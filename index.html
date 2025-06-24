@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Thingy - Desktop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #22d3ee;
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --text: #f1f5f9;
+            --text-dim: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* App Container */
+        .app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 70px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface);
+            padding: 1rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            -webkit-app-region: drag;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .storage-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-dim);
+            -webkit-app-region: no-drag;
+        }
+
+        .storage-badge {
+            background: var(--surface-light);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Views */
+        .view {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Search Bar */
+        .search-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            flex: 1;
+            background: var(--surface);
+            border: 2px solid var(--surface-light);
+            color: var(--text);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: all 0.3s;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Fix for modal search input */
+#searchModal .search-input {
+    position: relative;
+    z-index: 1001;
+}
+
+#searchModal .modal-content {
+    z-index: 1002;
+}
+
+/* Ensure modal inputs are always interactive */
+.modal.active input,
+.modal.active button,
+.modal.active textarea {
+    pointer-events: auto !important;
+}
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--surface-light);
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface);
+        }
+
+        /* Sort Options */
+        .sort-section {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .sort-chip {
+            background: var(--surface);
+            color: var(--text-dim);
+            border: 2px solid var(--surface-light);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        .sort-chip.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Book Grid */
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .book-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .book-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .book-cover {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+            background: var(--surface-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .book-info {
+            padding: 0.75rem;
+        }
+
+        .book-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .book-author {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .book-status {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.625rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-reading { background: rgba(34, 211, 238, 0.9); }
+        .status-completed { background: rgba(16, 185, 129, 0.9); }
+        .status-want-to-read { background: rgba(245, 158, 11, 0.9); }
+        .status-abandoned { background: rgba(239, 68, 68, 0.9); }
+
+        .rating-display {
+            display: flex;
+            gap: 0.25rem;
+            font-size: 1rem;
+        }
+
+        /* Book Details Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--surface-light);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+
+        .modal-close:hover {
+            background: var(--surface-light);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-dim);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            background: var(--background);
+            border: 2px solid var(--surface-light);
+            color: var(--text);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: all 0.3s;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Rating Stars */
+        .rating {
+            display: flex;
+            gap: 0.25rem;
+            font-size: 1.5rem;
+        }
+
+        .rating-star {
+            cursor: pointer;
+            color: var(--surface-light);
+            transition: color 0.2s;
+        }
+
+        .rating-star.active {
+            color: #fbbf24;
+        }
+
+        .rating-star:hover {
+            color: #fbbf24;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-dim);
+            font-size: 0.875rem;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            margin-bottom: 2rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            background: var(--surface-light);
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            height: 100%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 0.5rem;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Lending List */
+        .lending-list {
+            background: var(--surface);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .lending-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--surface-light);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .lending-item:last-child {
+            border-bottom: none;
+        }
+
+        .lending-book-cover {
+            width: 50px;
+            height: 75px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: var(--surface-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .lending-info {
+            flex: 1;
+        }
+
+        .lending-borrower {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .lending-date {
+            font-size: 0.875rem;
+            color: var(--text-dim);
+        }
+
+        .return-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .return-btn:hover {
+            background: #059669;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+            z-index: 100;
+        }
+
+        .nav-items {
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem 0;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-dim);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-label {
+            font-size: 0.75rem;
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 90px;
+            right: 1rem;
+            background: var(--primary);
+            color: white;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 99;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+        }
+
+        /* Add Options Menu */
+        .add-options {
+            position: fixed;
+            bottom: 160px;
+            right: 1rem;
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 0.5rem;
+            box-shadow: var(--shadow);
+            display: none;
+            z-index: 98;
+        }
+
+        .add-options.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .add-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: background 0.3s;
+            white-space: nowrap;
+        }
+
+        .add-option:hover {
+            background: var(--surface-light);
+        }
+
+        /* Search Results */
+        .search-results {
+            max-height: 400px;
+            overflow-y: auto;
+            background: var(--background);
+            border-radius: var(--radius);
+            margin-top: 1rem;
+        }
+
+        .search-result-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--surface-light);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .search-result-item:hover {
+            background: var(--surface);
+        }
+
+        .search-result-cover {
+            width: 60px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: var(--surface-light);
+        }
+
+        .search-result-info {
+            flex: 1;
+        }
+
+        .search-result-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .search-result-author {
+            font-size: 0.875rem;
+            color: var(--text-dim);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            color: var(--text-dim);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid var(--surface-light);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Save indicator */
+        .save-indicator {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--success);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .save-indicator.show {
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            .book-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <span>📚</span>
+                    <span>Book Thingy</span>
+                </div>
+                <div class="storage-info">
+                    <span>Storage: <span id="storageSize">0 MB</span></span>
+                    <span class="storage-badge">Unlimited</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Library View -->
+            <div class="view active" id="libraryView">
+                <div class="search-section">
+                    <div class="search-bar">
+                        <input type="text" class="search-input" id="searchInput" placeholder="Search your library...">
+                    </div>
+                    <div class="sort-section">
+                        <button class="sort-chip active" data-sort="recent">Recent</button>
+                        <button class="sort-chip" data-sort="title">Title</button>
+                        <button class="sort-chip" data-sort="author">Author</button>
+                        <button class="sort-chip" data-sort="status">Status</button>
+                        <button class="sort-chip" data-sort="rating">Rating</button>
+                    </div>
+                </div>
+
+                <div class="book-grid" id="bookGrid">
+                    <!-- Books will be rendered here -->
+                </div>
+
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-icon">📚</div>
+                    <p class="empty-text">Your library is empty. Add your first book!</p>
+                    <button class="btn" onclick="showAddOptions()">
+                        <span>+</span>
+                        <span>Add Book</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats View -->
+            <div class="view" id="statsView">
+                <h2 style="margin-bottom: 1.5rem;">Reading Statistics</h2>
+                
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <h3>2025 Reading Goal</h3>
+                        <button class="btn btn-secondary" onclick="showGoalModal()">Set Goal</button>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="goalProgress" style="width: 0%">0%</div>
+                    </div>
+                    <p style="margin-top: 0.5rem; color: var(--text-dim);" id="goalText">No goal set</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalBooks">0</div>
+                        <div class="stat-label">Total Books</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="currentlyReading">0</div>
+                        <div class="stat-label">Currently Reading</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="completedBooks">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="averageRating">0.0</div>
+                        <div class="stat-label">Average Rating</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-bottom: 1rem;">Top Rated Books</h3>
+                <div class="book-grid" id="topRatedGrid">
+                    <!-- Top rated books will be rendered here -->
+                </div>
+            </div>
+
+            <!-- Lending View -->
+            <div class="view" id="lendingView">
+                <h2 style="margin-bottom: 1.5rem;">Books On Loan</h2>
+                
+                <div class="lending-list" id="lendingList">
+                    <!-- Lending items will be rendered here -->
+                </div>
+
+                <div class="empty-state" id="lendingEmpty" style="display: none;">
+                    <div class="empty-icon">🤝</div>
+                    <p class="empty-text">No books currently on loan</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <div class="nav-items">
+                <div class="nav-item active" data-view="library">
+                    <div class="nav-icon">📚</div>
+                    <div class="nav-label">Library</div>
+                </div>
+                <div class="nav-item" data-view="stats">
+                    <div class="nav-icon">📊</div>
+                    <div class="nav-label">Stats</div>
+                </div>
+                <div class="nav-item" data-view="lending">
+                    <div class="nav-icon">🤝</div>
+                    <div class="nav-label">Lending</div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Floating Action Button -->
+        <div class="fab" id="fab" onclick="toggleAddOptions()">+</div>
+
+        <!-- Add Options Menu -->
+        <div class="add-options" id="addOptions">
+            <div class="add-option" onclick="showBarcodeScanner()">
+                <span>📷</span>
+                <span>Scan Barcode</span>
+            </div>
+            <div class="add-option" onclick="showInternetSearch()">
+                <span>🔍</span>
+                <span>Search Internet</span>
+            </div>
+            <div class="add-option" onclick="showManualEntry()">
+                <span✏️</span>
+                <span>Manual Entry</span>
+            </div>
+        </div>
+
+        <!-- Book Details Modal -->
+        <div class="modal" id="bookModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modalBookTitle">Book Details</h2>
+                    <button class="modal-close" onclick="closeModal('bookModal')">×</button>
+                </div>
+                <div class="modal-body" id="bookModalBody">
+                    <!-- Book details will be rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Add/Edit Book Modal -->
+        <div class="modal" id="addBookModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="addBookTitle">Add Book</h2>
+                    <button class="modal-close" onclick="closeModal('addBookModal')">×</button>
+                </div>
+                <div class="modal-body">
+                    <form id="bookForm">
+                        <input type="hidden" id="bookId">
+                        
+                        <div class="form-group">
+                            <label class="form-label">Title *</label>
+                            <input type="text" class="form-input" id="bookTitle" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Author *</label>
+                            <input type="text" class="form-input" id="bookAuthor" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">ISBN</label>
+                            <input type="text" class="form-input" id="bookISBN">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Cover Image URL</label>
+                            <input type="url" class="form-input" id="bookCover" placeholder="https://...">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" id="bookStatus">
+                                <option value="want-to-read">Want to Read</option>
+                                <option value="reading">Currently Reading</option>
+                                <option value="completed">Completed</option>
+                                <option value="abandoned">Abandoned</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Rating</label>
+                            <div class="rating" id="bookRating">
+                                <span class="rating-star" data-rating="1">☆</span>
+                                <span class="rating-star" data-rating="2">☆</span>
+                                <span class="rating-star" data-rating="3">☆</span>
+                                <span class="rating-star" data-rating="4">☆</span>
+                                <span class="rating-star" data-rating="5">☆</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Summary</label>
+                            <textarea class="form-textarea" id="bookSummary" placeholder="What's this book about?"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-textarea" id="bookNotes" placeholder="Your thoughts..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Favorite Quotes</label>
+                            <textarea class="form-textarea" id="bookQuotes" placeholder="Memorable quotes from the book..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn" style="width: 100%;">Save Book</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Internet Search Modal -->
+        <div class="modal" id="searchModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Search Books</h2>
+                    <button class="modal-close" onclick="closeModal('searchModal')">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="search-bar">
+                        <input type="text" class="search-input" id="internetSearchInput" placeholder="Search by title, author, or ISBN...">
+                        <button class="btn" onclick="searchGoogleBooks()">Search</button>
+                    </div>
+                    <div id="searchResults"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lending Modal -->
+        <div class="modal" id="lendingModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Lend Book</h2>
+                    <button class="modal-close" onclick="closeModal('lendingModal')">×</button>
+                </div>
+                <div class="modal-body">
+                    <form id="lendingForm">
+                        <input type="hidden" id="lendBookId">
+                        
+                        <div class="form-group">
+                            <label class="form-label">Borrower's Name *</label>
+                            <input type="text" class="form-input" id="borrowerName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Contact Info</label>
+                            <input type="text" class="form-input" id="borrowerContact" placeholder="Phone or email">
+                        </div>
+
+                        <button type="submit" class="btn" style="width: 100%;">Lend Book</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Goal Modal -->
+        <div class="modal" id="goalModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Set Reading Goal</h2>
+                    <button class="modal-close" onclick="closeModal('goalModal')">×</button>
+                </div>
+                <div class="modal-body">
+                    <form id="goalForm">
+                        <div class="form-group">
+                            <label class="form-label">Books to read in 2025</label>
+                            <input type="number" class="form-input" id="goalInput" min="1" max="365" placeholder="e.g., 24" required>
+                        </div>
+                        <button type="submit" class="btn" style="width: 100%;">Set Goal</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Indicator -->
+        <div class="save-indicator" id="saveIndicator">Saved!</div>
+    </div>
+
+    <script>
+        // App State
+        let library = {
+            books: [],
+            settings: {
+                goal2025: null
+            }
+        };
+        let currentSort = 'recent';
+        let currentBookId = null;
+        let selectedRating = 0;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadLibrary();
+            setupEventListeners();
+            renderLibrary();
+            updateStats();
+            updateStorageInfo();
+        });
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', () => switchView(item.dataset.view));
+            });
+
+            // Sort chips
+            document.querySelectorAll('.sort-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    document.querySelectorAll('.sort-chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    currentSort = chip.dataset.sort;
+                    renderLibrary();
+                });
+            });
+
+            // Search
+            document.getElementById('searchInput').addEventListener('input', renderLibrary);
+
+            // Forms
+            document.getElementById('bookForm').addEventListener('submit', saveBook);
+            document.getElementById('lendingForm').addEventListener('submit', lendBook);
+            document.getElementById('goalForm').addEventListener('submit', setGoal);
+
+            // Rating stars
+            document.querySelectorAll('.rating-star').forEach(star => {
+                star.addEventListener('click', () => {
+                    selectedRating = parseInt(star.dataset.rating);
+                    updateRatingDisplay();
+                });
+            });
+
+            // Export/Import listeners
+            window.electronAPI.onExportLibrary((event, filePath) => {
+                exportLibrary(filePath);
+            });
+
+            window.electronAPI.onImportLibrary((event, filePath) => {
+                importLibrary(filePath);
+            });
+        }
+
+        // View Management
+        function switchView(viewName) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById(viewName + 'View').classList.add('active');
+            document.querySelector(`[data-view="${viewName}"]`).classList.add('active');
+
+            if (viewName === 'stats') {
+                updateStats();
+            } else if (viewName === 'lending') {
+                renderLending();
+            }
+        }
+
+        // Data Management
+        async function loadLibrary() {
+            try {
+                const data = await window.electronAPI.loadLibrary();
+                library = data;
+                if (!library.books) library.books = [];
+                if (!library.settings) library.settings = { goal2025: null };
+            } catch (error) {
+                console.error('Error loading library:', error);
+                library = { books: [], settings: { goal2025: null } };
+            }
+        }
+
+        async function saveLibrary() {
+            try {
+                await window.electronAPI.saveLibrary(library);
+                showSaveIndicator();
+            } catch (error) {
+                console.error('Error saving library:', error);
+                alert('Failed to save library!');
+            }
+        }
+
+        function showSaveIndicator() {
+            const indicator = document.getElementById('saveIndicator');
+            indicator.classList.add('show');
+            setTimeout(() => indicator.classList.remove('show'), 2000);
+        }
+
+        async function updateStorageInfo() {
+            try {
+                const info = await window.electronAPI.getStorageInfo();
+                document.getElementById('storageSize').textContent = info.totalSize;
+            } catch (error) {
+                console.error('Error getting storage info:', error);
+            }
+        }
+
+        // Book Management
+        async function saveBook(e) {
+            e.preventDefault();
+            
+            const book = {
+                id: document.getElementById('bookId').value || Date.now().toString(),
+                title: document.getElementById('bookTitle').value,
+                author: document.getElementById('bookAuthor').value,
+                isbn: document.getElementById('bookISBN').value,
+                cover: document.getElementById('bookCover').value,
+                status: document.getElementById('bookStatus').value,
+                rating: selectedRating,
+                summary: document.getElementById('bookSummary').value,
+                notes: document.getElementById('bookNotes').value,
+                quotes: document.getElementById('bookQuotes').value,
+                dateAdded: new Date().toISOString(),
+                dateModified: new Date().toISOString()
+            };
+
+            const existingIndex = library.books.findIndex(b => b.id === book.id);
+            if (existingIndex >= 0) {
+                library.books[existingIndex] = { ...library.books[existingIndex], ...book };
+            } else {
+                library.books.push(book);
+            }
+
+            await saveLibrary();
+            closeModal('addBookModal');
+            renderLibrary();
+            updateStats();
+            updateStorageInfo();
+        }
+
+        async function deleteBook(bookId) {
+            if (confirm('Are you sure you want to delete this book?')) {
+                library.books = library.books.filter(b => b.id !== bookId);
+                await saveLibrary();
+                closeModal('bookModal');
+                renderLibrary();
+                updateStats();
+                updateStorageInfo();
+            }
+        }
+
+        // Rendering Functions
+        function renderLibrary() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            let filteredBooks = library.books.filter(book => 
+                book.title.toLowerCase().includes(searchTerm) ||
+                book.author.toLowerCase().includes(searchTerm)
+            );
+
+            // Sort books
+            filteredBooks.sort((a, b) => {
+                switch (currentSort) {
+                    case 'recent':
+                        return new Date(b.dateAdded) - new Date(a.dateAdded);
+                    case 'title':
+                        return a.title.localeCompare(b.title);
+                    case 'author':
+                        return a.author.localeCompare(b.author);
+                    case 'status':
+                        return a.status.localeCompare(b.status);
+                    case 'rating':
+                        return (b.rating || 0) - (a.rating || 0);
+                    default:
+                        return 0;
+                }
+            });
+
+            const grid = document.getElementById('bookGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (filteredBooks.length === 0) {
+                grid.innerHTML = '';
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+                grid.innerHTML = filteredBooks.map(book => `
+                    <div class="book-card" onclick="showBookDetails('${book.id}')">
+                        ${book.cover ? 
+                            `<img src="${book.cover}" alt="${book.title}" class="book-cover" onerror="this.outerHTML='<div class=\\'book-cover\\'>📖</div>'">` :
+                            `<div class="book-cover">📖</div>`
+                        }
+                        <div class="book-info">
+                            <div class="book-title">${book.title}</div>
+                            <div class="book-author">${book.author}</div>
+                            ${book.rating ? `<div class="rating-display">${'★'.repeat(book.rating)}${'☆'.repeat(5-book.rating)}</div>` : ''}
+                        </div>
+                        <div class="book-status status-${book.status}">${book.status.replace('-', ' ')}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function updateStats() {
+            const total = library.books.length;
+            const reading = library.books.filter(b => b.status === 'reading').length;
+            const completed = library.books.filter(b => b.status === 'completed').length;
+            const ratings = library.books.filter(b => b.rating > 0).map(b => b.rating);
+            const avgRating = ratings.length > 0 ? 
+                (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : 
+                '0.0';
+
+            document.getElementById('totalBooks').textContent = total;
+            document.getElementById('currentlyReading').textContent = reading;
+            document.getElementById('completedBooks').textContent = completed;
+            document.getElementById('averageRating').textContent = avgRating;
+
+            // Update goal progress
+            const goal = library.settings.goal2025;
+            if (goal) {
+                const goalNum = parseInt(goal);
+                const progress = Math.min((completed / goalNum) * 100, 100);
+                document.getElementById('goalProgress').style.width = progress + '%';
+                document.getElementById('goalProgress').textContent = Math.round(progress) + '%';
+                document.getElementById('goalText').textContent = `${completed} of ${goalNum} books (${Math.round(goalNum/12)} per month)`;
+            }
+
+            // Top rated books
+            const topRated = library.books
+                .filter(b => b.rating >= 4)
+                .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+                .slice(0, 4);
+
+            document.getElementById('topRatedGrid').innerHTML = topRated.map(book => `
+                <div class="book-card" onclick="showBookDetails('${book.id}')">
+                    ${book.cover ? 
+                        `<img src="${book.cover}" alt="${book.title}" class="book-cover" onerror="this.outerHTML='<div class=\\'book-cover\\'>📖</div>'">` :
+                        `<div class="book-cover">📖</div>`
+                    }
+                    <div class="book-info">
+                        <div class="book-title">${book.title}</div>
+                        <div class="book-author">${'⭐'.repeat(book.rating)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderLending() {
+            const lentBooks = library.books.filter(b => b.lentTo);
+            const list = document.getElementById('lendingList');
+            const empty = document.getElementById('lendingEmpty');
+
+            if (lentBooks.length === 0) {
+                list.innerHTML = '';
+                empty.style.display = 'block';
+            } else {
+                empty.style.display = 'none';
+                list.innerHTML = lentBooks.map(book => {
+                    const daysSince = Math.floor((new Date() - new Date(book.lentDate)) / (1000 * 60 * 60 * 24));
+                    return `
+                        <div class="lending-item">
+                            ${book.cover ? 
+                                `<img src="${book.cover}" alt="${book.title}" class="lending-book-cover" onerror="this.outerHTML='<div class=\\'lending-book-cover\\'>📖</div>'">` :
+                                `<div class="lending-book-cover">📖</div>`
+                            }
+                            <div class="lending-info">
+                                <div class="lending-borrower">${book.lentTo}</div>
+                                <div class="lending-date">${book.title} • ${daysSince} days ago</div>
+                            </div>
+                            <button class="return-btn" onclick="returnBook('${book.id}')">Return</button>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        // Modal Functions
+        function showBookDetails(bookId) {
+            const book = library.books.find(b => b.id === bookId);
+            if (!book) return;
+
+            currentBookId = bookId;
+            document.getElementById('modalBookTitle').textContent = book.title;
+            
+            document.getElementById('bookModalBody').innerHTML = `
+                <div style="display: flex; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    ${book.cover ? 
+                        `<img src="${book.cover}" alt="${book.title}" style="width: 120px; height: 180px; object-fit: cover; border-radius: var(--radius);" onerror="this.outerHTML='<div style=\\'width: 120px; height: 180px; background: var(--surface-light); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 3rem;\\'>📖</div>'">` :
+                        `<div style="width: 120px; height: 180px; background: var(--surface-light); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 3rem;">📖</div>`
+                    }
+                    <div style="flex: 1;">
+                        <p style="margin-bottom: 0.5rem;"><strong>Author:</strong> ${book.author}</p>
+                        ${book.isbn ? `<p style="margin-bottom: 0.5rem;"><strong>ISBN:</strong> ${book.isbn}</p>` : ''}
+                        <p style="margin-bottom: 0.5rem;"><strong>Status:</strong> <span class="book-status status-${book.status}" style="position: static; font-size: 0.75rem;">${book.status.replace('-', ' ')}</span></p>
+                        ${book.rating ? `<p style="margin-bottom: 0.5rem;"><strong>Rating:</strong> ${'★'.repeat(book.rating)}${'☆'.repeat(5-book.rating)}</p>` : ''}
+                    </div>
+                </div>
+
+                ${book.summary ? `
+                    <div style="margin-bottom: 1.5rem;">
+                        <h3 style="margin-bottom: 0.5rem;">Summary</h3>
+                        <p style="color: var(--text-dim);">${book.summary}</p>
+                    </div>
+                ` : ''}
+
+                ${book.notes ? `
+                    <div style="margin-bottom: 1.5rem;">
+                        <h3 style="margin-bottom: 0.5rem;">Notes</h3>
+                        <p style="color: var(--text-dim);">${book.notes}</p>
+                    </div>
+                ` : ''}
+
+                ${book.quotes ? `
+                    <div style="margin-bottom: 1.5rem;">
+                        <h3 style="margin-bottom: 0.5rem;">Favorite Quotes</h3>
+                        <p style="color: var(--text-dim); white-space: pre-wrap;">${book.quotes}</p>
+                    </div>
+                ` : ''}
+
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn" onclick="editBook('${book.id}')">Edit</button>
+                    ${!book.lentTo ? 
+                        `<button class="btn btn-secondary" onclick="showLendingModal('${book.id}')">Lend</button>` : 
+                        ''
+                    }
+                    <button class="btn btn-secondary" style="background: var(--danger);" onclick="deleteBook('${book.id}')">Delete</button>
+                </div>
+            `;
+
+            openModal('bookModal');
+        }
+
+        function showAddOptions() {
+            document.getElementById('addOptions').classList.add('active');
+        }
+
+        function toggleAddOptions() {
+            document.getElementById('addOptions').classList.toggle('active');
+        }
+
+        function showManualEntry() {
+            currentBookId = null;
+            selectedRating = 0;
+            document.getElementById('addBookTitle').textContent = 'Add Book';
+            document.getElementById('bookForm').reset();
+            updateRatingDisplay();
+            openModal('addBookModal');
+            document.getElementById('addOptions').classList.remove('active');
+        }
+
+        function editBook(bookId) {
+            const book = library.books.find(b => b.id === bookId);
+            if (!book) return;
+
+            currentBookId = bookId;
+            selectedRating = book.rating || 0;
+            
+            document.getElementById('addBookTitle').textContent = 'Edit Book';
+            document.getElementById('bookId').value = book.id;
+            document.getElementById('bookTitle').value = book.title;
+            document.getElementById('bookAuthor').value = book.author;
+            document.getElementById('bookISBN').value = book.isbn || '';
+            document.getElementById('bookCover').value = book.cover || '';
+            document.getElementById('bookStatus').value = book.status;
+            document.getElementById('bookSummary').value = book.summary || '';
+            document.getElementById('bookNotes').value = book.notes || '';
+            document.getElementById('bookQuotes').value = book.quotes || '';
+            
+            updateRatingDisplay();
+            closeModal('bookModal');
+            openModal('addBookModal');
+        }
+
+        function showBarcodeScanner() {
+            alert('Barcode scanner would open here!\n\nTo implement:\n1. Add QuaggaJS or ZXing library\n2. Request camera permissions\n3. Scan ISBN barcode\n4. Look up book details via API');
+            document.getElementById('addOptions').classList.remove('active');
+        }
+
+      function showInternetSearch() {
+    openModal('searchModal');
+    document.getElementById('addOptions').classList.remove('active');
+    
+    // Clear previous search
+    document.getElementById('internetSearchInput').value = '';
+    document.getElementById('searchResults').innerHTML = '';
+    
+    // Force focus after a short delay
+    setTimeout(() => {
+        const searchInput = document.getElementById('internetSearchInput');
+        searchInput.focus();
+        searchInput.click();
+    }, 100);
+}
+
+        function showLendingModal(bookId) {
+            document.getElementById('lendBookId').value = bookId;
+            document.getElementById('lendingForm').reset();
+            closeModal('bookModal');
+            openModal('lendingModal');
+        }
+
+        function showGoalModal() {
+            const currentGoal = library.settings.goal2025;
+            if (currentGoal) {
+                document.getElementById('goalInput').value = currentGoal;
+            }
+            openModal('goalModal');
+        }
+
+        // Modal Controls
+      function openModal(modalId) {
+    document.getElementById(modalId).classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    // Special handling for search modal
+    if (modalId === 'searchModal') {
+        setTimeout(() => {
+            const searchInput = document.getElementById('internetSearchInput');
+            if (searchInput) {
+                searchInput.focus();
+                searchInput.click();
+            }
+        }, 100);
+    }
+}
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Rating Display
+        function updateRatingDisplay() {
+            document.querySelectorAll('.rating-star').forEach((star, index) => {
+                if (index < selectedRating) {
+                    star.textContent = '★';
+                    star.classList.add('active');
+                } else {
+                    star.textContent = '☆';
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+       // Google Books Search
+async function searchGoogleBooks() {
+    const query = document.getElementById('internetSearchInput').value;
+    if (!query) return;
+
+    const resultsDiv = document.getElementById('searchResults');
+    resultsDiv.innerHTML = '<div class="spinner"></div>';
+
+    try {
+        const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=10`);
+        const data = await response.json();
+
+if (data.items && data.items.length > 0) {
+    resultsDiv.innerHTML = '<div class="search-results">' + 
+        data.items.map((item, index) => {
+            const info = item.volumeInfo;
+            const title = info.title || 'Unknown Title';
+            const authors = info.authors?.join(', ') || 'Unknown Author';
+            const isbn = info.industryIdentifiers?.find(id => id.type === 'ISBN_13')?.identifier || 
+                       info.industryIdentifiers?.find(id => id.type === 'ISBN_10')?.identifier || '';
+            
+      let thumbnail = info.imageLinks?.thumbnail || '';
+let originalThumbnail = thumbnail; // Keep the original as backup
+
+// Force higher resolution by changing zoom parameter
+if (thumbnail) {
+    // Change zoom=1 to zoom=0 for better quality
+    thumbnail = thumbnail.replace('zoom=1', 'zoom=0');
+    // Also change http to https for security
+    thumbnail = thumbnail.replace('http://', 'https://');
+    // Remove edge=curl for cleaner image
+    thumbnail = thumbnail.replace('&edge=curl', '');
+    // Also fix https on the original
+    originalThumbnail = originalThumbnail.replace('http://', 'https://');
+}
+
+// Store both versions in the book data
+const bookData = {
+    title: title,
+    author: authors,
+    isbn: isbn,
+    cover: originalThumbnail || thumbnail,  // Use original (more reliable) thumbnail
+    summary: (info.description || '').substring(0, 500)
+};                 
+// Use index to store data in a global variable to avoid encoding issues
+                    window.searchResultsData = window.searchResultsData || {};
+                    window.searchResultsData[index] = bookData;
+                    
+return `
+    <div class="search-result-item" onclick="selectGoogleBookByIndex(${index})">
+        <img src="${thumbnail}" 
+             alt="${title}" 
+             class="search-result-cover"
+             onerror="this.onerror=null; if(this.src.includes('zoom=0')) { this.src=this.src.replace('zoom=0','zoom=1'); } else { this.parentElement.innerHTML='<div class=\\'search-result-cover\\' style=\\'display:flex;align-items:center;justify-content:center;\\'>📖</div>'; }"
+        <div class="search-result-info">
+            <div class="search-result-title">${title}</div>
+            <div class="search-result-author">${authors}</div>
+        </div>
+    </div>
+`;              }).join('') + 
+            '</div>';
+        } else {
+            resultsDiv.innerHTML = '<p style="text-align: center; color: var(--text-dim);">No books found. Try a different search term.</p>';
+        }
+    } catch (error) {
+        resultsDiv.innerHTML = '<p style="text-align: center; color: var(--danger);">Search failed. Please try again.</p>';
+        console.error('Search error:', error);
+    }
+}
+
+function selectGoogleBook(bookData) {
+    currentBookId = null;
+    selectedRating = 0;
+    
+    document.getElementById('addBookTitle').textContent = 'Add Book';
+    document.getElementById('bookId').value = '';
+    document.getElementById('bookTitle').value = bookData.title;
+    document.getElementById('bookAuthor').value = bookData.author;
+    document.getElementById('bookISBN').value = bookData.isbn;
+    document.getElementById('bookCover').value = bookData.cover;
+    document.getElementById('bookStatus').value = 'want-to-read';
+    document.getElementById('bookSummary').value = bookData.summary || '';
+    document.getElementById('bookNotes').value = '';
+    document.getElementById('bookQuotes').value = '';
+    
+    updateRatingDisplay();
+    closeModal('searchModal');
+    openModal('addBookModal');
+}
+
+// New function to handle clicks using index
+function selectGoogleBookByIndex(index) {
+    if (window.searchResultsData && window.searchResultsData[index]) {
+        selectGoogleBook(window.searchResultsData[index]);
+    } else {
+        console.error('Book data not found for index:', index);
+        alert('Error loading book details. Please try manual entry.');
+    }
+}
+function selectGoogleBookFromElement(element) {
+    try {
+        const bookData = JSON.parse(element.getAttribute('data-book').replace(/&#39;/g, "'"));
+        selectGoogleBook(bookData);
+    } catch (error) {
+        console.error('Error selecting book:', error);
+        alert('Error loading book details. Please try manual entry.');
+    }
+}
+        // Lending Functions
+        async function lendBook(e) {
+            e.preventDefault();
+            
+            const bookId = document.getElementById('lendBookId').value;
+            const book = library.books.find(b => b.id === bookId);
+            
+            if (book) {
+                book.lentTo = document.getElementById('borrowerName').value;
+                book.lentContact = document.getElementById('borrowerContact').value;
+                book.lentDate = new Date().toISOString();
+                
+                await saveLibrary();
+                closeModal('lendingModal');
+                renderLending();
+            }
+        }
+
+        async function returnBook(bookId) {
+            const book = library.books.find(b => b.id === bookId);
+            if (book) {
+                delete book.lentTo;
+                delete book.lentContact;
+                delete book.lentDate;
+                
+                await saveLibrary();
+                renderLending();
+            }
+        }
+
+        // Goal Functions
+        async function setGoal(e) {
+            e.preventDefault();
+            const goal = document.getElementById('goalInput').value;
+            library.settings.goal2025 = goal;
+            await saveLibrary();
+            closeModal('goalModal');
+            updateStats();
+        }
+
+        // Export/Import Functions
+        async function exportLibrary(filePath) {
+            try {
+                const fs = require('fs').promises;
+                await fs.writeFile(filePath, JSON.stringify(library, null, 2));
+                alert('Library exported successfully!');
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('Failed to export library!');
+            }
+        }
+
+        async function importLibrary(filePath) {
+            try {
+                const fs = require('fs').promises;
+                const data = await fs.readFile(filePath, 'utf8');
+                library = JSON.parse(data);
+                await saveLibrary();
+                renderLibrary();
+                updateStats();
+                alert('Library imported successfully!');
+            } catch (error) {
+                console.error('Import error:', error);
+                alert('Failed to import library!');
+            }
+        }
+
+        // Close modals on background click
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal(modal.id);
+                }
+            });
+        });
+
+        // Prevent form submission on Enter in search
+        document.getElementById('internetSearchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                searchGoogleBooks();
+            }
+        });
+    </script>
+</body>
+</html>
