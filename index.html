@@ -901,7 +901,7 @@
                 <span>Search Internet</span>
             </div>
             <div class="add-option" onclick="showManualEntry()">
-                <span✏️</span>
+                <span>✏️</span>
                 <span>Manual Entry</span>
             </div>
         </div>
@@ -1113,15 +1113,16 @@
                 });
             });
 
-            // Export/Import listeners
-            window.electronAPI.onExportLibrary((event, filePath) => {
-                exportLibrary(filePath);
-            });
+ // Export/Import listeners - only for Electron
+if (window.electronAPI) {
+    window.electronAPI.onExportLibrary((event, filePath) => {
+        exportLibrary(filePath);
+    });
 
-            window.electronAPI.onImportLibrary((event, filePath) => {
-                importLibrary(filePath);
-            });
-        }
+    window.electronAPI.onImportLibrary((event, filePath) => {
+        importLibrary(filePath);
+    });
+}
 
         // View Management
         function switchView(viewName) {
@@ -1139,10 +1140,18 @@
         }
 
         // Data Management
-        async function loadLibrary() {
-            try {
-                const data = await window.electronAPI.loadLibrary();
-                library = data;
+async function loadLibrary() {
+    try {
+        // Check if we're in Electron or web
+        if (window.electronAPI) {
+            const data = await window.electronAPI.loadLibrary();
+            library = data;
+        } else {
+            // Web version - use localStorage for now
+            const saved = localStorage.getItem('bookThingyLibrary');
+            library = saved ? JSON.parse(saved) : { books: [], settings: { goal2025: null }, podcasts: [] };
+        }
+        
                 if (!library.books) library.books = [];
                 if (!library.settings) library.settings = { goal2025: null };
             } catch (error) {
@@ -1151,15 +1160,20 @@
             }
         }
 
-        async function saveLibrary() {
-            try {
-                await window.electronAPI.saveLibrary(library);
-                showSaveIndicator();
-            } catch (error) {
-                console.error('Error saving library:', error);
-                alert('Failed to save library!');
-            }
+async function saveLibrary() {
+    try {
+        if (window.electronAPI) {
+            await window.electronAPI.saveLibrary(library);
+        } else {
+            // Web version - use localStorage for now
+            localStorage.setItem('bookThingyLibrary', JSON.stringify(library));
         }
+        showSaveIndicator();
+    } catch (error) {
+        console.error('Error saving library:', error);
+        alert('Failed to save library!');
+    }
+}
 
         function showSaveIndicator() {
             const indicator = document.getElementById('saveIndicator');
@@ -1167,14 +1181,21 @@
             setTimeout(() => indicator.classList.remove('show'), 2000);
         }
 
-        async function updateStorageInfo() {
-            try {
-                const info = await window.electronAPI.getStorageInfo();
-                document.getElementById('storageSize').textContent = info.totalSize;
-            } catch (error) {
-                console.error('Error getting storage info:', error);
-            }
+async function updateStorageInfo() {
+    try {
+        if (window.electronAPI) {
+            const info = await window.electronAPI.getStorageInfo();
+            document.getElementById('storageSize').textContent = info.totalSize;
+        } else {
+            // Web version - calculate from localStorage
+            const dataSize = new Blob([JSON.stringify(library)]).size;
+            const sizeInMB = (dataSize / 1024 / 1024).toFixed(2);
+            document.getElementById('storageSize').textContent = `${sizeInMB} MB`;
         }
+    } catch (error) {
+        console.error('Error getting storage info:', error);
+    }
+}
 
         // Book Management
         async function saveBook(e) {
