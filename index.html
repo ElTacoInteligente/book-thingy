@@ -775,11 +775,6 @@
                 <div class="logo">
                     <span>📚</span>
                     <span>Book Thingy</span>
-                </div>
-                <div class="storage-info">
-                    <span>Storage: <span id="storageSize">0 MB</span></span>
-                    <span class="storage-badge">Unlimited</span>
-                </div>
             </div>
         </header>
 
@@ -1077,7 +1072,6 @@
             setupEventListeners();
             renderLibrary();
             updateStats();
-            updateStorageInfo();
         });
 
         // Event Listeners
@@ -1181,22 +1175,6 @@ async function saveLibrary() {
             setTimeout(() => indicator.classList.remove('show'), 2000);
         }
 
-async function updateStorageInfo() {
-    try {
-        if (window.electronAPI) {
-            const info = await window.electronAPI.getStorageInfo();
-            document.getElementById('storageSize').textContent = info.totalSize;
-        } else {
-            // Web version - calculate from localStorage
-            const dataSize = new Blob([JSON.stringify(library)]).size;
-            const sizeInMB = (dataSize / 1024 / 1024).toFixed(2);
-            document.getElementById('storageSize').textContent = `${sizeInMB} MB`;
-        }
-    } catch (error) {
-        console.error('Error getting storage info:', error);
-    }
-}
-
         // Book Management
         async function saveBook(e) {
             e.preventDefault();
@@ -1227,7 +1205,6 @@ async function updateStorageInfo() {
             closeModal('addBookModal');
             renderLibrary();
             updateStats();
-            updateStorageInfo();
         }
 
         async function deleteBook(bookId) {
@@ -1237,7 +1214,6 @@ async function updateStorageInfo() {
                 closeModal('bookModal');
                 renderLibrary();
                 updateStats();
-                updateStorageInfo();
             }
         }
 
