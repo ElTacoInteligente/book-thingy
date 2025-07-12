@@ -776,6 +776,12 @@
         <span>📚</span>
         <span>Book Thingy</span>
     </div>
+    <div class="user-info" id="userInfo" style="display: none;">
+        <span id="userEmail" style="color: var(--text-dim); font-size: 0.875rem; margin-right: 1rem;"></span>
+        <button class="btn btn-secondary" onclick="signOut()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+            Sign Out
+        </button>
+    </div>
 </div>
 </header>
 
@@ -1776,17 +1782,43 @@ document.getElementById('googleSignInBtn').addEventListener('click', async () =>
 });
 
 // Listen for authentication state changes
-auth.onAuthStateChanged((user) => {
+auth.onAuthStateChanged(async (user) => {
     if (user) {
         currentUser = user;
         console.log('User signed in:', user.email);
+        
+        // Show user info in header
+        document.getElementById('userEmail').textContent = user.email;
+        document.getElementById('userInfo').style.display = 'flex';
+        
+        // Load user's data and render
+        await loadLibrary();
+        renderLibrary();
+        updateStats();
     } else {
         currentUser = null;
         console.log('User signed out');
-        // Show sign-in modal when not authenticated
+        
+        // Hide user info in header
+        document.getElementById('userInfo').style.display = 'none';
+        
+        // Clear local data and show sign-in modal
+        library = { books: [], settings: { goal2025: null } };
+        renderLibrary();
         openModal('signInModal');
     }
 });
+
+// Sign-out function
+function signOut() {
+    if (confirm('Are you sure you want to sign out?')) {
+        auth.signOut().then(() => {
+            console.log('User signed out successfully');
+        }).catch((error) => {
+            console.error('Sign-out error:', error);
+        });
+    }
+}
 
 </script>
 </body>
