@@ -1051,6 +1051,28 @@
             </div>
         </div>
 
+                <!-- ADD THE SIGN-IN MODAL HERE -->
+        <!-- Sign In Modal -->
+        <div class="modal" id="signInModal">
+            <div class="modal-content" style="max-width: 400px;">
+                <div class="modal-header">
+                    <h2 class="modal-title">Welcome to Book Thingy</h2>
+                </div>
+                <div class="modal-body" style="text-align: center;">
+                    <div style="margin-bottom: 2rem;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">📚</div>
+                        <p style="color: var(--text-dim); margin-bottom: 2rem;">Sign in to sync your library across all devices</p>
+                    </div>
+                    <button class="btn" id="googleSignInBtn" style="width: 100%; justify-content: center;">
+                        <span>Sign in with Google</span>
+                    </button>
+                    <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-dim);">
+                        Your data is private and secure
+                    </p>
+                </div>
+            </div>
+        </div>
+
         <!-- Save Indicator -->
         <div class="save-indicator" id="saveIndicator">Saved!</div>
     </div>
@@ -1068,12 +1090,11 @@
         let selectedRating = 0;
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', async () => {
-            await loadLibrary();
-            setupEventListeners();
-            renderLibrary();
-            updateStats();
-        });
+document.addEventListener('DOMContentLoaded', async () => {
+    setupEventListeners();
+    // Don't load library immediately - wait for auth state
+    // If no user is signed in, the auth listener will show sign-in modal
+});
 
         // Event Listeners
         function setupEventListeners() {
@@ -1138,30 +1159,38 @@ if (window.electronAPI) {
         // Data Management
 async function loadLibrary() {
     try {
-        // Check if we're in Electron or web
-        if (window.electronAPI) {
-            const data = await window.electronAPI.loadLibrary();
-            library = data;
+        // Check if user is authenticated and use Firebase
+        if (currentUser) {
+            const doc = await db.collection('users').doc(currentUser.uid).get();
+            if (doc.exists) {
+                library = doc.data();
+            } else {
+                // First time user - create default library
+                library = { books: [], settings: { goal2025: null } };
+                await saveLibrary(); // Save the default structure
+            }
         } else {
-            // Web version - use localStorage for now
+            // Not signed in - use localStorage
             const saved = localStorage.getItem('bookThingyLibrary');
-            library = saved ? JSON.parse(saved) : { books: [], settings: { goal2025: null }, podcasts: [] };
+            library = saved ? JSON.parse(saved) : { books: [], settings: { goal2025: null } };
         }
         
-                if (!library.books) library.books = [];
-                if (!library.settings) library.settings = { goal2025: null };
-            } catch (error) {
-                console.error('Error loading library:', error);
-                library = { books: [], settings: { goal2025: null } };
-            }
-        }
+        if (!library.books) library.books = [];
+        if (!library.settings) library.settings = { goal2025: null };
+    } catch (error) {
+        console.error('Error loading library:', error);
+        library = { books: [], settings: { goal2025: null } };
+    }
+}
 
 async function saveLibrary() {
     try {
-        if (window.electronAPI) {
-            await window.electronAPI.saveLibrary(library);
+        if (currentUser) {
+            // User is signed in - save to Firebase
+            await db.collection('users').doc(currentUser.uid).set(library);
+            console.log('Data saved to Firebase for user:', currentUser.email);
         } else {
-            // Web version - use localStorage for now
+            // Not signed in - save to localStorage
             localStorage.setItem('bookThingyLibrary', JSON.stringify(library));
         }
         showSaveIndicator();
@@ -1726,6 +1755,39 @@ const firebaseConfig = {
     const app = firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
+
+    // Authentication state
+let currentUser = null;
+
+// Google Sign-In
+document.getElementById('googleSignInBtn').addEventListener('click', async () => {
+    try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        const result = await auth.signInWithPopup(provider);
+        currentUser = result.user;
+        console.log('Signed in:', currentUser.email);
+        closeModal('signInModal');
+        await loadLibrary(); // Reload data from Firebase
+        renderLibrary();
+    } catch (error) {
+        console.error('Sign-in error:', error);
+        alert('Sign-in failed. Please try again.');
+    }
+});
+
+// Listen for authentication state changes
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        currentUser = user;
+        console.log('User signed in:', user.email);
+    } else {
+        currentUser = null;
+        console.log('User signed out');
+        // Show sign-in modal when not authenticated
+        openModal('signInModal');
+    }
+});
+
 </script>
 </body>
 </html>
