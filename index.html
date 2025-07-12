@@ -1703,5 +1703,29 @@ function selectGoogleBookFromElement(element) {
             }
         });
     </script>
+    <!-- Firebase App (the core Firebase SDK) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<!-- Firebase Auth -->
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<!-- Firebase Firestore -->
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+
+<!-- Initialize Firebase -->
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCG4hFaDegneYjJ8_jvAVAEJIu9NwzxVsw",
+  authDomain: "book-thingy-app.firebaseapp.com",
+  projectId: "book-thingy-app",
+  storageBucket: "book-thingy-app.firebasestorage.app",
+  messagingSenderId: "284502577988",
+  appId: "1:284502577988:web:5c50de859e0870a09efd11",
+  measurementId: "G-TZ2VTER0YV"
+};
+    
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+</script>
 </body>
 </html>
