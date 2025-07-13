@@ -773,6 +773,101 @@
     margin: 0;
 }
 
+/* Toast Notifications */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10001;
+    pointer-events: none;
+}
+
+.toast {
+    background: var(--surface);
+    border: 2px solid var(--surface-light);
+    border-radius: var(--radius);
+    padding: 1rem 1.5rem;
+    margin-bottom: 0.5rem;
+    box-shadow: var(--shadow);
+    transform: translateX(400px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    max-width: 400px;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.toast-content {
+    flex: 1;
+}
+
+.toast-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.toast-message {
+    font-size: 0.875rem;
+    color: var(--text-dim);
+}
+
+.toast-success {
+    border-color: var(--success);
+}
+
+.toast-success .toast-icon {
+    color: var(--success);
+}
+
+.toast-error {
+    border-color: var(--danger);
+}
+
+.toast-error .toast-icon {
+    color: var(--danger);
+}
+
+.toast-warning {
+    border-color: var(--warning);
+}
+
+.toast-warning .toast-icon {
+    color: var(--warning);
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 1.25rem;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+.toast-close:hover {
+    background: var(--surface-light);
+}
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -1108,6 +1203,9 @@
             </div>
         </div>
 
+          <!-- Toast Container -->
+        <div class="toast-container" id="toastContainer"></div>
+
                 <!-- ADD THE SIGN-IN MODAL HERE -->
         <!-- Sign In Modal -->
         <div class="modal" id="signInModal">
@@ -1251,9 +1349,9 @@ async function saveLibrary() {
             localStorage.setItem('bookThingyLibrary', JSON.stringify(library));
         }
         showSaveIndicator();
-    } catch (error) {
+} catch (error) {
         console.error('Error saving library:', error);
-        alert('Failed to save library!');
+        showToast('Save Failed', 'Could not save your library. Please try again.', 'error');
     }
 }
 
@@ -1295,18 +1393,26 @@ async function saveBook(e) {
     closeModal('addBookModal');
     renderLibrary();
     updateStats();
+    await saveLibrary();
+    closeModal('addBookModal');
+    renderLibrary();
+    updateStats();
+    showToast('Book Saved', 'Your book has been added to your library!', 'success');
     hideLoading();
 }
 
-        async function deleteBook(bookId) {
-            if (confirm('Are you sure you want to delete this book?')) {
-                library.books = library.books.filter(b => b.id !== bookId);
-                await saveLibrary();
-                closeModal('bookModal');
-                renderLibrary();
-                updateStats();
-            }
-        }
+async function deleteBook(bookId) {
+    if (confirm('Are you sure you want to delete this book?')) {
+        showLoading('Deleting book...');
+        library.books = library.books.filter(b => b.id !== bookId);
+        await saveLibrary();
+        closeModal('bookModal');
+        renderLibrary();
+        updateStats();
+        showToast('Book Deleted', 'The book has been removed from your library.', 'warning');
+        hideLoading();
+    }
+}
 
         // Rendering Functions
         function renderLibrary() {
@@ -1664,18 +1770,18 @@ return `
         } else {
             resultsDiv.innerHTML = '<p style="text-align: center; color: var(--text-dim);">No books found. Try a different search term.</p>';
         }
-} catch (error) {
-        hideLoading();
+    } catch (error) {
         resultsDiv.innerHTML = '<p style="text-align: center; color: var(--danger);">Search failed. Please try again.</p>';
         console.error('Search error:', error);
+        showToast('Search Failed', 'Could not search for books. Please check your internet connection.', 'error');
+    } finally {
+        hideLoading();
     }
-    hideLoading();
 }
 
 function selectGoogleBook(bookData) {
     currentBookId = null;
     selectedRating = 0;
-    
     document.getElementById('addBookTitle').textContent = 'Add Book';
     document.getElementById('bookId').value = '';
     document.getElementById('bookTitle').value = bookData.title;
@@ -1847,14 +1953,13 @@ provider.setCustomParameters({
         await loadLibrary();
         renderLibrary();
         hideLoading();
-    } catch (error) {
+} catch (error) {
         hideLoading();
         console.error('Sign-in error:', error);
-        alert('Sign-in failed. Please try again.');
+        showToast('Sign-in Failed', 'Please try again or check your internet connection.', 'error');
     }
 });
 
-// Listen for authentication state changes
 // Listen for authentication state changes
 auth.onAuthStateChanged(async (user) => {
     if (user) {
@@ -1891,8 +1996,10 @@ function signOut() {
     if (confirm('Are you sure you want to sign out?')) {
         auth.signOut().then(() => {
             console.log('User signed out successfully');
+            showToast('Signed Out', 'You have been signed out successfully.', 'info');
         }).catch((error) => {
             console.error('Sign-out error:', error);
+            showToast('Sign-out Failed', 'Could not sign out. Please try again.', 'error');
         });
     }
 }
