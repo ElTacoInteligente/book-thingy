@@ -1836,6 +1836,9 @@ document.getElementById('googleSignInBtn').addEventListener('click', async () =>
     try {
         showLoading('Signing in...');
         const provider = new firebase.auth.GoogleAuthProvider();
+provider.setCustomParameters({
+    prompt: 'select_account'
+});
         const result = await auth.signInWithPopup(provider);
         currentUser = result.user;
         console.log('Signed in:', currentUser.email);
