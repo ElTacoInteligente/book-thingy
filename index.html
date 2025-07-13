@@ -914,12 +914,15 @@
         <span>📚</span>
         <span>Book Thingy</span>
     </div>
-    <div class="user-info" id="userInfo" style="display: none;">
-        <span id="userEmail" style="color: var(--text-dim); font-size: 0.875rem; margin-right: 1rem;"></span>
-        <button class="btn btn-secondary" onclick="signOut()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
-            Sign Out
-        </button>
-    </div>
+<div class="user-info" id="userInfo" style="display: none;">
+    <span id="userEmail" style="color: var(--text-dim); font-size: 0.875rem; margin-right: 1rem;"></span>
+    <button class="btn btn-secondary" onclick="showExportModal()" style="padding: 0.5rem 1rem; font-size: 0.875rem; margin-right: 0.5rem;">
+        Export
+    </button>
+    <button class="btn btn-secondary" onclick="signOut()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+        Sign Out
+    </button>
+</div>
 </div>
 </header>
 
@@ -1195,6 +1198,38 @@
             </div>
         </div>
 
+        <!-- Export Modal -->
+        <div class="modal" id="exportModal">
+            <div class="modal-content" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h2 class="modal-title">Export Your Library</h2>
+                    <button class="modal-close" onclick="closeModal('exportModal')">×</button>
+                </div>
+                <div class="modal-body">
+                    <p style="color: var(--text-dim); margin-bottom: 2rem;">
+                        Download your book library for backup or to use in other applications.
+                    </p>
+                    
+                    <div style="display: grid; gap: 1rem;">
+                        <button class="btn" onclick="exportAsCSV()" style="justify-content: center;">
+                            <span>📄</span>
+                            <span>Download as CSV</span>
+                        </button>
+                        
+                        <button class="btn btn-secondary" onclick="exportAsJSON()" style="justify-content: center;">
+                            <span>📋</span>
+                            <span>Download as JSON</span>
+                        </button>
+                    </div>
+                    
+                    <p style="font-size: 0.875rem; color: var(--text-dim); text-align: center; margin-top: 1.5rem;">
+                        CSV works with Excel and Google Sheets<br>
+                        JSON preserves all data including notes and quotes
+                    </p>
+                </div>
+            </div>
+        </div>
+
                 <!-- Loading Overlay -->
         <div class="loading-overlay" id="loadingOverlay">
             <div class="loading-content">
@@ -1367,38 +1402,40 @@ async function saveBook(e) {
     
     showLoading('Saving book...');
     
-    const book = {
-        id: document.getElementById('bookId').value || Date.now().toString(),
-        title: document.getElementById('bookTitle').value,
-        author: document.getElementById('bookAuthor').value,
-        isbn: document.getElementById('bookISBN').value,
-        cover: document.getElementById('bookCover').value,
-        status: document.getElementById('bookStatus').value,
-        rating: selectedRating,
-        summary: document.getElementById('bookSummary').value,
-        notes: document.getElementById('bookNotes').value,
-        quotes: document.getElementById('bookQuotes').value,
-        dateAdded: new Date().toISOString(),
-        dateModified: new Date().toISOString()
-    };
+    try {
+        const book = {
+            id: document.getElementById('bookId').value || Date.now().toString(),
+            title: document.getElementById('bookTitle').value,
+            author: document.getElementById('bookAuthor').value,
+            isbn: document.getElementById('bookISBN').value,
+            cover: document.getElementById('bookCover').value,
+            status: document.getElementById('bookStatus').value,
+            rating: selectedRating,
+            summary: document.getElementById('bookSummary').value,
+            notes: document.getElementById('bookNotes').value,
+            quotes: document.getElementById('bookQuotes').value,
+            dateAdded: new Date().toISOString(),
+            dateModified: new Date().toISOString()
+        };
 
-    const existingIndex = library.books.findIndex(b => b.id === book.id);
-    if (existingIndex >= 0) {
-        library.books[existingIndex] = { ...library.books[existingIndex], ...book };
-    } else {
-        library.books.push(book);
+        const existingIndex = library.books.findIndex(b => b.id === book.id);
+        if (existingIndex >= 0) {
+            library.books[existingIndex] = { ...library.books[existingIndex], ...book };
+        } else {
+            library.books.push(book);
+        }
+
+        await saveLibrary();
+        closeModal('addBookModal');
+        renderLibrary();
+        updateStats();
+        showToast('Book Saved', 'Your book has been added to your library!', 'success');
+    } catch (error) {
+        console.error('Error saving book:', error);
+        showToast('Save Failed', 'Could not save your book. Please try again.', 'error');
+    } finally {
+        hideLoading();
     }
-
-    await saveLibrary();
-    closeModal('addBookModal');
-    renderLibrary();
-    updateStats();
-    await saveLibrary();
-    closeModal('addBookModal');
-    renderLibrary();
-    updateStats();
-    showToast('Book Saved', 'Your book has been added to your library!', 'success');
-    hideLoading();
 }
 
 async function deleteBook(bookId) {
@@ -1932,6 +1969,137 @@ function showLoading(message = 'Loading...') {
 
 function hideLoading() {
     document.getElementById('loadingOverlay').classList.remove('active');
+}
+
+// Toast notification functions
+function showToast(title, message = '', type = 'success', duration = 4000) {
+    const container = document.getElementById('toastContainer');
+    const toastId = 'toast-' + Date.now();
+    
+    const icons = {
+        success: '✅',
+        error: '❌',
+        warning: '⚠️',
+        info: 'ℹ️'
+    };
+    
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.id = toastId;
+    toast.innerHTML = `
+        <div class="toast-icon">${icons[type]}</div>
+        <div class="toast-content">
+            <div class="toast-title">${title}</div>
+            ${message ? `<div class="toast-message">${message}</div>` : ''}
+        </div>
+        <button class="toast-close" onclick="closeToast('${toastId}')">×</button>
+    `;
+    
+    container.appendChild(toast);
+    
+    // Show toast with animation
+    setTimeout(() => toast.classList.add('show'), 100);
+    
+    // Auto remove after duration
+    setTimeout(() => closeToast(toastId), duration);
+}
+
+function closeToast(toastId) {
+    const toast = document.getElementById(toastId);
+    if (toast) {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }
+}
+
+// Export functions (add after toast functions)
+function showExportModal() {
+    if (library.books.length === 0) {
+        showToast('Nothing to Export', 'Your library is empty. Add some books first!', 'warning');
+        return;
+    }
+    openModal('exportModal');
+}
+
+function exportAsCSV() {
+    try {
+        showLoading('Preparing CSV export...');
+        
+        // CSV headers
+        const headers = ['Title', 'Author', 'ISBN', 'Status', 'Rating', 'Date Added', 'Summary', 'Notes', 'Quotes'];
+        
+        // Convert books to CSV rows
+        const csvRows = [
+            headers.join(','), // Header row
+            ...library.books.map(book => [
+                escapeCSV(book.title || ''),
+                escapeCSV(book.author || ''),
+                escapeCSV(book.isbn || ''),
+                escapeCSV(book.status || ''),
+                book.rating || '',
+                book.dateAdded ? new Date(book.dateAdded).toLocaleDateString() : '',
+                escapeCSV(book.summary || ''),
+                escapeCSV(book.notes || ''),
+                escapeCSV(book.quotes || '')
+            ].join(','))
+        ];
+        
+        const csvContent = csvRows.join('\n');
+        downloadFile(csvContent, 'my-book-library.csv', 'text/csv');
+        
+        closeModal('exportModal');
+        showToast('CSV Exported', `Successfully exported ${library.books.length} books to CSV!`, 'success');
+        hideLoading();
+    } catch (error) {
+        console.error('CSV export error:', error);
+        showToast('Export Failed', 'Could not export CSV file. Please try again.', 'error');
+        hideLoading();
+    }
+}
+
+function exportAsJSON() {
+    try {
+        showLoading('Preparing JSON export...');
+        
+        const exportData = {
+            exportDate: new Date().toISOString(),
+            totalBooks: library.books.length,
+            books: library.books,
+            settings: library.settings
+        };
+        
+        const jsonContent = JSON.stringify(exportData, null, 2);
+        downloadFile(jsonContent, 'my-book-library.json', 'application/json');
+        
+        closeModal('exportModal');
+        showToast('JSON Exported', `Successfully exported ${library.books.length} books to JSON!`, 'success');
+        hideLoading();
+    } catch (error) {
+        console.error('JSON export error:', error);
+        showToast('Export Failed', 'Could not export JSON file. Please try again.', 'error');
+        hideLoading();
+    }
+}
+
+// Helper functions for export
+function escapeCSV(str) {
+    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+        return '"' + str.replace(/"/g, '""') + '"';
+    }
+    return str;
+}
+
+function downloadFile(content, filename, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
 }
 
     // Authentication state
