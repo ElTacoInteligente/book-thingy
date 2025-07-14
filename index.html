@@ -916,6 +916,9 @@
     </div>
 <div class="user-info" id="userInfo" style="display: none;">
     <span id="userEmail" style="color: var(--text-dim); font-size: 0.875rem; margin-right: 1rem;"></span>
+    <button class="btn btn-secondary" onclick="showSettingsModal()" style="padding: 0.5rem 1rem; font-size: 0.875rem; margin-right: 0.5rem;">
+        Settings
+    </button>
     <button class="btn btn-secondary" onclick="showExportModal()" style="padding: 0.5rem 1rem; font-size: 0.875rem; margin-right: 0.5rem;">
         Export
     </button>
@@ -1194,6 +1197,86 @@
                         </div>
                         <button type="submit" class="btn" style="width: 100%;">Set Goal</button>
                     </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div class="modal" id="settingsModal">
+            <div class="modal-content" style="max-width: 600px;">
+                <div class="modal-header">
+                    <h2 class="modal-title">Settings</h2>
+                    <button class="modal-close" onclick="closeModal('settingsModal')">×</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Account Section -->
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem; color: var(--primary);">Account</h3>
+                        <div style="background: var(--surface); padding: 1.5rem; border-radius: var(--radius);">
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                <div style="width: 60px; height: 60px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white;">
+                                    👤
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600;" id="settingsUserEmail">Loading...</div>
+                                    <div style="font-size: 0.875rem; color: var(--text-dim);">Google Account</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reading Preferences -->
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem; color: var(--primary);">Reading Preferences</h3>
+                        <div style="background: var(--surface); padding: 1.5rem; border-radius: var(--radius);">
+                            <div class="form-group">
+                                <label class="form-label">Default Book Status</label>
+                                <select class="form-select" id="defaultBookStatus">
+                                    <option value="want-to-read">Want to Read</option>
+                                    <option value="reading">Currently Reading</option>
+                                    <option value="completed">Completed</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Books per Page</label>
+                                <select class="form-select" id="booksPerPage">
+                                    <option value="20">20 books</option>
+                                    <option value="50">50 books</option>
+                                    <option value="100">100 books</option>
+                                    <option value="all">Show all</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Management -->
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem; color: var(--primary);">Data Management</h3>
+                        <div style="background: var(--surface); padding: 1.5rem; border-radius: var(--radius);">
+                            <div style="display: grid; gap: 1rem;">
+                                <button class="btn btn-secondary" onclick="showExportModal(); closeModal('settingsModal');" style="justify-content: center;">
+                                    <span>📤</span>
+                                    <span>Export Library</span>
+                                </button>
+                                
+                                <button class="btn btn-secondary" onclick="showImportModal()" style="justify-content: center;">
+                                    <span>📥</span>
+                                    <span>Import Library</span>
+                                </button>
+                                
+                                <button class="btn" onclick="clearAllData()" style="background: var(--danger); justify-content: center;">
+                                    <span>🗑️</span>
+                                    <span>Clear All Data</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Save Settings Button -->
+                    <button class="btn" onclick="saveSettings()" style="width: 100%; justify-content: center;">
+                        Save Settings
+                    </button>
                 </div>
             </div>
         </div>
@@ -1678,10 +1761,10 @@ async function deleteBook(bookId) {
             openModal('addBookModal');
         }
 
-        function showBarcodeScanner() {
-            alert('Barcode scanner would open here!\n\nTo implement:\n1. Add QuaggaJS or ZXing library\n2. Request camera permissions\n3. Scan ISBN barcode\n4. Look up book details via API');
-            document.getElementById('addOptions').classList.remove('active');
-        }
+function showBarcodeScanner() {
+    showToast('Coming Soon', 'Barcode scanner feature will be available in a future update!', 'info');
+    document.getElementById('addOptions').classList.remove('active');
+}
 
       function showInternetSearch() {
     openModal('searchModal');
@@ -1802,7 +1885,7 @@ return `
         <img src="${thumbnail}" 
              alt="${title}" 
              class="search-result-cover"
-             onerror="this.onerror=null; if(this.src.includes('zoom=0')) { this.src=this.src.replace('zoom=0','zoom=1'); } else { this.parentElement.innerHTML='<div class=\\'search-result-cover\\' style=\\'display:flex;align-items:center;justify-content:center;\\'>📖</div>'; }"
+             onerror="this.onerror=null; if(this.src.includes('zoom=0')) { this.src=this.src.replace('zoom=0','zoom=1'); } else { this.parentElement.innerHTML='<div class=\\'search-result-cover\\' style=\\'display:flex;align-items:center;justify-content:center;\\'>📖</div>'; }">
         <div class="search-result-info">
             <div class="search-result-title">${title}</div>
             <div class="search-result-author">${authors}</div>
@@ -1897,33 +1980,6 @@ function selectGoogleBookFromElement(element) {
             await saveLibrary();
             closeModal('goalModal');
             updateStats();
-        }
-
-        // Export/Import Functions
-        async function exportLibrary(filePath) {
-            try {
-                const fs = require('fs').promises;
-                await fs.writeFile(filePath, JSON.stringify(library, null, 2));
-                alert('Library exported successfully!');
-            } catch (error) {
-                console.error('Export error:', error);
-                alert('Failed to export library!');
-            }
-        }
-
-        async function importLibrary(filePath) {
-            try {
-                const fs = require('fs').promises;
-                const data = await fs.readFile(filePath, 'utf8');
-                library = JSON.parse(data);
-                await saveLibrary();
-                renderLibrary();
-                updateStats();
-                alert('Library imported successfully!');
-            } catch (error) {
-                console.error('Import error:', error);
-                alert('Failed to import library!');
-            }
         }
 
         // Close modals on background click
@@ -2106,6 +2162,87 @@ function downloadFile(content, filename, mimeType) {
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
+}
+
+// Settings functions
+function showSettingsModal() {
+    // Load current settings into the modal
+    document.getElementById('settingsUserEmail').textContent = currentUser ? currentUser.email : 'Not signed in';
+    
+    // Load saved preferences
+    const settings = library.settings || {};
+    document.getElementById('defaultBookStatus').value = settings.defaultBookStatus || 'want-to-read';
+    document.getElementById('booksPerPage').value = settings.booksPerPage || '50';
+    
+    openModal('settingsModal');
+}
+
+function saveSettings() {
+    try {
+        showLoading('Saving settings...');
+        
+        // Get settings from form
+        const settings = {
+            ...library.settings,
+            defaultBookStatus: document.getElementById('defaultBookStatus').value,
+            booksPerPage: document.getElementById('booksPerPage').value,
+            lastUpdated: new Date().toISOString()
+        };
+        
+        // Save to library
+        library.settings = settings;
+        saveLibrary();
+        
+        closeModal('settingsModal');
+        showToast('Settings Saved', 'Your preferences have been updated!', 'success');
+        hideLoading();
+    } catch (error) {
+        console.error('Error saving settings:', error);
+        showToast('Save Failed', 'Could not save settings. Please try again.', 'error');
+        hideLoading();
+    }
+}
+
+function clearAllData() {
+    const confirmText = `Are you absolutely sure you want to delete ALL your books and data? This cannot be undone.
+
+Type "DELETE ALL" to confirm:`;
+    
+    const userInput = prompt(confirmText);
+    
+    if (userInput === 'DELETE ALL') {
+        try {
+            showLoading('Clearing all data...');
+            
+            // Clear all data
+            library = {
+                books: [],
+                settings: {
+                    goal2025: null,
+                    defaultBookStatus: 'want-to-read',
+                    booksPerPage: '50'
+                }
+            };
+            
+            saveLibrary();
+            renderLibrary();
+            updateStats();
+            
+            closeModal('settingsModal');
+            showToast('Data Cleared', 'All your books and data have been deleted.', 'warning');
+            hideLoading();
+        } catch (error) {
+            console.error('Error clearing data:', error);
+            showToast('Clear Failed', 'Could not clear data. Please try again.', 'error');
+            hideLoading();
+        }
+    } else if (userInput !== null) {
+        showToast('Cancelled', 'You must type "DELETE ALL" exactly to confirm.', 'info');
+    }
+}
+
+function showImportModal() {
+    showToast('Import Feature', 'Import functionality coming soon! For now, you can manually add books.', 'info');
 }
 
     // Authentication state
