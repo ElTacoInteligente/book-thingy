@@ -1393,16 +1393,6 @@ body {
                             </select>
                         </div>
 
-                        <div class="form-group">
-    <label class="form-label">Status</label>
-    <select class="form-select" id="bookStatus">
-        <option value="want-to-read">Want to Read</option>
-        <option value="reading">Currently Reading</option>
-        <option value="completed">Completed</option>
-        <option value="abandoned">Abandoned</option>
-    </select>
-</div>
-
 <!-- ADD THIS NEW FIELD -->
 <div class="form-group" id="pastReadGroup" style="display: none;">
     <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
@@ -1687,6 +1677,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             });
 
+// Status change listener
+document.getElementById('bookStatus').addEventListener('change', function() {
+    const pastReadGroup = document.getElementById('pastReadGroup');
+    if (this.value === 'completed') {
+        pastReadGroup.style.display = 'block';
+    } else {
+        pastReadGroup.style.display = 'none';
+        document.getElementById('bookPastRead').checked = false;
+    }
+});
+
  // Export/Import listeners - only for Electron
 if (window.electronAPI) {
     window.electronAPI.onExportLibrary((event, filePath) => {
@@ -1830,6 +1831,7 @@ async function saveBook(e) {
             summary: document.getElementById('bookSummary').value,
             notes: document.getElementById('bookNotes').value,
             quotes: document.getElementById('bookQuotes').value,
+            pastRead: document.getElementById('bookPastRead').checked, // ADD THIS LINE
             dateAdded: new Date().toISOString(),
             dateModified: new Date().toISOString()
         };
@@ -1924,16 +1926,21 @@ async function deleteBook(bookId) {
             }
         }
 
-        function updateStats() {
-        console.log('Updating stats, total books:', library.books.length);
+  function updateStats() {
+    console.log('Updating stats, total books:', library.books.length);
 
-            const total = library.books.length;
-            const reading = library.books.filter(b => b.status === 'reading').length;
-            const completed = library.books.filter(b => b.status === 'completed').length;
-            const ratings = library.books.filter(b => b.rating > 0).map(b => b.rating);
-            const avgRating = ratings.length > 0 ? 
-                (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : 
-                '0.0';
+    const total = library.books.length;
+    const reading = library.books.filter(b => b.status === 'reading').length;
+    
+    // Only count completed books that aren't marked as past reads
+    const completed = library.books.filter(b => b.status === 'completed' && !b.pastRead).length;
+    
+    const ratings = library.books.filter(b => b.rating > 0).map(b => b.rating);
+    const avgRating = ratings.length > 0 ? 
+        (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : 
+        '0.0';
+
+    // Rest of the function remains the same...
 
             document.getElementById('totalBooks').textContent = total;
             document.getElementById('currentlyReading').textContent = reading;
@@ -2074,28 +2081,37 @@ function showManualEntry() {
     document.getElementById('addOptions').classList.remove('active');
 }
 
-        function editBook(bookId) {
-            const book = library.books.find(b => b.id === bookId);
-            if (!book) return;
+function editBook(bookId) {
+    const book = library.books.find(b => b.id === bookId);
+    if (!book) return;
 
-            currentBookId = bookId;
-            selectedRating = book.rating || 0;
-            
-            document.getElementById('addBookTitle').textContent = 'Edit Book';
-            document.getElementById('bookId').value = book.id;
-            document.getElementById('bookTitle').value = book.title;
-            document.getElementById('bookAuthor').value = book.author;
-            document.getElementById('bookISBN').value = book.isbn || '';
-            document.getElementById('bookCover').value = book.cover || '';
-            document.getElementById('bookStatus').value = book.status;
-            document.getElementById('bookSummary').value = book.summary || '';
-            document.getElementById('bookNotes').value = book.notes || '';
-            document.getElementById('bookQuotes').value = book.quotes || '';
-            
-            updateRatingDisplay();
-            closeModal('bookModal');
-            openModal('addBookModal');
-        }
+    currentBookId = bookId;
+    selectedRating = book.rating || 0;
+    
+    document.getElementById('addBookTitle').textContent = 'Edit Book';
+    document.getElementById('bookId').value = book.id;
+    document.getElementById('bookTitle').value = book.title;
+    document.getElementById('bookAuthor').value = book.author;
+    document.getElementById('bookISBN').value = book.isbn || '';
+    document.getElementById('bookCover').value = book.cover || '';
+    document.getElementById('bookStatus').value = book.status;
+    document.getElementById('bookSummary').value = book.summary || '';
+    document.getElementById('bookNotes').value = book.notes || '';
+    document.getElementById('bookQuotes').value = book.quotes || '';
+    
+    // Handle past read checkbox
+    if (book.status === 'completed') {
+        document.getElementById('pastReadGroup').style.display = 'block';
+        document.getElementById('bookPastRead').checked = book.pastRead || false;
+    } else {
+        document.getElementById('pastReadGroup').style.display = 'none';
+        document.getElementById('bookPastRead').checked = false;
+    }
+    
+    updateRatingDisplay();
+    closeModal('bookModal');
+    openModal('addBookModal');
+}
 
 function showBarcodeScanner() {
     showToast('Coming Soon', 'Barcode scanner feature will be available in a future update!', 'info');
