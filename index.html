@@ -1658,11 +1658,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Event Listeners
         function setupEventListeners() {
-            // Navigation
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', () => switchView(item.dataset.view));
-            });
-
+ 
             // Sort chips
             document.querySelectorAll('.sort-chip').forEach(chip => {
                 chip.addEventListener('click', () => {
