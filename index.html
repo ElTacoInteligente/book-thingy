@@ -1202,97 +1202,98 @@ body {
 </div>
 </header>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Library View -->
-            <div class="view active" id="libraryView">
-                <div class="search-section">
-                    <div class="search-bar">
-                        <input type="text" class="search-input" id="searchInput" placeholder="Search your library...">
-                    </div>
-                    <div class="sort-section">
-                        <button class="sort-chip active" data-sort="recent">Recent</button>
-                        <button class="sort-chip" data-sort="title">Title</button>
-                        <button class="sort-chip" data-sort="author">Author</button>
-                        <button class="sort-chip" data-sort="status">Status</button>
-                        <button class="sort-chip" data-sort="rating">Rating</button>
-                    </div>
-                </div>
+     <!-- Main Content -->
+<main class="main-content">
+    <!-- Library View -->
+    <div class="view active" id="libraryView">
+        <div class="search-section">
+            <div class="search-bar">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search your library...">
+            </div>
+            <div class="sort-section">
+                <button class="sort-chip active" data-sort="recent">Recent</button>
+                <button class="sort-chip" data-sort="title">Title</button>
+                <button class="sort-chip" data-sort="author">Author</button>
+                <button class="sort-chip" data-sort="status">Status</button>
+                <button class="sort-chip" data-sort="rating">Rating</button>
+            </div>
+        </div>
 
-                <div class="book-grid" id="bookGrid">
-                    <!-- Books will be rendered here -->
-                </div>
+        <div class="book-grid" id="bookGrid">
+            <!-- Books will be rendered here -->
+        </div>
 
-<div class="empty-state" id="emptyState" style="display: none;">
-    <div class="empty-icon">📚</div>
-    <p class="empty-text">Your library is waiting for its first book!</p>
-    <p class="empty-text" style="font-size: 0.875rem; margin-top: 0.5rem;">Click the + button to add a book</p>
-    <div class="empty-tips">
-        <h4>Quick Tips</h4>
-        <ul>
-            <li>Search for books by title, author, or ISBN</li>
-            <li>Track your reading progress and set goals</li>
-            <li>Your library syncs across all devices</li>
-        </ul>
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-icon">📚</div>
+            <p class="empty-text">Your library is waiting for its first book!</p>
+            <p class="empty-text" style="font-size: 0.875rem; margin-top: 0.5rem;">Click the + button to add a book</p>
+            <div class="empty-tips">
+                <h4>Quick Tips</h4>
+                <ul>
+                    <li>Search for books by title, author, or ISBN</li>
+                    <li>Track your reading progress and set goals</li>
+                    <li>Your library syncs across all devices</li>
+                </ul>
+            </div>
+        </div>
+    </div> <!-- This closing div was missing! -->
+
+    <!-- Stats View -->
+    <div class="view" id="statsView">
+        <h2 style="margin-bottom: 1.5rem;">Reading Statistics</h2>
+        
+        <div class="progress-container">
+            <div class="progress-header">
+                <h3>2025 Reading Goal</h3>
+                <button class="btn btn-secondary" onclick="showGoalModal()">Set Goal</button>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="goalProgress" style="width: 0%">0%</div>
+            </div>
+            <p style="margin-top: 0.5rem; color: var(--text-dim);" id="goalText">No goal set</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalBooks">0</div>
+                <div class="stat-label">Total Books</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="currentlyReading">0</div>
+                <div class="stat-label">Currently Reading</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="completedBooks">0</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="averageRating">0</div>
+                <div class="stat-label">Average Rating</div>
+            </div>
+        </div>
+
+        <h3 style="margin-bottom: 1rem;">Top Rated Books</h3>
+        <div class="book-grid" id="topRatedGrid">
+            <!-- Top rated books will be rendered here -->
+        </div>
     </div>
-</div>
 
-            <!-- Stats View -->
-            <div class="view" id="statsView">
-                <h2 style="margin-bottom: 1.5rem;">Reading Statistics</h2>
-                
-                <div class="progress-container">
-                    <div class="progress-header">
-                        <h3>2025 Reading Goal</h3>
-                        <button class="btn btn-secondary" onclick="showGoalModal()">Set Goal</button>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="goalProgress" style="width: 0%">0%</div>
-                    </div>
-                    <p style="margin-top: 0.5rem; color: var(--text-dim);" id="goalText">No goal set</p>
-                </div>
+    <!-- Lending View -->
+    <div class="view" id="lendingView">
+        <h2 style="margin-bottom: 1.5rem;">Books On Loan</h2>
+        
+        <div class="lending-list" id="lendingList">
+            <!-- Lending items will be rendered here -->
+        </div>
 
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="totalBooks">0</div>
-                        <div class="stat-label">Total Books</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="currentlyReading">0</div>
-                        <div class="stat-label">Currently Reading</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="completedBooks">0</div>
-                        <div class="stat-label">Completed</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="averageRating">0.0</div>
-                        <div class="stat-label">Average Rating</div>
-                    </div>
-                </div>
+        <div class="empty-state" id="lendingEmpty" style="display: none;">
+            <div class="empty-icon">🤝</div>
+            <p class="empty-text">No books currently on loan</p>
+        </div>
+    </div>
+</main>
 
-                <h3 style="margin-bottom: 1rem;">Top Rated Books</h3>
-                <div class="book-grid" id="topRatedGrid">
-                    <!-- Top rated books will be rendered here -->
-                </div>
-            </div>
-
-            <!-- Lending View -->
-            <div class="view" id="lendingView">
-                <h2 style="margin-bottom: 1.5rem;">Books On Loan</h2>
-                
-                <div class="lending-list" id="lendingList">
-                    <!-- Lending items will be rendered here -->
-                </div>
-
-                <div class="empty-state" id="lendingEmpty" style="display: none;">
-                    <div class="empty-icon">🤝</div>
-                    <p class="empty-text">No books currently on loan</p>
-                </div>
-            </div>
-        </main>
-
-        <!-- Bottom Navigation -->
+<!-- Bottom Navigation -->
 <nav class="bottom-nav">
     <div class="nav-item active" onclick="switchView('libraryView')">
         <div class="nav-icon">📚</div>
