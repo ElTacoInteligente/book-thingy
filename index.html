@@ -1276,6 +1276,7 @@ body {
             <div class="add-option" onclick="showManualEntry()">
                 <span>✏️</span>
                 <span>Manual Entry</span>
+                document.getElementById('coverPreview').style.display = 'none';
             </div>
         </div>
 
@@ -1318,10 +1319,21 @@ body {
                             <input type="text" class="form-input" id="bookISBN">
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Cover Image URL</label>
-                            <input type="url" class="form-input" id="bookCover" placeholder="https://...">
-                        </div>
+<div class="form-group">
+    <label class="form-label">Cover Image</label>
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <input type="url" class="form-input" id="bookCover" placeholder="Paste image URL..." style="flex: 1;">
+        <span style="color: var(--text-dim); font-size: 0.875rem;">or</span>
+        <label class="btn btn-secondary" style="margin: 0; cursor: pointer;">
+            <span>📷</span>
+            <span>Upload</span>
+            <input type="file" id="bookCoverUpload" accept="image/*" style="display: none;" onchange="handleCoverUpload(event)">
+        </label>
+    </div>
+    <div id="coverPreview" style="margin-top: 1rem; display: none;">
+        <img id="coverPreviewImg" style="width: 100px; height: 150px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+    </div>
+</div>
 
                         <div class="form-group">
                             <label class="form-label">Status</label>
@@ -2024,6 +2036,25 @@ function showBarcodeScanner() {
             openModal('goalModal');
         }
 
+        // Handle cover image upload
+function handleCoverUpload(event) {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const dataUrl = e.target.result;
+            document.getElementById('bookCover').value = dataUrl;
+            
+            // Show preview
+            document.getElementById('coverPreviewImg').src = dataUrl;
+            document.getElementById('coverPreview').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        showToast('Invalid File', 'Please select an image file', 'error');
+    }
+}
+
         // Modal Controls
       function openModal(modalId) {
     document.getElementById(modalId).classList.add('active');
@@ -2147,6 +2178,7 @@ function selectGoogleBook(bookData) {
     document.getElementById('bookQuotes').value = '';
     
     updateRatingDisplay();
+    document.getElementById('coverPreview').style.display = 'none';
     closeModal('searchModal');
     openModal('addBookModal');
 }
