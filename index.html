@@ -2071,12 +2071,13 @@ async function deleteBook(bookId) {
         }
 
 function showManualEntry() {
+    console.log('showManualEntry called');
     currentBookId = null;
     selectedRating = 0;
     document.getElementById('addBookTitle').textContent = 'Add Book';
     document.getElementById('bookForm').reset();
     updateRatingDisplay();
-    document.getElementById('coverPreview').style.display = 'none';  // Add this line here
+    document.getElementById('coverPreview').style.display = 'none';
     openModal('addBookModal');
     document.getElementById('addOptions').classList.remove('active');
 }
@@ -2114,11 +2115,13 @@ function editBook(bookId) {
 }
 
 function showBarcodeScanner() {
+    console.log('showBarcodeScanner called');
     showToast('Coming Soon', 'Barcode scanner feature will be available in a future update!', 'info');
     document.getElementById('addOptions').classList.remove('active');
 }
 
-      function showInternetSearch() {
+function showInternetSearch() {
+    console.log('showInternetSearch called');
     openModal('searchModal');
     document.getElementById('addOptions').classList.remove('active');
     
@@ -2135,6 +2138,7 @@ function showBarcodeScanner() {
 }
 
         function showLendingModal(bookId) {
+                console.log('showManualEntry called');
             document.getElementById('lendBookId').value = bookId;
             document.getElementById('lendingForm').reset();
             closeModal('bookModal');
@@ -2169,8 +2173,14 @@ function handleCoverUpload(event) {
 }
 
         // Modal Controls
-      function openModal(modalId) {
-    document.getElementById(modalId).classList.add('active');
+function openModal(modalId) {
+    console.log('openModal called with:', modalId);
+    const modal = document.getElementById(modalId);
+    if (!modal) {
+        console.error('Modal not found:', modalId);
+        return;
+    }
+    modal.classList.add('active');
     document.body.style.overflow = 'hidden';
     
     // Special handling for search modal
