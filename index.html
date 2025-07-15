@@ -1276,7 +1276,6 @@ body {
             <div class="add-option" onclick="showManualEntry()">
                 <span>✏️</span>
                 <span>Manual Entry</span>
-                document.getElementById('coverPreview').style.display = 'none';
             </div>
         </div>
 
@@ -1967,15 +1966,16 @@ async function deleteBook(bookId) {
             document.getElementById('addOptions').classList.toggle('active');
         }
 
-        function showManualEntry() {
-            currentBookId = null;
-            selectedRating = 0;
-            document.getElementById('addBookTitle').textContent = 'Add Book';
-            document.getElementById('bookForm').reset();
-            updateRatingDisplay();
-            openModal('addBookModal');
-            document.getElementById('addOptions').classList.remove('active');
-        }
+function showManualEntry() {
+    currentBookId = null;
+    selectedRating = 0;
+    document.getElementById('addBookTitle').textContent = 'Add Book';
+    document.getElementById('bookForm').reset();
+    updateRatingDisplay();
+    document.getElementById('coverPreview').style.display = 'none';  // Add this line here
+    openModal('addBookModal');
+    document.getElementById('addOptions').classList.remove('active');
+}
 
         function editBook(bookId) {
             const book = library.books.find(b => b.id === bookId);
