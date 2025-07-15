@@ -1703,29 +1703,65 @@ if (window.electronAPI) {
 
 // View Management
 function switchView(viewName) {
+    console.log('=== SWITCHING VIEW ===');
+    console.log('Target view name:', viewName);
+    
+    // Remove active from all views
     document.querySelectorAll('.view').forEach(view => {
+        console.log('Removing active from:', view.id);
         view.classList.remove('active');
     });
-    document.getElementById(viewName).classList.add('active');
+    
+    // Find and activate target view
+    const targetView = document.getElementById(viewName);
+    console.log('Target view element found:', targetView);
+    console.log('Target view exists:', !!targetView);
+    
+    if (targetView) {
+        targetView.classList.add('active');
+        console.log('Added active class to:', viewName);
+        console.log('View has active class:', targetView.classList.contains('active'));
+    } else {
+        console.error('ERROR: View not found:', viewName);
+        return;
+    }
 
+    // Render appropriate content
+    console.log('Rendering content for:', viewName);
     if (viewName === 'libraryView') {
+        console.log('Calling renderLibrary()');
         renderLibrary();
     } else if (viewName === 'statsView') {
+        console.log('Calling updateStats()');
+        console.log('Current books in library:', library.books.length);
         updateStats();
     } else if (viewName === 'lendingView') {
+        console.log('Calling renderLending()');
         renderLending();
     }
 
     // Update active nav item
+    console.log('Updating navigation indicators...');
     document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.remove('active');
     });
 
     // Find and activate the correct nav item
     const navItems = document.querySelectorAll('.nav-item');
-    if (viewName === 'libraryView') navItems[0].classList.add('active');
-    else if (viewName === 'statsView') navItems[1].classList.add('active');
-    else if (viewName === 'lendingView') navItems[2].classList.add('active');
+    console.log('Number of nav items found:', navItems.length);
+    
+    if (viewName === 'libraryView' && navItems[0]) {
+        navItems[0].classList.add('active');
+        console.log('Activated nav item 0 (Library)');
+    } else if (viewName === 'statsView' && navItems[1]) {
+        navItems[1].classList.add('active');
+        console.log('Activated nav item 1 (Stats)');
+    } else if (viewName === 'lendingView' && navItems[2]) {
+        navItems[2].classList.add('active');
+        console.log('Activated nav item 2 (Lending)');
+    }
+    
+    console.log('=== VIEW SWITCH COMPLETE ===');
 }
 
         // Data Management
