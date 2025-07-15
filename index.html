@@ -1394,6 +1394,28 @@ body {
                         </div>
 
                         <div class="form-group">
+    <label class="form-label">Status</label>
+    <select class="form-select" id="bookStatus">
+        <option value="want-to-read">Want to Read</option>
+        <option value="reading">Currently Reading</option>
+        <option value="completed">Completed</option>
+        <option value="abandoned">Abandoned</option>
+    </select>
+</div>
+
+<!-- ADD THIS NEW FIELD -->
+<div class="form-group" id="pastReadGroup" style="display: none;">
+    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+        <input type="checkbox" id="bookPastRead" style="width: auto; margin: 0;">
+        <span>This is a past read (won't count toward current goals)</span>
+    </label>
+</div>
+
+<div class="form-group">
+    <label class="form-label">Rating</label>
+    <!-- rest of the form continues -->
+
+                        <div class="form-group">
                             <label class="form-label">Rating</label>
                             <div class="rating" id="bookRating">
                                 <span class="rating-star" data-rating="1">☆</span>
