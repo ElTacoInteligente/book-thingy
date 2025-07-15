@@ -586,45 +586,73 @@ body {
         }
 
         /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--surface);
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
-            z-index: 100;
-        }
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(180deg, 
+        rgba(30, 41, 59, 0.95) 0%, 
+        rgba(30, 41, 59, 0.98) 100%);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 0.5rem 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 99;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+}
 
-        .nav-items {
-            display: flex;
-            justify-content: space-around;
-            padding: 0.5rem 0;
-        }
+.nav-item {
+    flex: 1;
+    text-align: center;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
 
-        .nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: var(--text-dim);
-        }
+.nav-item:hover {
+    transform: translateY(-2px);
+}
 
-        .nav-item.active {
-            color: var(--primary);
-        }
+.nav-item.active {
+    color: var(--primary);
+}
 
-        .nav-icon {
-            font-size: 1.5rem;
-            margin-bottom: 0.25rem;
-        }
+.nav-item.active::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 3px;
+    background: var(--primary);
+    border-radius: 2px;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+}
 
-        .nav-label {
-            font-size: 0.75rem;
-        }
+.nav-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.nav-item:hover .nav-icon {
+    transform: scale(1.1);
+}
+
+.nav-item.active .nav-icon {
+    filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.4));
+}
+
+.nav-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
 
         /* Floating Action Button */
 .fab {
@@ -1265,22 +1293,20 @@ body {
         </main>
 
         <!-- Bottom Navigation -->
-        <nav class="bottom-nav">
-            <div class="nav-items">
-                <div class="nav-item active" data-view="library">
-                    <div class="nav-icon">📚</div>
-                    <div class="nav-label">Library</div>
-                </div>
-                <div class="nav-item" data-view="stats">
-                    <div class="nav-icon">📊</div>
-                    <div class="nav-label">Stats</div>
-                </div>
-                <div class="nav-item" data-view="lending">
-                    <div class="nav-icon">🤝</div>
-                    <div class="nav-label">Lending</div>
-                </div>
-            </div>
-        </nav>
+<nav class="bottom-nav">
+    <div class="nav-item active" onclick="switchView('libraryView')">
+        <div class="nav-icon">📚</div>
+        <div class="nav-label">Library</div>
+    </div>
+    <div class="nav-item" onclick="switchView('statsView')">
+        <div class="nav-icon">📊</div>
+        <div class="nav-label">Stats</div>
+    </div>
+    <div class="nav-item" onclick="switchView('lendingView')">
+        <div class="nav-icon">🤝</div>
+        <div class="nav-label">Lending</div>
+    </div>
+</nav>
 
         <!-- Floating Action Button -->
         <div class="fab" id="fab" onclick="toggleAddOptions()">+</div>
@@ -1674,20 +1700,32 @@ if (window.electronAPI) {
 }
 }
 
-        // View Management
-        function switchView(viewName) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
-            document.getElementById(viewName + 'View').classList.add('active');
-            document.querySelector(`[data-view="${viewName}"]`).classList.add('active');
+// View Management
+function switchView(viewName) {
+    document.querySelectorAll('.view').forEach(view => {
+        view.classList.remove('active');
+    });
+    document.getElementById(viewName).classList.add('active');
 
-            if (viewName === 'stats') {
-                updateStats();
-            } else if (viewName === 'lending') {
-                renderLending();
-            }
-        }
+    if (viewName === 'libraryView') {
+        renderLibrary();
+    } else if (viewName === 'statsView') {
+        updateStats();
+    } else if (viewName === 'lendingView') {
+        renderLending();
+    }
+
+    // Update active nav item
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+
+    // Find and activate the correct nav item
+    const navItems = document.querySelectorAll('.nav-item');
+    if (viewName === 'libraryView') navItems[0].classList.add('active');
+    else if (viewName === 'statsView') navItems[1].classList.add('active');
+    else if (viewName === 'lendingView') navItems[2].classList.add('active');
+}
 
         // Data Management
 async function loadLibrary() {
