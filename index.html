@@ -2230,7 +2230,10 @@ function handleCoverUpload(event) {
 
         // Modal Controls
 function openModal(modalId) {
-    console.log('openModal called with:', modalId);
+    console.log('=== openModal called ===');
+    console.log('Modal ID:', modalId);
+    console.log('Caller:', new Error().stack.split('\n')[2]); // Shows what called this
+    
     const modal = document.getElementById(modalId);
     if (!modal) {
         console.error('Modal not found:', modalId);
@@ -2238,6 +2241,9 @@ function openModal(modalId) {
     }
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
+    
+    // Rest of your function...
+}
     
     // Special handling for search modal
     if (modalId === 'searchModal') {
