@@ -2232,7 +2232,14 @@ function handleCoverUpload(event) {
 function openModal(modalId) {
     console.log('=== openModal called ===');
     console.log('Modal ID:', modalId);
-    console.log('Caller:', new Error().stack.split('\n')[2]); // Shows what called this
+    console.log('Caller:', new Error().stack.split('\n')[2]);
+    
+    // Close all other modals first
+    document.querySelectorAll('.modal.active').forEach(modal => {
+        if (modal.id !== modalId) {
+            modal.classList.remove('active');
+        }
+    });
     
     const modal = document.getElementById(modalId);
     if (!modal) {
