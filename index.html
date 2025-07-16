@@ -1323,15 +1323,15 @@ body {
 
 <!-- Add Options Menu -->
 <div class="add-options" id="addOptions">
-    <button type="button" class="add-option" data-action="barcode">
+    <button type="button" class="add-option" id="barcodeBtn">
         <span>📷</span>
         <span>Scan Barcode</span>
     </button>
-    <button type="button" class="add-option" data-action="search">
+    <button type="button" class="add-option" id="searchBtn">
         <span>🔍</span>
         <span>Search Internet</span>
     </button>
-    <button type="button" class="add-option" data-action="manual">
+    <button type="button" class="add-option" id="manualBtn">
         <span>✏️</span>
         <span>Manual Entry</span>
     </button>
@@ -1680,6 +1680,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         e.stopPropagation();
         document.getElementById('addOptions').classList.toggle('active');
     });
+
+    // Direct button handlers (add after FAB handler)
+document.getElementById('barcodeBtn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    document.getElementById('addOptions').classList.remove('active');
+    showBarcodeScanner();
+});
+
+document.getElementById('searchBtn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    document.getElementById('addOptions').classList.remove('active');
+    showInternetSearch();
+});
+
+document.getElementById('manualBtn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    document.getElementById('addOptions').classList.remove('active');
+    showManualEntry();
+});
 
 // Handle add option clicks - IMPROVED VERSION
 document.getElementById('addOptions').addEventListener('click', function(e) {
