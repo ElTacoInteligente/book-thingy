@@ -1700,42 +1700,6 @@ document.getElementById('manualBtn').addEventListener('click', function(e) {
     showManualEntry();
 });
 
-
-    // Get the button element (handle clicks on child elements)
-    let button = e.target;
-    if (!button.classList.contains('add-option')) {
-        button = e.target.closest('.add-option');
-    }
-    
-    if (!button) {
-        console.log('No button found');
-        return;
-    }
-    
-    const action = button.getAttribute('data-action');
-    console.log('Button found with action:', action);
-    
-    // Close the menu first
-    this.classList.remove('active');
-    
-    // Then execute the action with a small delay to ensure menu closes
-    setTimeout(() => {
-        switch(action) {
-            case 'barcode':
-                showBarcodeScanner();
-                break;
-            case 'search':
-                showInternetSearch();
-                break;
-            case 'manual':
-                showManualEntry();
-                break;
-            default:
-                console.error('Unknown action:', action);
-        }
-    }, 100);
-});
-
     // Close FAB menu when clicking elsewhere
     document.addEventListener('click', function(e) {
         if (!e.target.closest('#fab') && !e.target.closest('#addOptions')) {
