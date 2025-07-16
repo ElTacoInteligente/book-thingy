@@ -1309,23 +1309,23 @@ body {
     </div>
 </nav>
 
-        <!-- Floating Action Button -->
-        <div class="fab" id="fab" onclick="toggleAddOptions()">+</div>
+<!-- Floating Action Button -->
+<div class="fab" id="fab">+</div>
 
 <!-- Add Options Menu -->
 <div class="add-options" id="addOptions">
-    <div class="add-option" onclick="showBarcodeScanner(); return false;">
-        <span style="pointer-events: none;">📷</span>
-        <span style="pointer-events: none;">Scan Barcode</span>
-    </div>
-    <div class="add-option" onclick="showInternetSearch(); return false;">
-        <span style="pointer-events: none;">🔍</span>
-        <span style="pointer-events: none;">Search Internet</span>
-    </div>
-    <div class="add-option" onclick="showManualEntry(); return false;">
-        <span style="pointer-events: none;">✏️</span>
-        <span style="pointer-events: none;">Manual Entry</span>
-    </div>
+    <button type="button" class="add-option" data-action="barcode">
+        <span>📷</span>
+        <span>Scan Barcode</span>
+    </button>
+    <button type="button" class="add-option" data-action="search">
+        <span>🔍</span>
+        <span>Search Internet</span>
+    </button>
+    <button type="button" class="add-option" data-action="manual">
+        <span>✏️</span>
+        <span>Manual Entry</span>
+    </button>
 </div>
 
         <!-- Book Details Modal -->
@@ -1672,6 +1672,45 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Event Listeners
         function setupEventListeners() {
  
+            // FAB menu handler - add this after setupEventListeners()
+document.getElementById('fab').addEventListener('click', function(e) {
+    e.stopPropagation();
+    document.getElementById('addOptions').classList.toggle('active');
+});
+
+// Handle add option clicks
+document.getElementById('addOptions').addEventListener('click', function(e) {
+    e.stopPropagation();
+    const button = e.target.closest('.add-option');
+    if (!button) return;
+    
+    const action = button.getAttribute('data-action');
+    console.log('FAB action clicked:', action);
+    
+    // Close the menu first
+    this.classList.remove('active');
+    
+    // Then execute the action
+    switch(action) {
+        case 'barcode':
+            showBarcodeScanner();
+            break;
+        case 'search':
+            showInternetSearch();
+            break;
+        case 'manual':
+            showManualEntry();
+            break;
+    }
+});
+
+// Close FAB menu when clicking elsewhere
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('#fab') && !e.target.closest('#addOptions')) {
+        document.getElementById('addOptions').classList.remove('active');
+    }
+});
+
             // Sort chips
             document.querySelectorAll('.sort-chip').forEach(chip => {
                 chip.addEventListener('click', () => {
@@ -2085,10 +2124,6 @@ async function deleteBook(bookId) {
 
         function showAddOptions() {
             document.getElementById('addOptions').classList.add('active');
-        }
-
-        function toggleAddOptions() {
-            document.getElementById('addOptions').classList.toggle('active');
         }
 
 function showManualEntry() {
