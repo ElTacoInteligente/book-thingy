@@ -1314,17 +1314,17 @@ body {
 
 <!-- Add Options Menu -->
 <div class="add-options" id="addOptions">
-    <div class="add-option" onclick="event.stopPropagation(); showBarcodeScanner()">
-        <span>📷</span>
-        <span>Scan Barcode</span>
+    <div class="add-option" onclick="showBarcodeScanner(); return false;">
+        <span style="pointer-events: none;">📷</span>
+        <span style="pointer-events: none;">Scan Barcode</span>
     </div>
-    <div class="add-option" onclick="event.stopPropagation(); showInternetSearch()">
-        <span>🔍</span>
-        <span>Search Internet</span>
+    <div class="add-option" onclick="showInternetSearch(); return false;">
+        <span style="pointer-events: none;">🔍</span>
+        <span style="pointer-events: none;">Search Internet</span>
     </div>
-    <div class="add-option" onclick="event.stopPropagation(); showManualEntry()">
-        <span>✏️</span>
-        <span>Manual Entry</span>
+    <div class="add-option" onclick="showManualEntry(); return false;">
+        <span style="pointer-events: none;">✏️</span>
+        <span style="pointer-events: none;">Manual Entry</span>
     </div>
 </div>
 
