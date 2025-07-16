@@ -1671,55 +1671,53 @@ body {
         let currentBookId = null;
         let selectedRating = 0;
 
-        // Initialize
+// Initialize
 document.addEventListener('DOMContentLoaded', async () => {
     setupEventListeners();
-    // Don't load library immediately - wait for auth state
-    // If no user is signed in, the auth listener will show sign-in modal
+    
+    // FAB menu handler - MUST be here, not inside setupEventListeners
+    document.getElementById('fab').addEventListener('click', function(e) {
+        e.stopPropagation();
+        document.getElementById('addOptions').classList.toggle('active');
+    });
+
+    // Handle add option clicks
+    document.getElementById('addOptions').addEventListener('click', function(e) {
+        e.stopPropagation();
+        const button = e.target.closest('.add-option');
+        if (!button) return;
+        
+        const action = button.getAttribute('data-action');
+        console.log('FAB action clicked:', action);
+        
+        // Close the menu first
+        this.classList.remove('active');
+        
+        // Then execute the action
+        switch(action) {
+            case 'barcode':
+                showBarcodeScanner();
+                break;
+            case 'search':
+                showInternetSearch();
+                break;
+            case 'manual':
+                showManualEntry();
+                break;
+        }
+    });
+
+    // Close FAB menu when clicking elsewhere
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#fab') && !e.target.closest('#addOptions')) {
+            document.getElementById('addOptions').classList.remove('active');
+        }
+    });
 });
 
         // Event Listeners
         function setupEventListeners() {
  
-            // FAB menu handler - add this after setupEventListeners()
-document.getElementById('fab').addEventListener('click', function(e) {
-    e.stopPropagation();
-    document.getElementById('addOptions').classList.toggle('active');
-});
-
-// Handle add option clicks
-document.getElementById('addOptions').addEventListener('click', function(e) {
-    e.stopPropagation();
-    const button = e.target.closest('.add-option');
-    if (!button) return;
-    
-    const action = button.getAttribute('data-action');
-    console.log('FAB action clicked:', action);
-    
-    // Close the menu first
-    this.classList.remove('active');
-    
-    // Then execute the action
-    switch(action) {
-        case 'barcode':
-            showBarcodeScanner();
-            break;
-        case 'search':
-            showInternetSearch();
-            break;
-        case 'manual':
-            showManualEntry();
-            break;
-    }
-});
-
-// Close FAB menu when clicking elsewhere
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('#fab') && !e.target.closest('#addOptions')) {
-        document.getElementById('addOptions').classList.remove('active');
-    }
-});
-
             // Sort chips
             document.querySelectorAll('.sort-chip').forEach(chip => {
                 chip.addEventListener('click', () => {
