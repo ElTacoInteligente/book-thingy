@@ -1700,14 +1700,7 @@ document.getElementById('manualBtn').addEventListener('click', function(e) {
     showManualEntry();
 });
 
-// Handle add option clicks - IMPROVED VERSION
-document.getElementById('addOptions').addEventListener('click', function(e) {
-    console.log('Click event fired on:', e.target);
-    console.log('Click event target tagName:', e.target.tagName);
-    console.log('Click event target className:', e.target.className);
-    
-    e.stopPropagation();
-    
+
     // Get the button element (handle clicks on child elements)
     let button = e.target;
     if (!button.classList.contains('add-option')) {
