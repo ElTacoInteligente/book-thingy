@@ -678,7 +678,39 @@ body {
             transform: scale(1.1);
             box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
         }
-        
+
+        /* Add Options Menu */
+.add-options {
+    position: fixed;
+    bottom: 170px;
+    right: 1.5rem;
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 0.5rem;
+            box-shadow: var(--shadow);
+            display: none;
+            z-index: 98;
+        }
+
+        .add-options.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .add-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: background 0.3s;
+            white-space: nowrap;
+        }
+
+        .add-option:hover {
+            background: var(--surface-light);
+        }
 
         /* Search Results */
         .search-results {
@@ -1279,22 +1311,6 @@ body {
 
         <!-- Floating Action Button -->
         <div class="fab" id="fab" onclick="toggleAddOptions()">+</div>
-
-        <!-- Add Options Menu -->
-        <div class="add-options" id="addOptions">
-            <div class="add-option" onclick="showBarcodeScanner()">
-                <span>📷</span>
-                <span>Scan Barcode</span>
-            </div>
-            <div class="add-option" onclick="showInternetSearch()">
-                <span>🔍</span>
-                <span>Search Internet</span>
-            </div>
-            <div class="add-option" onclick="showManualEntry()">
-                <span>✏️</span>
-                <span>Manual Entry</span>
-            </div>
-        </div>
 
         <!-- Book Details Modal -->
         <div class="modal" id="bookModal">
