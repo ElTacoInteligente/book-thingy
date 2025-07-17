@@ -1392,6 +1392,28 @@ body {
                            <input type="text" class="form-input" id="bookGenre" placeholder="e.g., Fiction, Mystery, Biography...">
                         </div>
 
+                        <div class="form-group">
+    <label class="form-label">Book Format (check all that apply)</label>
+    <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem;">
+        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+            <input type="checkbox" name="bookFormat" value="hardcover" style="width: auto; margin: 0;">
+            <span>Hardcover</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+            <input type="checkbox" name="bookFormat" value="paperback" style="width: auto; margin: 0;">
+            <span>Paperback</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+            <input type="checkbox" name="bookFormat" value="ebook" style="width: auto; margin: 0;">
+            <span>E-book</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+            <input type="checkbox" name="bookFormat" value="audiobook" style="width: auto; margin: 0;">
+            <span>Audiobook</span>
+        </label>
+    </div>
+</div>
+
 <div class="form-group">
     <label class="form-label">Cover Image</label>
     <div style="display: flex; gap: 0.5rem; align-items: center;">
@@ -1892,23 +1914,28 @@ async function saveBook(e) {
     
     showLoading('Saving book...');
     
+    function getCheckedFormats() {
+    const checkboxes = document.querySelectorAll('input[name="bookFormat"]:checked');
+    return Array.from(checkboxes).map(cb => cb.value);
+}
     try {
         const book = {
-            id: document.getElementById('bookId').value || Date.now().toString(),
-            title: document.getElementById('bookTitle').value,
-            author: document.getElementById('bookAuthor').value,
-            isbn: document.getElementById('bookISBN').value,
-            genre: document.getElementById('bookGenre').value,
-            cover: document.getElementById('bookCover').value,
-            status: document.getElementById('bookStatus').value,
-            rating: selectedRating,
-            summary: document.getElementById('bookSummary').value,
-            notes: document.getElementById('bookNotes').value,
-            quotes: document.getElementById('bookQuotes').value,
-            pastRead: document.getElementById('bookPastRead').checked, // ADD THIS LINE
-            dateAdded: new Date().toISOString(),
-            dateModified: new Date().toISOString()
-        };
+    id: document.getElementById('bookId').value || Date.now().toString(),
+    title: document.getElementById('bookTitle').value,
+    author: document.getElementById('bookAuthor').value,
+    isbn: document.getElementById('bookISBN').value,
+    genre: document.getElementById('bookGenre').value,
+    formats: getCheckedFormats(), // CHANGED from format to formats (plural)
+    cover: document.getElementById('bookCover').value,
+    status: document.getElementById('bookStatus').value,
+    rating: selectedRating,
+    summary: document.getElementById('bookSummary').value,
+    notes: document.getElementById('bookNotes').value,
+    quotes: document.getElementById('bookQuotes').value,
+    pastRead: document.getElementById('bookPastRead').checked,
+    dateAdded: new Date().toISOString(),
+    dateModified: new Date().toISOString()
+};
 
         const existingIndex = library.books.findIndex(b => b.id === book.id);
         if (existingIndex >= 0) {
@@ -2097,12 +2124,16 @@ async function deleteBook(bookId) {
                         `<img src="${book.cover}" alt="${book.title}" style="width: 120px; height: 180px; object-fit: cover; border-radius: var(--radius);" onerror="this.outerHTML='<div style=\\'width: 120px; height: 180px; background: var(--surface-light); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 3rem;\\'>📖</div>'">` :
                         `<div style="width: 120px; height: 180px; background: var(--surface-light); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 3rem;">📖</div>`
                     }
-                    <div style="flex: 1;">
-                        <p style="margin-bottom: 0.5rem;"><strong>Author:</strong> ${book.author}</p>
-                        ${book.isbn ? `<p style="margin-bottom: 0.5rem;"><strong>ISBN:</strong> ${book.isbn}</p>` : ''}
-                        <p style="margin-bottom: 0.5rem;"><strong>Status:</strong> <span class="book-status status-${book.status}" style="position: static; font-size: 0.75rem;">${book.status.replace('-', ' ')}</span></p>
-                        ${book.rating ? `<p style="margin-bottom: 0.5rem;"><strong>Rating:</strong> ${'★'.repeat(book.rating)}${'☆'.repeat(5-book.rating)}</p>` : ''}
-                    </div>
+<div style="flex: 1;">
+    <p style="margin-bottom: 0.5rem;"><strong>Author:</strong> ${book.author}</p>
+    ${book.isbn ? `<p style="margin-bottom: 0.5rem;"><strong>ISBN:</strong> ${book.isbn}</p>` : ''}
+    <p style="margin-bottom: 0.5rem;"><strong>Status:</strong> <span class="book-status status-${book.status}" style="position: static; font-size: 0.75rem;">${book.status.replace('-', ' ')}</span></p>
+    ${book.rating ? `<p style="margin-bottom: 0.5rem;"><strong>Rating:</strong> ${'★'.repeat(book.rating)}${'☆'.repeat(5-book.rating)}</p>` : ''}
+    ${book.formats && book.formats.length > 0 ? 
+        `<p style="margin-bottom: 0.5rem;"><strong>Formats:</strong> ${book.formats.map(f => f.charAt(0).toUpperCase() + f.slice(1)).join(', ')}</p>` : 
+        book.format ? `<p style="margin-bottom: 0.5rem;"><strong>Format:</strong> ${book.format.charAt(0).toUpperCase() + book.format.slice(1)}</p>` : ''
+    }
+</div>
                 </div>
 
                 ${book.summary ? `
@@ -2172,7 +2203,27 @@ function editBook(bookId) {
     document.getElementById('bookSummary').value = book.summary || '';
     document.getElementById('bookNotes').value = book.notes || '';
     document.getElementById('bookQuotes').value = book.quotes || '';
-    document.getElementById('bookGenre').value = book.genre || '';
+    
+    // Safe check for genre field
+    if (document.getElementById('bookGenre')) {
+        document.getElementById('bookGenre').value = book.genre || '';
+    }
+    
+    // Handle format checkboxes
+    // First, uncheck all format checkboxes
+    document.querySelectorAll('input[name="bookFormat"]').forEach(cb => cb.checked = false);
+    
+    // Then check the ones that match the book's formats
+    if (book.formats && Array.isArray(book.formats)) {
+        book.formats.forEach(format => {
+            const checkbox = document.querySelector(`input[name="bookFormat"][value="${format}"]`);
+            if (checkbox) checkbox.checked = true;
+        });
+    } else if (book.format) {
+        // Handle old single format data
+        const checkbox = document.querySelector(`input[name="bookFormat"][value="${book.format}"]`);
+        if (checkbox) checkbox.checked = true;
+    }
     
     // Handle past read checkbox
     if (book.status === 'completed') {
