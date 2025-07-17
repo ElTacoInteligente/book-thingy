@@ -1411,6 +1411,11 @@ body {
             <input type="checkbox" name="bookFormat" value="audiobook" style="width: auto; margin: 0;">
             <span>Audiobook</span>
         </label>
+        <!-- ADD THIS NEW CHECKBOX -->
+        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--surface-light);">
+            <input type="checkbox" name="bookFormat" value="no-copy" style="width: auto; margin: 0;">
+            <span>No Personal Copy</span>
+        </label>
     </div>
 </div>
 
@@ -1783,6 +1788,24 @@ document.getElementById('bookStatus').addEventListener('change', function() {
     }
 });
 
+// ADD THIS NEW EVENT LISTENER HERE
+    // Handle format checkbox mutual exclusivity
+    document.addEventListener('change', function(e) {
+        if (e.target.name === 'bookFormat') {
+            const noCopyCheckbox = document.querySelector('input[name="bookFormat"][value="no-copy"]');
+            const otherCheckboxes = document.querySelectorAll('input[name="bookFormat"]:not([value="no-copy"])');
+            
+            if (e.target.value === 'no-copy' && e.target.checked) {
+                // If "No Personal Copy" is checked, uncheck all others
+                otherCheckboxes.forEach(cb => cb.checked = false);
+            } else if (e.target.value !== 'no-copy' && e.target.checked) {
+                // If any other format is checked, uncheck "No Personal Copy"
+                noCopyCheckbox.checked = false;
+            }
+        }
+    });
+}
+
  // Export/Import listeners - only for Electron
 if (window.electronAPI) {
     window.electronAPI.onExportLibrary((event, filePath) => {
@@ -1907,6 +1930,18 @@ async function saveLibrary() {
             indicator.classList.add('show');
             setTimeout(() => indicator.classList.remove('show'), 2000);
         }
+
+        // ADD THE NEW FUNCTION HERE
+function getFormatIcon(format) {
+    const icons = {
+        'hardcover': '📕',
+        'paperback': '📗',
+        'ebook': '📱',
+        'audiobook': '🎧',
+        'no-copy': '🚫'
+    };
+    return icons[format] || '';
+}
 
 // Book Management
 async function saveBook(e) {
@@ -2129,10 +2164,12 @@ async function deleteBook(bookId) {
     ${book.isbn ? `<p style="margin-bottom: 0.5rem;"><strong>ISBN:</strong> ${book.isbn}</p>` : ''}
     <p style="margin-bottom: 0.5rem;"><strong>Status:</strong> <span class="book-status status-${book.status}" style="position: static; font-size: 0.75rem;">${book.status.replace('-', ' ')}</span></p>
     ${book.rating ? `<p style="margin-bottom: 0.5rem;"><strong>Rating:</strong> ${'★'.repeat(book.rating)}${'☆'.repeat(5-book.rating)}</p>` : ''}
-    ${book.formats && book.formats.length > 0 ? 
+   ${book.formats && book.formats.length > 0 ? 
+    book.formats.includes('no-copy') ? 
+        `<p style="margin-bottom: 0.5rem;"><strong>Format:</strong> <span style="color: var(--text-dim);">No Personal Copy</span></p>` :
         `<p style="margin-bottom: 0.5rem;"><strong>Formats:</strong> ${book.formats.map(f => f.charAt(0).toUpperCase() + f.slice(1)).join(', ')}</p>` : 
-        book.format ? `<p style="margin-bottom: 0.5rem;"><strong>Format:</strong> ${book.format.charAt(0).toUpperCase() + book.format.slice(1)}</p>` : ''
-    }
+    book.format ? `<p style="margin-bottom: 0.5rem;"><strong>Format:</strong> ${book.format.charAt(0).toUpperCase() + book.format.slice(1)}</p>` : ''
+}
 </div>
                 </div>
 
