@@ -1225,6 +1225,7 @@ body {
                 <button class="sort-chip" data-sort="author">Author</button>
                 <button class="sort-chip" data-sort="status">Status</button>
                 <button class="sort-chip" data-sort="rating">Rating</button>
+                <button class="sort-chip" data-sort="genre">Genre</button>
             </div>
         </div>
 
@@ -1882,6 +1883,7 @@ async function saveBook(e) {
             title: document.getElementById('bookTitle').value,
             author: document.getElementById('bookAuthor').value,
             isbn: document.getElementById('bookISBN').value,
+            genre: document.getElementById('bookGenre').value,
             cover: document.getElementById('bookCover').value,
             status: document.getElementById('bookStatus').value,
             rating: selectedRating,
@@ -1953,6 +1955,8 @@ async function deleteBook(bookId) {
                         return a.status.localeCompare(b.status);
                     case 'rating':
                         return (b.rating || 0) - (a.rating || 0);
+                    case 'genre':  
+                        return (a.genre || '').localeCompare(b.genre || '');
                     default:
                         return 0;
                 }
@@ -1972,11 +1976,12 @@ async function deleteBook(bookId) {
                             `<img src="${book.cover}" alt="${book.title}" class="book-cover" onerror="this.outerHTML='<div class=\\'book-cover\\'>📖</div>'">` :
                             `<div class="book-cover">📖</div>`
                         }
-                        <div class="book-info">
-                            <div class="book-title">${book.title}</div>
-                            <div class="book-author">${book.author}</div>
-                            ${book.rating ? `<div class="rating-display">${'★'.repeat(book.rating)}${'☆'.repeat(5-book.rating)}</div>` : ''}
-                        </div>
+                       <div class="book-info">
+    <div class="book-title">${book.title}</div>
+    <div class="book-author">${book.author}</div>
+    ${book.genre ? `<div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.25rem;">${book.genre}</div>` : ''}
+    ${book.rating ? `<div class="rating-display">${'★'.repeat(book.rating)}${'☆'.repeat(5-book.rating)}</div>` : ''}
+</div>
                         <div class="book-status status-${book.status}">${book.status.replace('-', ' ')}</div>
                     </div>
                 `).join('');
@@ -2152,6 +2157,7 @@ function editBook(bookId) {
     document.getElementById('bookSummary').value = book.summary || '';
     document.getElementById('bookNotes').value = book.notes || '';
     document.getElementById('bookQuotes').value = book.quotes || '';
+    document.getElementById('bookGenre').value = book.genre || '';
     
     // Handle past read checkbox
     if (book.status === 'completed') {
