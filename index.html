@@ -2329,7 +2329,7 @@ const bookData = {
     author: authors,
     isbn: isbn,
     cover: originalThumbnail || thumbnail,  // Use original (more reliable) thumbnail
-    summary: (info.description || '').substring(0, 500)
+    summary: (info.description || '').substring(0, 500),
     genre: info.categories ? info.categories.join(', ') : '' // ADD THIS LINE
 };                 
 // Use index to store data in a global variable to avoid encoding issues
