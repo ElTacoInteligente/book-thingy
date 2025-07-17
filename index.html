@@ -1976,12 +1976,11 @@ async function deleteBook(bookId) {
                             `<img src="${book.cover}" alt="${book.title}" class="book-cover" onerror="this.outerHTML='<div class=\\'book-cover\\'>📖</div>'">` :
                             `<div class="book-cover">📖</div>`
                         }
-                       <div class="book-info">
-    <div class="book-title">${book.title}</div>
-    <div class="book-author">${book.author}</div>
-    ${book.genre ? `<div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.25rem;">${book.genre}</div>` : ''}
-    ${book.rating ? `<div class="rating-display">${'★'.repeat(book.rating)}${'☆'.repeat(5-book.rating)}</div>` : ''}
-</div>
+                        <div class="book-info">
+                            <div class="book-title">${book.title}</div>
+                            <div class="book-author">${book.author}</div>
+                            ${book.rating ? `<div class="rating-display">${'★'.repeat(book.rating)}${'☆'.repeat(5-book.rating)}</div>` : ''}
+                        </div>
                         <div class="book-status status-${book.status}">${book.status.replace('-', ' ')}</div>
                     </div>
                 `).join('');
