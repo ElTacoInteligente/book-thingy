@@ -1984,6 +1984,7 @@ async function deleteBook(bookId) {
                         <div class="book-info">
                             <div class="book-title">${book.title}</div>
                             <div class="book-author">${book.author}</div>
+                            ${book.genre ? `<div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.25rem;">${book.genre}</div>` : ''}
                             ${book.rating ? `<div class="rating-display">${'★'.repeat(book.rating)}${'☆'.repeat(5-book.rating)}</div>` : ''}
                         </div>
                         <div class="book-status status-${book.status}">${book.status.replace('-', ' ')}</div>
@@ -2329,6 +2330,7 @@ const bookData = {
     isbn: isbn,
     cover: originalThumbnail || thumbnail,  // Use original (more reliable) thumbnail
     summary: (info.description || '').substring(0, 500)
+    genre: info.categories ? info.categories.join(', ') : '' // ADD THIS LINE
 };                 
 // Use index to store data in a global variable to avoid encoding issues
                     window.searchResultsData = window.searchResultsData || {};
@@ -2368,6 +2370,7 @@ function selectGoogleBook(bookData) {
     document.getElementById('bookAuthor').value = bookData.author;
     document.getElementById('bookISBN').value = bookData.isbn;
     document.getElementById('bookCover').value = bookData.cover;
+    document.getElementById('bookGenre').value = bookData.genre || ''; 
     document.getElementById('bookStatus').value = 'want-to-read';
     document.getElementById('bookSummary').value = bookData.summary || '';
     document.getElementById('bookNotes').value = '';
