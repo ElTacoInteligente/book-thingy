@@ -80,6 +80,75 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* Light theme text fixes */
+.light-theme .btn {
+    color: white; /* Keep white text for primary buttons */
+}
+
+.light-theme .btn-secondary {
+    color: var(--text); /* Dark text for secondary buttons */
+    background: var(--surface-light);
+}
+
+.light-theme .form-label {
+    color: var(--text);
+}
+
+.light-theme .form-input,
+.light-theme .form-select,
+.light-theme .form-textarea {
+    color: var(--text);
+    background: var(--surface-light);
+    border-color: #cbd5e1;
+}
+
+.light-theme .modal-header {
+    color: var(--text);
+}
+
+.light-theme .modal-title {
+    color: var(--text);
+}
+
+.light-theme h3 {
+    color: var(--primary);
+}
+
+.light-theme span,
+.light-theme p,
+.light-theme label {
+    color: var(--text);
+}
+
+.light-theme .empty-state .empty-text {
+    color: var(--text-dim);
+}
+
+.light-theme .sort-chip {
+    color: var(--text);
+    background: var(--surface-light);
+    border-color: #cbd5e1;
+}
+
+.light-theme .sort-chip.active {
+    color: white; /* Keep white text on active purple chips */
+}
+
+.light-theme input[type="radio"],
+.light-theme input[type="checkbox"] {
+    accent-color: var(--primary);
+}
+
+/* Fix the specific buttons in settings modal */
+.light-theme .btn[style*="background: var(--danger)"] {
+    color: white !important;
+}
+
+/* Ensure header text is visible */
+.light-theme #userEmail {
+    color: var(--text-dim) !important;
+}
+
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--background);
