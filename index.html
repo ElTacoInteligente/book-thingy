@@ -1622,10 +1622,10 @@ body {
                                     <span>Export Library</span>
                                 </button>
                                 
-                                <button class="btn btn-secondary" onclick="showImportModal()" style="justify-content: center;">
-                                    <span>📥</span>
-                                    <span>Import Library</span>
-                                </button>
+<button class="btn btn-secondary" onclick="importLibrary()" style="justify-content: center;">
+    <span>📥</span>
+    <span>Import Library</span>
+</button>
                                 
                                 <button class="btn" onclick="clearAllData()" style="background: var(--danger); justify-content: center;">
                                     <span>🗑️</span>
@@ -2987,11 +2987,6 @@ Type "DELETE ALL" to confirm:`;
         showToast('Cancelled', 'You must type "DELETE ALL" exactly to confirm.', 'info');
     }
 }
-
-function showImportModal() {
-    showToast('Import Feature', 'Import functionality coming soon! For now, you can manually add books.', 'info');
-}
-
     // Authentication state
 let currentUser = null;
 
