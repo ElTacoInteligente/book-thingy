@@ -1301,15 +1301,15 @@ body {
 
         <!-- ADD THIS BULK ACTIONS TOOLBAR -->
         <div class="bulk-actions-toolbar" id="bulkActionsToolbar" style="display: none;">
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: var(--surface); border-radius: var(--radius); margin-bottom: 1rem;">
-                <div>
-                    <span id="selectedCount">0</span> books selected
-                    <button class="btn btn-secondary" onclick="selectAll()" style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.875rem;">
-                        Select All
-                    </button>
-                    <button class="btn btn-secondary" onclick="deselectAll()" style="margin-left: 0.5rem; padding: 0.5rem 1rem; font-size: 0.875rem;">
-                        Clear Selection
-                    </button>
+<div style="display: flex; align-items: center; gap: 0.5rem;">
+    <span id="selectedCount">0</span> books selected
+    <button class="btn btn-secondary" onclick="selectAll()" style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.875rem;">
+        Select All
+    </button>
+    <button class="btn btn-secondary" onclick="deselectAll()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+        Clear Selection
+    </button>
+</div>
                 </div>
                 <div style="display: flex; gap: 0.5rem;">
                     <button class="btn btn-secondary" onclick="bulkChangeStatus()" style="padding: 0.5rem 1rem;">
