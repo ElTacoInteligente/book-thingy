@@ -338,6 +338,58 @@ body {
             font-size: 1rem;
         }
 
+  /* Bulk Selection Styles */
+.selection-mode .book-card {
+    position: relative;
+}
+
+.book-checkbox {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    width: 24px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 4px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.selection-mode .book-checkbox {
+    display: flex;
+}
+
+.book-checkbox input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.book-card.selected {
+    outline: 3px solid var(--primary);
+    outline-offset: -3px;
+}
+
+.bulk-actions-toolbar {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}      
+
         /* Book Details Modal */
         .modal {
             display: none;
@@ -1241,7 +1293,37 @@ body {
         <div class="search-section">
             <div class="search-bar">
                 <input type="text" class="search-input" id="searchInput" placeholder="Search your library...">
+                   <button class="btn btn-secondary" id="selectionModeBtn" onclick="toggleSelectionMode()">
+                <span>✓</span>
+                <span>Select</span>
+            </button>
+        </div>
+
+        <!-- ADD THIS BULK ACTIONS TOOLBAR -->
+        <div class="bulk-actions-toolbar" id="bulkActionsToolbar" style="display: none;">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: var(--surface); border-radius: var(--radius); margin-bottom: 1rem;">
+                <div>
+                    <span id="selectedCount">0</span> books selected
+                    <button class="btn btn-secondary" onclick="selectAll()" style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.875rem;">
+                        Select All
+                    </button>
+                    <button class="btn btn-secondary" onclick="deselectAll()" style="margin-left: 0.5rem; padding: 0.5rem 1rem; font-size: 0.875rem;">
+                        Clear Selection
+                    </button>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-secondary" onclick="bulkChangeStatus()" style="padding: 0.5rem 1rem;">
+                        <span>📚</span>
+                        <span>Change Status</span>
+                    </button>
+                    <button class="btn" onclick="bulkDelete()" style="background: var(--danger); padding: 0.5rem 1rem;">
+                        <span>🗑️</span>
+                        <span>Delete Selected</span>
+                    </button>
+                </div>
             </div>
+        </div>
+
             <div class="sort-section">
                 <button class="sort-chip active" data-sort="recent">Recent</button>
                 <button class="sort-chip" data-sort="title">Title</button>
@@ -1723,6 +1805,8 @@ body {
         let currentSort = 'recent';
         let currentBookId = null;
         let selectedRating = 0;
+        let selectionMode = false;
+        let selectedBooks = new Set();
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
@@ -2059,8 +2143,15 @@ async function deleteBook(bookId) {
                 emptyState.style.display = 'block';
             } else {
                 emptyState.style.display = 'none';
-                grid.innerHTML = filteredBooks.map(book => `
-    <div class="book-card" onclick="showBookDetails('${book.id}')">
+grid.innerHTML = filteredBooks.map(book => `
+    <div class="book-card ${selectedBooks.has(book.id) ? 'selected' : ''}" 
+         data-book-id="${book.id}"
+         onclick="${selectionMode ? `toggleBookSelection('${book.id}', event)` : `showBookDetails('${book.id}')`}">
+        ${selectionMode ? `
+            <div class="book-checkbox" onclick="toggleBookSelection('${book.id}', event)">
+                <input type="checkbox" ${selectedBooks.has(book.id) ? 'checked' : ''}>
+            </div>
+        ` : ''}
         ${book.cover ? 
             `<img src="${book.cover}" alt="${book.title}" class="book-cover" onerror="this.outerHTML='<div class=\\'book-cover\\'>📖</div>'">` :
             `<div class="book-cover">📖</div>`
@@ -2076,6 +2167,164 @@ async function deleteBook(bookId) {
 `).join('');
             }
         }
+
+// Bulk Selection Functions
+function toggleSelectionMode() {
+    selectionMode = !selectionMode;
+    const libraryView = document.getElementById('libraryView');
+    const btn = document.getElementById('selectionModeBtn');
+    const toolbar = document.getElementById('bulkActionsToolbar');
+    
+    if (selectionMode) {
+        libraryView.classList.add('selection-mode');
+        btn.innerHTML = '<span>✕</span><span>Cancel</span>';
+        btn.style.background = 'var(--danger)';
+        toolbar.style.display = 'block';
+        selectedBooks.clear();
+        updateSelectedCount();
+    } else {
+        libraryView.classList.remove('selection-mode');
+        btn.innerHTML = '<span>✓</span><span>Select</span>';
+        btn.style.background = '';
+        toolbar.style.display = 'none';
+        selectedBooks.clear();
+        // Remove selected class from all books
+        document.querySelectorAll('.book-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+    }
+    renderLibrary();
+}
+
+function toggleBookSelection(bookId, event) {
+    if (event) {
+        event.stopPropagation();
+    }
+    
+    if (selectedBooks.has(bookId)) {
+        selectedBooks.delete(bookId);
+        document.querySelector(`[data-book-id="${bookId}"]`).classList.remove('selected');
+    } else {
+        selectedBooks.add(bookId);
+        document.querySelector(`[data-book-id="${bookId}"]`).classList.add('selected');
+    }
+    
+    updateSelectedCount();
+}
+
+function updateSelectedCount() {
+    document.getElementById('selectedCount').textContent = selectedBooks.size;
+}
+
+function selectAll() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    let filteredBooks = library.books.filter(book => 
+        book.title.toLowerCase().includes(searchTerm) ||
+        book.author.toLowerCase().includes(searchTerm)
+    );
+    
+    filteredBooks.forEach(book => {
+        selectedBooks.add(book.id);
+    });
+    
+    // Update UI
+    document.querySelectorAll('.book-card').forEach(card => {
+        card.classList.add('selected');
+        const checkbox = card.querySelector('.book-checkbox input');
+        if (checkbox) checkbox.checked = true;
+    });
+    
+    updateSelectedCount();
+}
+
+function deselectAll() {
+    selectedBooks.clear();
+    document.querySelectorAll('.book-card').forEach(card => {
+        card.classList.remove('selected');
+        const checkbox = card.querySelector('.book-checkbox input');
+        if (checkbox) checkbox.checked = false;
+    });
+    updateSelectedCount();
+}
+
+async function bulkDelete() {
+    if (selectedBooks.size === 0) {
+        showToast('No Selection', 'Please select books to delete', 'warning');
+        return;
+    }
+    
+    const confirmText = `Are you sure you want to delete ${selectedBooks.size} book${selectedBooks.size > 1 ? 's' : ''}? This cannot be undone.`;
+    
+    if (confirm(confirmText)) {
+        try {
+            showLoading('Deleting books...');
+            
+            // Remove selected books from library
+            library.books = library.books.filter(book => !selectedBooks.has(book.id));
+            
+            await saveLibrary();
+            
+            // Exit selection mode
+            toggleSelectionMode();
+            
+            renderLibrary();
+            updateStats();
+            
+            showToast('Books Deleted', `Successfully deleted ${selectedBooks.size} book${selectedBooks.size > 1 ? 's' : ''}`, 'success');
+        } catch (error) {
+            console.error('Error deleting books:', error);
+            showToast('Delete Failed', 'Could not delete books. Please try again.', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+}
+
+async function bulkChangeStatus() {
+    if (selectedBooks.size === 0) {
+        showToast('No Selection', 'Please select books to update', 'warning');
+        return;
+    }
+    
+    // Create a simple modal for status selection
+    const newStatus = prompt(`Change status for ${selectedBooks.size} book${selectedBooks.size > 1 ? 's' : ''}:\n\n1 = Want to Read\n2 = Currently Reading\n3 = Completed\n4 = Abandoned\n\nEnter number (1-4):`);
+    
+    const statusMap = {
+        '1': 'want-to-read',
+        '2': 'reading',
+        '3': 'completed',
+        '4': 'abandoned'
+    };
+    
+    if (newStatus && statusMap[newStatus]) {
+        try {
+            showLoading('Updating books...');
+            
+            // Update status for selected books
+            library.books.forEach(book => {
+                if (selectedBooks.has(book.id)) {
+                    book.status = statusMap[newStatus];
+                    book.dateModified = new Date().toISOString();
+                }
+            });
+            
+            await saveLibrary();
+            
+            // Exit selection mode
+            toggleSelectionMode();
+            
+            renderLibrary();
+            updateStats();
+            
+            showToast('Books Updated', `Changed status for ${selectedBooks.size} book${selectedBooks.size > 1 ? 's' : ''}`, 'success');
+        } catch (error) {
+            console.error('Error updating books:', error);
+            showToast('Update Failed', 'Could not update books. Please try again.', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+}
 
   function updateStats() {
     console.log('Updating stats, total books:', library.books.length);
