@@ -761,6 +761,25 @@ body {
             color: var(--text-dim);
         }
 
+        /* Make lending contact info selectable */
+.lending-contact {
+    -webkit-user-select: text !important;
+    user-select: text !important;
+    cursor: text;
+}
+
+.lending-borrower {
+    -webkit-user-select: text !important;
+    user-select: text !important;
+    cursor: text;
+}
+
+/* Also make the lending info container selectable */
+.lending-info {
+    -webkit-user-select: text !important;
+    user-select: text !important;
+}
+
         .return-btn {
             background: var(--success);
             color: white;
