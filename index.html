@@ -3008,6 +3008,29 @@ function selectGoogleBookFromElement(element) {
     }
 }
 
+// Return Book Function
+async function returnBook(bookId) {
+    const book = library.books.find(b => b.id === bookId);
+    if (book && book.lentTo) {
+        const borrowerName = book.lentTo;
+        
+        // Remove all lending information
+        delete book.lentTo;
+        delete book.lentContact;  // Remove old field if it exists
+        delete book.lentPhone;
+        delete book.lentEmail;
+        delete book.lentDate;
+        
+        await saveLibrary();
+        renderLending();
+        renderLibrary(); // Also update the main library view
+        showToast('Book Returned', `${book.title} has been returned from ${borrowerName}`, 'success');
+    }
+}
+
+// Make it globally accessible
+window.returnBook = returnBook;
+
         // Goal Functions
         async function setGoal(e) {
             e.preventDefault();
