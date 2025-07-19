@@ -1730,15 +1730,20 @@ body {
                     <form id="lendingForm">
                         <input type="hidden" id="lendBookId">
                         
-                        <div class="form-group">
-                            <label class="form-label">Borrower's Name *</label>
-                            <input type="text" class="form-input" id="borrowerName" required>
-                        </div>
+                     <div class="form-group">
+    <label class="form-label">Borrower's Name *</label>
+    <input type="text" class="form-input" id="borrowerName" required>
+</div>
 
-                        <div class="form-group">
-                            <label class="form-label">Contact Info</label>
-                            <input type="text" class="form-input" id="borrowerContact" placeholder="Phone: 555-1234 or email@example.com">
-                        </div>
+<div class="form-group">
+    <label class="form-label">Phone Number</label>
+    <input type="tel" class="form-input" id="borrowerPhone" placeholder="(555) 123-4567">
+</div>
+
+<div class="form-group">
+    <label class="form-label">Email Address</label>
+    <input type="email" class="form-input" id="borrowerEmail" placeholder="email@example.com">
+</div>
 
                         <button type="submit" class="btn" style="width: 100%;">Lend Book</button>
                     </form>
