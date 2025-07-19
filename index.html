@@ -1599,6 +1599,11 @@ body {
                         </div>
 
                         <div class="form-group">
+                           <label class="form-label">Location</label>
+                           <input type="text" class="form-input" id="bookLocation" placeholder="e.g., Living room shelf, Bedroom, Library">
+                       </div>
+
+                        <div class="form-group">
                            <label class="form-label">Genre</label>
                            <input type="text" class="form-input" id="bookGenre" placeholder="e.g., Fiction, Mystery, Biography...">
                         </div>
@@ -2246,6 +2251,7 @@ async function saveBook(e) {
     title: document.getElementById('bookTitle').value,
     author: document.getElementById('bookAuthor').value,
     isbn: document.getElementById('bookISBN').value,
+    location: document.getElementById('bookLocation').value,
     genre: document.getElementById('bookGenre').value,
     formats: getCheckedFormats(), // CHANGED from format to formats (plural)
     cover: document.getElementById('bookCover').value,
@@ -2614,6 +2620,7 @@ async function bulkChangeStatus() {
 <div style="flex: 1;">
     <p style="margin-bottom: 0.5rem;"><strong>Author:</strong> ${book.author}</p>
     ${book.isbn ? `<p style="margin-bottom: 0.5rem;"><strong>ISBN:</strong> ${book.isbn}</p>` : ''}
+    ${book.location ? `<p style="margin-bottom: 0.5rem;"><strong>Location:</strong> ${book.location}</p>` : ''}
     <p style="margin-bottom: 0.5rem;"><strong>Status:</strong> <span class="book-status status-${book.status}" style="position: static; font-size: 0.75rem;">${book.status.replace('-', ' ')}</span></p>
     ${book.rating ? `<p style="margin-bottom: 0.5rem;"><strong>Rating:</strong> ${'★'.repeat(book.rating)}${'☆'.repeat(5-book.rating)}</p>` : ''}
    ${book.formats && book.formats.length > 0 ? 
@@ -2687,6 +2694,7 @@ function editBook(bookId) {
     document.getElementById('bookTitle').value = book.title;
     document.getElementById('bookAuthor').value = book.author;
     document.getElementById('bookISBN').value = book.isbn || '';
+    document.getElementById('bookLocation').value = book.location || '';
     document.getElementById('bookCover').value = book.cover || '';
     document.getElementById('bookStatus').value = book.status;
     document.getElementById('bookSummary').value = book.summary || '';
