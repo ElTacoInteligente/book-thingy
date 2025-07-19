@@ -2982,35 +2982,30 @@ function selectGoogleBookFromElement(element) {
         alert('Error loading book details. Please try manual entry.');
     }
 }
-        // Lending Functions
-        async function lendBook(e) {
-            e.preventDefault();
-            
-            const bookId = document.getElementById('lendBookId').value;
-            const book = library.books.find(b => b.id === bookId);
-            
-            if (book) {
-                book.lentTo = document.getElementById('borrowerName').value;
-                book.lentContact = document.getElementById('borrowerContact').value;
-                book.lentDate = new Date().toISOString();
-                
-                await saveLibrary();
-                closeModal('lendingModal');
-                renderLending();
-            }
-        }
 
-        async function returnBook(bookId) {
-            const book = library.books.find(b => b.id === bookId);
-            if (book) {
-                delete book.lentTo;
-                delete book.lentContact;
-                delete book.lentDate;
-                
-                await saveLibrary();
-                renderLending();
-            }
+     async function lendBook(e) {
+    e.preventDefault();
+    
+    const bookId = document.getElementById('lendBookId').value;
+    const book = library.books.find(b => b.id === bookId);
+    
+    if (book) {
+        book.lentTo = document.getElementById('borrowerName').value;
+        book.lentPhone = document.getElementById('borrowerPhone').value || '';
+        book.lentEmail = document.getElementById('borrowerEmail').value || '';
+        book.lentDate = new Date().toISOString();
+        
+        // Remove old contact field if it exists
+        if (book.lentContact) {
+            delete book.lentContact;
         }
+        
+        await saveLibrary();
+        closeModal('lendingModal');
+        renderLending();
+        showToast('Book Lent', `${book.title} has been lent to ${book.lentTo}`, 'success');
+    }
+}
 
         // Goal Functions
         async function setGoal(e) {
