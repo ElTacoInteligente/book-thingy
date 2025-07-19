@@ -2584,22 +2584,22 @@ async function bulkChangeStatus() {
                 empty.style.display = 'block';
             } else {
                 empty.style.display = 'none';
-                list.innerHTML = lentBooks.map(book => {
-                    const daysSince = Math.floor((new Date() - new Date(book.lentDate)) / (1000 * 60 * 60 * 24));
-                    return `
-                        <div class="lending-item">
-                            ${book.cover ? 
-                                `<img src="${book.cover}" alt="${book.title}" class="lending-book-cover" onerror="this.outerHTML='<div class=\\'lending-book-cover\\'>📖</div>'">` :
-                                `<div class="lending-book-cover">📖</div>`
-                            }
-                            <div class="lending-info">
-                                <div class="lending-borrower">${book.lentTo}</div>
-                                <div class="lending-date">${book.title} • ${daysSince} days ago</div>
-                            </div>
-                            <button class="return-btn" onclick="returnBook('${book.id}')">Return</button>
-                        </div>
-                    `;
-                }).join('');
+ list.innerHTML = lentBooks.map(book => {
+    const daysSince = Math.floor((new Date() - new Date(book.lentDate)) / (1000 * 60 * 60 * 24));
+    return `
+        <div class="lending-item" onclick="showBookDetails('${book.id}')" style="cursor: pointer;">
+            ${book.cover ? 
+                `<img src="${book.cover}" alt="${book.title}" class="lending-book-cover">` :
+                `<div class="lending-book-cover">📖</div>`
+            }
+            <div class="lending-info">
+                <div class="lending-borrower">${book.lentTo}</div>
+                <div class="lending-date">${book.title} • ${daysSince} days ago</div>
+            </div>
+            <button class="return-btn" onclick="event.stopPropagation(); returnBook('${book.id}')">Return</button>
+        </div>
+    `;
+}).join('');
             }
         }
 
