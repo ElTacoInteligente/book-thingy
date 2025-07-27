@@ -242,6 +242,11 @@ body {
             display: block;
         }
 
+        /* Disable animation for notebook view to prevent positioning glitch */
+        #notebookView {
+            animation: none;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -662,11 +667,25 @@ body {
             border-radius: var(--radius);
             text-align: center;
             transition: all 0.3s;
+            cursor: pointer;
         }
 
         .stat-card:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow);
+        }
+
+        .stat-card.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .stat-card.active .stat-value {
+            color: white;
+        }
+
+        .stat-card.active .stat-label {
+            color: rgba(255, 255, 255, 0.9);
         }
 
         .stat-value {
@@ -679,6 +698,491 @@ body {
         .stat-label {
             color: var(--text-dim);
             font-size: 0.875rem;
+        }
+
+        /* Book row cards */
+        .book-row-container {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .book-row-container.active {
+            display: block;
+        }
+
+        .book-row-card {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1rem;
+            background: var(--surface);
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .book-row-card:hover {
+            transform: translateX(4px);
+            box-shadow: var(--shadow);
+        }
+
+        .book-row-card.draggable {
+            cursor: grab;
+        }
+
+        .book-row-card.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+            transform: rotate(2deg);
+        }
+
+        .book-row-card.drag-over {
+            border-top: 3px solid var(--primary);
+            margin-top: 1.5rem;
+        }
+
+        .drag-handle {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            color: var(--text-dim);
+            cursor: grab;
+            user-select: none;
+        }
+
+        .drag-handle:hover {
+            color: var(--primary);
+        }
+
+        /* Notebook Layout */
+        .notebook-container {
+            display: flex;
+            height: calc(100vh - 80px);
+            background: var(--background);
+            margin: 0;
+            padding: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100vw;
+            z-index: 50;
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        .notebook-sidebar {
+            width: 300px;
+            background: var(--surface);
+            border-right: 1px solid var(--surface-light);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s;
+            padding-top: 80px;
+        }
+
+        .notebook-sidebar.collapsed {
+            width: 0;
+            overflow: hidden;
+        }
+
+        .notebook-book-sidebar {
+            width: 250px;
+            background: var(--surface-light);
+            border-right: 1px solid var(--surface-light);
+            display: none;
+            flex-direction: column;
+            transition: all 0.3s;
+            padding-top: 80px;
+        }
+
+        .notebook-book-sidebar.active {
+            display: flex;
+        }
+
+        .notebook-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--background);
+            padding-top: 80px;
+        }
+
+        .notebook-search {
+            padding: 1rem;
+            border-bottom: 1px solid var(--surface-light);
+        }
+
+        .notebook-search input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--surface-light);
+            border-radius: 8px;
+            background: var(--background);
+            color: var(--text);
+            font-size: 0.875rem;
+        }
+
+        .notebook-book-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+
+        .notebook-book-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: var(--background);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .notebook-book-item:hover {
+            background: var(--surface-light);
+        }
+
+        .notebook-book-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .notebook-book-cover {
+            width: 40px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 0.75rem;
+            background: var(--surface-light);
+        }
+
+        .notebook-book-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notebook-book-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .notebook-book-author {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .notebook-book-item.active .notebook-book-author {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .notebook-pages-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--surface-light);
+            background: var(--surface);
+        }
+
+        .notebook-pages-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 1rem;
+        }
+
+        .notebook-pages-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-bottom: 1rem;
+        }
+
+        .notebook-add-page {
+            width: 100%;
+            padding: 0.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1000;
+            pointer-events: auto;
+        }
+
+        .notebook-add-page:hover {
+            background: var(--primary-dark);
+        }
+
+        .notebook-pages-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+
+        .notebook-page-item {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: var(--background);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notebook-page-item:hover {
+            background: var(--surface);
+        }
+
+        .notebook-page-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .notebook-page-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .notebook-page-actions {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .notebook-page-action {
+            padding: 0.25rem;
+            background: transparent;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            opacity: 0.7;
+            transition: all 0.3s;
+        }
+
+        .notebook-page-action:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .notebook-editor-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notebook-editor-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--surface-light);
+            background: var(--surface);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notebook-editor-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .notebook-editor {
+            flex: 1;
+            padding: 1.5rem;
+            background: var(--background);
+            overflow-y: auto;
+        }
+
+        .notebook-textarea {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+        }
+
+        .notebook-empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dim);
+            padding: 2rem;
+        }
+
+        .notebook-empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Rich text editor toolbar */
+        .notebook-toolbar {
+            padding: 0.75rem 1rem;
+            background: var(--surface);
+            border-bottom: 1px solid var(--surface-light);
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .notebook-toolbar-group {
+            display: flex;
+            gap: 0.25rem;
+            padding-right: 0.75rem;
+            border-right: 1px solid var(--surface-light);
+        }
+
+        .notebook-toolbar-group:last-child {
+            border-right: none;
+        }
+
+        .notebook-toolbar-btn {
+            padding: 0.5rem;
+            background: transparent;
+            border: 1px solid var(--surface-light);
+            border-radius: 4px;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.875rem;
+            min-width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .notebook-toolbar-btn:hover {
+            background: var(--surface-light);
+        }
+
+        .notebook-toolbar-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .notebook-toolbar-select {
+            padding: 0.5rem;
+            background: var(--background);
+            border: 1px solid var(--surface-light);
+            border-radius: 4px;
+            color: var(--text);
+            font-size: 0.875rem;
+            min-width: 120px;
+        }
+
+        .notebook-rich-editor {
+            flex: 1;
+            padding: 1.5rem;
+            background: white;
+            color: #000;
+            overflow-y: auto;
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .notebook-rich-editor:focus {
+            outline: none;
+        }
+
+        .notebook-rich-editor h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 1.5rem 0 1rem 0;
+            color: #000;
+        }
+
+        .notebook-rich-editor h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 1.25rem 0 0.75rem 0;
+            color: #000;
+        }
+
+        .notebook-rich-editor h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 1rem 0 0.5rem 0;
+            color: #000;
+        }
+
+        .notebook-rich-editor p {
+            margin: 0.5rem 0;
+            color: #000;
+        }
+
+        .notebook-rich-editor ul, .notebook-rich-editor ol {
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+            color: #000;
+        }
+
+        .notebook-rich-editor blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1rem;
+            margin: 1rem 0;
+            font-style: italic;
+            color: #555;
+        }
+
+        .book-row-thumbnail {
+            width: 120px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 4px;
+            flex-shrink: 0;
+            background: var(--surface-light);
+        }
+
+        .book-row-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .book-row-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .book-row-author {
+            color: var(--text-dim);
+            font-size: 1rem;
+        }
+
+        .book-row-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-dim);
+        }
+
+        .book-row-summary {
+            margin-top: 0.5rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         /* Progress Bar */
@@ -1402,7 +1906,7 @@ body {
         <!-- Header -->
         <header class="header">
 <div class="header-content">
-    <div class="logo">
+    <div class="logo" onclick="switchView('libraryView')" style="cursor: pointer;">
         <span>📚</span>
         <span>Book Thingy</span>
     </div>
@@ -1504,27 +2008,26 @@ body {
         </div>
 
         <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card" onclick="handleStatClick('total')">
                 <div class="stat-value" id="totalBooks">0</div>
                 <div class="stat-label">Total Books</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" onclick="handleStatClick('reading')">
                 <div class="stat-value" id="currentlyReading">0</div>
                 <div class="stat-label">Currently Reading</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" onclick="handleStatClick('completed')">
                 <div class="stat-value" id="completedBooks">0</div>
                 <div class="stat-label">Completed</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" onclick="handleStatClick('rating')">
                 <div class="stat-value" id="averageRating">0</div>
                 <div class="stat-label">Average Rating</div>
             </div>
         </div>
 
-        <h3 style="margin-bottom: 1rem;">Top Rated Books</h3>
-        <div class="book-grid" id="topRatedGrid">
-            <!-- Top rated books will be rendered here -->
+        <div class="book-row-container" id="bookRowContainer">
+            <!-- Book rows will be displayed here when a stat card is clicked -->
         </div>
     </div>
 
@@ -1541,6 +2044,111 @@ body {
             <p class="empty-text">No books currently on loan</p>
         </div>
     </div>
+
+    <!-- Wishlist View -->
+    <div class="view" id="wishlistView">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2>My Wishlist</h2>
+            <button class="btn" onclick="switchView('browserView')" style="padding: 0.5rem 1rem;">
+                🌐 Browse Books
+            </button>
+        </div>
+        
+        <div class="book-row-container active" id="wishlistContainer">
+            <!-- Wishlist items will be rendered here -->
+        </div>
+
+        <div class="empty-state" id="wishlistEmpty" style="display: none;">
+            <div class="empty-icon">⭐</div>
+            <p class="empty-text">Your wishlist is empty</p>
+            <p class="empty-text" style="font-size: 0.875rem; margin-top: 0.5rem;">Browse books to add them to your wishlist</p>
+        </div>
+    </div>
+
+    <!-- Notebook View -->
+    <div class="view" id="notebookView">
+        <div class="notebook-container">
+            <!-- Left Sidebar - Book List -->
+            <div class="notebook-sidebar">
+                <div class="notebook-search">
+                    <input type="text" id="notebookSearchInput" placeholder="Search your library..." />
+                </div>
+                <div class="notebook-book-list" id="notebookBookList">
+                    <!-- Books will be rendered here -->
+                </div>
+            </div>
+
+            <!-- Second Sidebar - Pages for Selected Book -->
+            <div class="notebook-book-sidebar" id="notebookBookSidebar">
+                <div class="notebook-pages-header">
+                    <div class="notebook-pages-title" id="notebookBookTitle">Select a book</div>
+                    <div class="notebook-pages-subtitle">Notebook</div>
+                    <button class="notebook-add-page" id="notebookAddPageBtn" style="display: none;">
+                        ➕ Add Page
+                    </button>
+                </div>
+                <div class="notebook-pages-list" id="notebookPagesList">
+                    <!-- Pages will be rendered here -->
+                </div>
+            </div>
+
+            <!-- Main Editor Area -->
+            <div class="notebook-main">
+                <div class="notebook-editor-container" id="notebookEditorContainer">
+                    <div class="notebook-empty-state">
+                        <div class="notebook-empty-icon">📝</div>
+                        <h3>Reading Notebook</h3>
+                        <p style="margin-top: 0.5rem;">Select a book from your library to start taking notes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Browser View -->
+    <div class="view" id="browserView">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 0 1rem;">
+            <button class="btn btn-secondary" onclick="switchView('wishlistView')" style="padding: 0.5rem 1rem;">
+                ← Back to Wishlist
+            </button>
+            <h2 style="margin: 0;">Browse Books</h2>
+            <button class="btn" id="addToWishlistBtn" onclick="addCurrentPageToWishlist()" style="padding: 0.5rem 1rem;">
+                ⭐ Add to Wishlist
+            </button>
+        </div>
+        
+        <div class="browser-container">
+            <webview id="bookBrowser" 
+                     src="https://www.amazon.com/books" 
+                     style="width: 100%; height: calc(100vh - 120px); border: none; border-radius: 8px;">
+            </webview>
+        </div>
+    </div>
+
+    <!-- Reading List View -->
+    <div class="view" id="readingListView">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2>My Reading List</h2>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-secondary" onclick="showAddToReadingListModal()" style="padding: 0.5rem 1rem;">
+                    ➕ Add Book
+                </button>
+                <button class="btn btn-secondary" onclick="clearReadingList()" style="padding: 0.5rem 1rem; background: var(--danger);">
+                    🗑️ Clear All
+                </button>
+            </div>
+        </div>
+        
+        <div class="book-row-container active" id="readingListContainer">
+            <!-- Reading list items will be rendered here -->
+        </div>
+
+        <div class="empty-state" id="readingListEmpty" style="display: none;">
+            <div class="empty-icon">📋</div>
+            <p class="empty-text">Your reading list is empty</p>
+            <p class="empty-text" style="font-size: 0.875rem; margin-top: 0.5rem;">Add books from your library or wishlist to plan your reading</p>
+        </div>
+    </div>
 </main>
 
 <!-- Bottom Navigation -->
@@ -1553,30 +2161,28 @@ body {
         <div class="nav-icon">📊</div>
         <div class="nav-label">Stats</div>
     </div>
+    <div class="nav-item" onclick="switchView('wishlistView')">
+        <div class="nav-icon">⭐</div>
+        <div class="nav-label">Wishlist</div>
+    </div>
+    <div class="nav-item" onclick="switchView('readingListView')">
+        <div class="nav-icon">📋</div>
+        <div class="nav-label">Reading List</div>
+    </div>
+    <div class="nav-item" onclick="switchView('notebookView')">
+        <div class="nav-icon">📝</div>
+        <div class="nav-label">Notebook</div>
+    </div>
     <div class="nav-item" onclick="switchView('lendingView')">
         <div class="nav-icon">🤝</div>
         <div class="nav-label">Lending</div>
     </div>
+    <div class="nav-item" onclick="showAddOptions()" style="margin-left: auto;">
+        <div class="nav-icon">➕</div>
+        <div class="nav-label">Add Book</div>
+    </div>
 </nav>
 
-<!-- Floating Action Button -->
-<div class="fab" id="fab">+</div>
-
-<!-- Add Options Menu -->
-<div class="add-options" id="addOptions">
-    <button type="button" class="add-option" id="barcodeBtn">
-        <span>📷</span>
-        <span>Scan Barcode</span>
-    </button>
-    <button type="button" class="add-option" id="searchBtn">
-        <span>🔍</span>
-        <span>Search Internet</span>
-    </button>
-    <button type="button" class="add-option" id="manualBtn">
-        <span>✏️</span>
-        <span>Manual Entry</span>
-    </button>
-</div>
 
             <!-- Book Details Modal -->
         <div class="modal" id="bookModal">
@@ -1978,6 +2584,9 @@ body {
         // App State
         let library = {
             books: [],
+            wishlist: [],
+            readingList: [],
+            notebooks: {},
             settings: {
                 goal2025: null
             }
@@ -2011,11 +2620,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('monthlyGoalPreview').textContent = monthly;
     });
     
-    // FAB menu handler - MUST be here, not inside setupEventListeners
-    document.getElementById('fab').addEventListener('click', function(e) {
-        e.stopPropagation();
-        document.getElementById('addOptions').classList.toggle('active');
-    });
 
     // Direct button handlers (add after FAB handler)
     document.getElementById('barcodeBtn').addEventListener('click', function(e) {
@@ -2168,9 +2772,26 @@ function switchView(viewName) {
         console.log('Calling updateStats()');
         console.log('Current books in library:', library.books.length);
         updateStats();
+        
+        // Show total books by default
+        setTimeout(() => {
+            handleStatClick('total');
+        }, 100);
+    } else if (viewName === 'wishlistView') {
+        console.log('Calling renderWishlist()');
+        renderWishlist();
+    } else if (viewName === 'readingListView') {
+        console.log('Calling renderReadingList()');
+        renderReadingList();
+    } else if (viewName === 'notebookView') {
+        console.log('Calling renderNotebook()');
+        renderNotebook();
     } else if (viewName === 'lendingView') {
         console.log('Calling renderLending()');
         renderLending();
+    } else if (viewName === 'browserView') {
+        console.log('Showing browser view');
+        // Browser view doesn't need special rendering
     }
 
     // Update active nav item
@@ -2189,9 +2810,18 @@ function switchView(viewName) {
     } else if (viewName === 'statsView' && navItems[1]) {
         navItems[1].classList.add('active');
         console.log('Activated nav item 1 (Stats)');
-    } else if (viewName === 'lendingView' && navItems[2]) {
+    } else if (viewName === 'wishlistView' && navItems[2]) {
         navItems[2].classList.add('active');
-        console.log('Activated nav item 2 (Lending)');
+        console.log('Activated nav item 2 (Wishlist)');
+    } else if (viewName === 'readingListView' && navItems[3]) {
+        navItems[3].classList.add('active');
+        console.log('Activated nav item 3 (Reading List)');
+    } else if (viewName === 'notebookView' && navItems[4]) {
+        navItems[4].classList.add('active');
+        console.log('Activated nav item 4 (Notebook)');
+    } else if (viewName === 'lendingView' && navItems[5]) {
+        navItems[5].classList.add('active');
+        console.log('Activated nav item 5 (Lending)');
     }
     
     console.log('=== VIEW SWITCH COMPLETE ===');
@@ -2207,20 +2837,24 @@ async function loadLibrary() {
                 library = doc.data();
             } else {
                 // First time user - create default library
-                library = { books: [], settings: { goal2025: null } };
+                library = { books: [], wishlist: [], readingList: [], notebooks: {}, settings: { goal2025: null } };
                 await saveLibrary(); // Save the default structure
             }
         } else {
             // Not signed in - use localStorage
             const saved = localStorage.getItem('bookThingyLibrary');
-            library = saved ? JSON.parse(saved) : { books: [], settings: { goal2025: null } };
+            library = saved ? JSON.parse(saved) : { books: [], wishlist: [], readingList: [], notebooks: {}, settings: { goal2025: null } };
         }
         
         if (!library.books) library.books = [];
+        if (!library.wishlist) library.wishlist = [];
+        if (!library.readingList) library.readingList = [];
+        if (!library.notebooks) library.notebooks = {};
+        if (!library.notebooks) library.notebooks = {};
         if (!library.settings) library.settings = { goal2025: null };
     } catch (error) {
         console.error('Error loading library:', error);
-        library = { books: [], settings: { goal2025: null } };
+        library = { books: [], wishlist: [], readingList: [], notebooks: {}, settings: { goal2025: null } };
     }
 }
 
@@ -2577,28 +3211,1285 @@ async function bulkChangeStatus() {
                 document.getElementById('goalProgress').textContent = Math.round(progress) + '%';
                 document.getElementById('goalText').textContent = `${completed} of ${goalNum} books (${Math.round(goalNum/12)} per month)`;
             }
-
-            // Top rated books
-            const topRated = library.books
-                .filter(b => b.rating >= 4)
-                .sort((a, b) => (b.rating || 0) - (a.rating || 0))
-                .slice(0, 4);
-
-            document.getElementById('topRatedGrid').innerHTML = topRated.map(book => `
-                <div class="book-card" onclick="showBookDetails('${book.id}')">
-                    ${book.cover ? 
-                        `<img src="${book.cover}" alt="${book.title}" class="book-cover" onerror="this.outerHTML='<div class=\\'book-cover\\'>📖</div>'">` :
-                        `<div class="book-cover">📖</div>`
-                    }
-                    <div class="book-info">
-                        <div class="book-title">${book.title}</div>
-                        <div class="book-author">${'⭐'.repeat(book.rating)}</div>
-                    </div>
-                </div>
-            `).join('');
         }
 
-  function renderLending() {
+  function renderWishlist() {
+    const wishlistItems = library.wishlist || [];
+    const container = document.getElementById('wishlistContainer');
+    const empty = document.getElementById('wishlistEmpty');
+
+    if (wishlistItems.length === 0) {
+        container.innerHTML = '';
+        empty.style.display = 'block';
+    } else {
+        empty.style.display = 'none';
+        container.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3 style="margin: 0;">Books I Want to Read</h3>
+                <button class="btn btn-secondary" onclick="exportWishlist()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                    📤 Export & Share
+                </button>
+            </div>
+            ${wishlistItems.map((item, index) => `
+                <div class="book-row-card draggable" draggable="true" data-wishlist-id="${item.id}" data-index="${index}">
+                    <div class="drag-handle">⋮⋮</div>
+                    ${item.cover ? 
+                        `<img src="${item.cover}" alt="${item.title}" class="book-row-thumbnail" onerror="this.outerHTML='<div class=\\'book-row-thumbnail\\' style=\\'display: flex; align-items: center; justify-content: center; font-size: 3rem;\\'>📖</div>'">` :
+                        `<div class="book-row-thumbnail" style="display: flex; align-items: center; justify-content: center; font-size: 3rem;">📖</div>`
+                    }
+                    <div class="book-row-info">
+                        <div class="book-row-title">${item.title}</div>
+                        <div class="book-row-author">by ${item.author}</div>
+                        <div class="book-row-meta">
+                            <span>⭐ Wishlist #${index + 1}</span>
+                            ${item.price ? `<span>💰 ${item.price}</span>` : ''}
+                            ${item.source ? `<span>🔗 ${item.source}</span>` : ''}
+                        </div>
+                        ${item.description ? `<div class="book-row-summary">${item.description}</div>` : ''}
+                        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                            <button class="btn btn-secondary" onclick="moveToLibrary('${item.id}')" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;">
+                                📚 Add to Library
+                            </button>
+                            <button class="btn btn-secondary" onclick="addToReadingList('${item.id}', 'wishlist')" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;">
+                                📋 Add to Reading List
+                            </button>
+                            <button class="btn btn-secondary" onclick="removeFromWishlist('${item.id}')" style="padding: 0.25rem 0.75rem; font-size: 0.875rem; background: var(--danger);">
+                                🗑️ Remove
+                            </button>
+                            ${item.url ? `<button class="btn btn-secondary" onclick="window.open('${item.url}', '_blank')" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;">🔗 View Online</button>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('')}
+        `;
+        
+        // Initialize drag and drop
+        initializeWishlistDragDrop();
+    }
+}
+
+// Drag and drop functionality for wishlist
+function initializeWishlistDragDrop() {
+    const container = document.getElementById('wishlistContainer');
+    const draggableItems = container.querySelectorAll('.book-row-card.draggable');
+    
+    draggableItems.forEach(item => {
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragover', handleDragOver);
+        item.addEventListener('drop', handleDrop);
+        item.addEventListener('dragend', handleDragEnd);
+    });
+}
+
+let draggedElement = null;
+
+function handleDragStart(e) {
+    draggedElement = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', this.outerHTML);
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+    
+    e.dataTransfer.dropEffect = 'move';
+    
+    // Add visual indicator
+    const allCards = document.querySelectorAll('.book-row-card.draggable');
+    allCards.forEach(card => card.classList.remove('drag-over'));
+    
+    if (this !== draggedElement) {
+        this.classList.add('drag-over');
+    }
+    
+    return false;
+}
+
+function handleDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+    
+    if (draggedElement !== this) {
+        const draggedId = draggedElement.dataset.wishlistId;
+        const targetId = this.dataset.wishlistId;
+        
+        reorderWishlist(draggedId, targetId);
+    }
+    
+    return false;
+}
+
+function handleDragEnd(e) {
+    const allCards = document.querySelectorAll('.book-row-card.draggable');
+    allCards.forEach(card => {
+        card.classList.remove('dragging', 'drag-over');
+    });
+    draggedElement = null;
+}
+
+async function reorderWishlist(draggedId, targetId) {
+    try {
+        const draggedIndex = library.wishlist.findIndex(item => item.id === draggedId);
+        const targetIndex = library.wishlist.findIndex(item => item.id === targetId);
+        
+        if (draggedIndex === -1 || targetIndex === -1) return;
+        
+        // Remove the dragged item and insert it at the target position
+        const draggedItem = library.wishlist.splice(draggedIndex, 1)[0];
+        library.wishlist.splice(targetIndex, 0, draggedItem);
+        
+        await saveLibrary();
+        renderWishlist();
+        
+    } catch (error) {
+        console.error('Error reordering wishlist:', error);
+        showToast('Error', 'Could not reorder wishlist items', 'error');
+    }
+}
+
+// Export wishlist functionality
+function exportWishlist() {
+    if (library.wishlist.length === 0) {
+        showToast('Empty Wishlist', 'Your wishlist is empty. Add some books first!', 'warning');
+        return;
+    }
+    
+    const wishlistText = generateWishlistText();
+    
+    // Create a modal to show export options
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>Export & Share Wishlist</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 1rem; color: var(--text-dim);">Share your wishlist with friends and family! Books are ordered by priority (most wanted first).</p>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Formatted Text:</label>
+                    <textarea readonly style="width: 100%; height: 200px; padding: 1rem; background: var(--surface-light); border: 1px solid var(--surface-light); border-radius: 8px; color: var(--text); font-family: monospace; font-size: 0.875rem;">${wishlistText}</textarea>
+                </div>
+                
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button class="btn" onclick="copyToClipboard(\`${wishlistText.replace(/`/g, '\\`')}\`)">
+                        📋 Copy to Clipboard
+                    </button>
+                    <button class="btn btn-secondary" onclick="downloadWishlist()">
+                        💾 Download as File
+                    </button>
+                    <button class="btn btn-secondary" onclick="shareViaEmail()">
+                        📧 Share via Email
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+function generateWishlistText() {
+    const currentDate = new Date().toLocaleDateString();
+    let text = `📚 My Book Wishlist - ${currentDate}\n`;
+    text += `═══════════════════════════════════════\n\n`;
+    
+    library.wishlist.forEach((item, index) => {
+        text += `${index + 1}. ${item.title}\n`;
+        text += `   by ${item.author}\n`;
+        if (item.price) text += `   💰 ${item.price}\n`;
+        if (item.url) text += `   🔗 ${item.url}\n`;
+        if (item.description) {
+            const shortDesc = item.description.length > 100 ? 
+                item.description.substring(0, 100) + '...' : 
+                item.description;
+            text += `   📖 ${shortDesc}\n`;
+        }
+        text += `\n`;
+    });
+    
+    text += `\n📱 Generated by Book Thingy`;
+    return text;
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('Copied!', 'Wishlist copied to clipboard', 'success');
+    }).catch(() => {
+        showToast('Error', 'Could not copy to clipboard', 'error');
+    });
+}
+
+function downloadWishlist() {
+    const text = generateWishlistText();
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `my-book-wishlist-${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Downloaded!', 'Wishlist saved as file', 'success');
+}
+
+function shareViaEmail() {
+    const text = generateWishlistText();
+    const subject = encodeURIComponent('My Book Wishlist');
+    const body = encodeURIComponent(text);
+    const mailtoLink = `mailto:?subject=${subject}&body=${body}`;
+    window.open(mailtoLink);
+}
+
+// Wishlist management functions
+async function addCurrentPageToWishlist() {
+    const browser = document.getElementById('bookBrowser');
+    
+    try {
+        showLoading('Adding to wishlist...');
+        
+        // Get page information from the webview
+        const title = await browser.executeJavaScript(`document.title`);
+        const url = await browser.executeJavaScript(`window.location.href`);
+        
+        // Try to extract book information from the page
+        let bookTitle = '';
+        let author = '';
+        let cover = '';
+        let price = '';
+        let description = '';
+        
+        // Amazon book page detection
+        if (url.includes('amazon.com') && url.includes('/dp/')) {
+            try {
+                bookTitle = await browser.executeJavaScript(`
+                    document.querySelector('#productTitle')?.textContent?.trim() || 
+                    document.querySelector('h1 span')?.textContent?.trim() || 
+                    'Unknown Title'
+                `);
+                
+                author = await browser.executeJavaScript(`
+                    document.querySelector('.author .a-link-normal')?.textContent?.trim() || 
+                    document.querySelector('span.author')?.textContent?.trim() || 
+                    'Unknown Author'
+                `);
+                
+                cover = await browser.executeJavaScript(`
+                    document.querySelector('#landingImage')?.src || 
+                    document.querySelector('.a-dynamic-image')?.src || 
+                    ''
+                `);
+                
+                price = await browser.executeJavaScript(`
+                    document.querySelector('.a-price-whole')?.textContent?.trim() || 
+                    document.querySelector('.a-price')?.textContent?.trim() || 
+                    ''
+                `);
+                
+                description = await browser.executeJavaScript(`
+                    document.querySelector('#feature-bullets ul')?.textContent?.trim()?.substring(0, 300) || 
+                    ''
+                `);
+            } catch (e) {
+                console.log('Could not extract Amazon book details');
+            }
+        }
+        
+        // Fallback to manual input if we couldn't extract details
+        if (!bookTitle || bookTitle === 'Unknown Title' || bookTitle === title) {
+            bookTitle = prompt('Book Title:', bookTitle || '');
+            if (!bookTitle) {
+                hideLoading();
+                return;
+            }
+            
+            author = prompt('Author:', author || '');
+            if (!author) author = 'Unknown Author';
+        }
+        
+        const wishlistItem = {
+            id: Date.now().toString(),
+            title: bookTitle,
+            author: author,
+            cover: cover,
+            price: price,
+            description: description,
+            url: url,
+            source: new URL(url).hostname,
+            dateAdded: new Date().toISOString()
+        };
+        
+        // Check if already in wishlist
+        const exists = library.wishlist.find(item => 
+            item.title.toLowerCase() === bookTitle.toLowerCase() && 
+            item.author.toLowerCase() === author.toLowerCase()
+        );
+        
+        if (exists) {
+            showToast('Already in Wishlist', 'This book is already in your wishlist!', 'warning');
+            hideLoading();
+            return;
+        }
+        
+        library.wishlist.push(wishlistItem);
+        await saveLibrary();
+        
+        showToast('Added to Wishlist', `"${bookTitle}" has been added to your wishlist!`, 'success');
+        hideLoading();
+        
+    } catch (error) {
+        console.error('Error adding to wishlist:', error);
+        showToast('Error', 'Could not add book to wishlist. Please try again.', 'error');
+        hideLoading();
+    }
+}
+
+// Reading List functionality
+function renderReadingList() {
+    const readingListItems = library.readingList || [];
+    const container = document.getElementById('readingListContainer');
+    const empty = document.getElementById('readingListEmpty');
+
+    if (readingListItems.length === 0) {
+        container.innerHTML = '';
+        empty.style.display = 'block';
+    } else {
+        empty.style.display = 'none';
+        container.innerHTML = `
+            <div style="margin-bottom: 1rem;">
+                <h3 style="margin: 0 0 0.5rem 0;">My Reading Playlist (${readingListItems.length} books)</h3>
+                <p style="color: var(--text-dim); font-size: 0.875rem;">Books are shown in reading order - drag to reorder</p>
+            </div>
+            ${readingListItems.map((item, index) => {
+                const sourceBook = item.source === 'library' ? 
+                    library.books.find(b => b.id === item.bookId) :
+                    library.wishlist.find(w => w.id === item.bookId);
+                
+                if (!sourceBook) return ''; // Book no longer exists
+                
+                const sourceIcon = item.source === 'library' ? '📚' : '⭐';
+                const sourceLabel = item.source === 'library' ? 'Library' : 'Wishlist';
+                
+                return `
+                    <div class="book-row-card draggable" draggable="true" data-reading-id="${item.id}" data-index="${index}">
+                        <div class="drag-handle">⋮⋮</div>
+                        ${sourceBook.cover ? 
+                            `<img src="${sourceBook.cover}" alt="${sourceBook.title}" class="book-row-thumbnail" onerror="this.outerHTML='<div class=\\'book-row-thumbnail\\' style=\\'display: flex; align-items: center; justify-content: center; font-size: 3rem;\\'>📖</div>'">` :
+                            `<div class="book-row-thumbnail" style="display: flex; align-items: center; justify-content: center; font-size: 3rem;">📖</div>`
+                        }
+                        <div class="book-row-info">
+                            <div class="book-row-title">${sourceBook.title}</div>
+                            <div class="book-row-author">by ${sourceBook.author}</div>
+                            <div class="book-row-meta">
+                                <span>📋 Reading List #${index + 1}</span>
+                                <span style="background: var(--primary); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">${sourceIcon} ${sourceLabel}</span>
+                                ${item.source === 'library' && sourceBook.status ? `<span>📖 ${sourceBook.status}</span>` : ''}
+                                ${sourceBook.rating ? `<span>${'⭐'.repeat(sourceBook.rating)}</span>` : ''}
+                            </div>
+                            ${item.notes ? `<div class="book-row-summary" style="background: var(--surface-light); padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem;"><strong>Reading Notes:</strong> ${item.notes}</div>` : ''}
+                            ${sourceBook.summary || sourceBook.description ? `<div class="book-row-summary">${sourceBook.summary || sourceBook.description}</div>` : ''}
+                            <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                                ${item.source === 'library' ? 
+                                    `<button class="btn btn-secondary" onclick="showBookDetails('${sourceBook.id}')" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;">📖 View Details</button>` :
+                                    `<button class="btn btn-secondary" onclick="moveToLibrary('${sourceBook.id}')" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;">📚 Add to Library</button>`
+                                }
+                                <button class="btn btn-secondary" onclick="removeFromReadingList('${item.id}')" style="padding: 0.25rem 0.75rem; font-size: 0.875rem; background: var(--danger);">🗑️ Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).filter(html => html).join('')}
+        `;
+        
+        // Initialize drag and drop for reading list
+        initializeReadingListDragDrop();
+    }
+}
+
+function initializeReadingListDragDrop() {
+    const container = document.getElementById('readingListContainer');
+    const draggableItems = container.querySelectorAll('.book-row-card.draggable');
+    
+    draggableItems.forEach(item => {
+        item.addEventListener('dragstart', handleReadingListDragStart);
+        item.addEventListener('dragover', handleReadingListDragOver);
+        item.addEventListener('drop', handleReadingListDrop);
+        item.addEventListener('dragend', handleReadingListDragEnd);
+    });
+}
+
+let draggedReadingElement = null;
+
+function handleReadingListDragStart(e) {
+    draggedReadingElement = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleReadingListDragOver(e) {
+    if (e.preventDefault) e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    
+    const allCards = document.querySelectorAll('#readingListContainer .book-row-card.draggable');
+    allCards.forEach(card => card.classList.remove('drag-over'));
+    
+    if (this !== draggedReadingElement) {
+        this.classList.add('drag-over');
+    }
+    return false;
+}
+
+function handleReadingListDrop(e) {
+    if (e.stopPropagation) e.stopPropagation();
+    
+    if (draggedReadingElement !== this) {
+        const draggedId = draggedReadingElement.dataset.readingId;
+        const targetId = this.dataset.readingId;
+        reorderReadingList(draggedId, targetId);
+    }
+    return false;
+}
+
+function handleReadingListDragEnd(e) {
+    const allCards = document.querySelectorAll('#readingListContainer .book-row-card.draggable');
+    allCards.forEach(card => card.classList.remove('dragging', 'drag-over'));
+    draggedReadingElement = null;
+}
+
+async function reorderReadingList(draggedId, targetId) {
+    try {
+        // Ensure readingList exists
+        if (!library.readingList) {
+            library.readingList = [];
+            return;
+        }
+        
+        const draggedIndex = library.readingList.findIndex(item => item.id === draggedId);
+        const targetIndex = library.readingList.findIndex(item => item.id === targetId);
+        
+        if (draggedIndex === -1 || targetIndex === -1) return;
+        
+        const draggedItem = library.readingList.splice(draggedIndex, 1)[0];
+        library.readingList.splice(targetIndex, 0, draggedItem);
+        
+        await saveLibrary();
+        renderReadingList();
+        
+    } catch (error) {
+        console.error('Error reordering reading list:', error);
+        showToast('Error', 'Could not reorder reading list', 'error');
+    }
+}
+
+async function addToReadingList(bookId, source) {
+    try {
+        showLoading('Adding to reading list...');
+        
+        // Ensure readingList exists
+        if (!library.readingList) {
+            library.readingList = [];
+        }
+        
+        // Check if already in reading list
+        const exists = library.readingList.find(item => item.bookId === bookId && item.source === source);
+        if (exists) {
+            showToast('Already Added', 'This book is already in your reading list!', 'warning');
+            hideLoading();
+            return;
+        }
+        
+        const readingItem = {
+            id: Date.now().toString(),
+            bookId: bookId,
+            source: source, // 'library' or 'wishlist'
+            dateAdded: new Date().toISOString(),
+            notes: ''
+        };
+        
+        library.readingList.push(readingItem);
+        await saveLibrary();
+        
+        // Re-render the reading list if we're currently viewing it
+        const activeView = document.querySelector('.view.active')?.id;
+        if (activeView === 'readingListView') {
+            renderReadingList();
+        }
+        
+        const sourceBook = source === 'library' ? 
+            library.books.find(b => b.id === bookId) :
+            library.wishlist.find(w => w.id === bookId);
+            
+        showToast('Added to Reading List', `"${sourceBook?.title}" has been added to your reading list!`, 'success');
+        hideLoading();
+        
+    } catch (error) {
+        console.error('Error adding to reading list:', error);
+        showToast('Error', 'Could not add book to reading list', 'error');
+        hideLoading();
+    }
+}
+
+async function removeFromWishlist(itemId) {
+    if (confirm('Remove this book from your wishlist?')) {
+        try {
+            showLoading('Removing from wishlist...');
+            library.wishlist = library.wishlist.filter(item => item.id !== itemId);
+            await saveLibrary();
+            renderWishlist();
+            showToast('Removed', 'Book removed from wishlist', 'success');
+            hideLoading();
+        } catch (error) {
+            console.error('Error removing from wishlist:', error);
+            showToast('Error', 'Could not remove book. Please try again.', 'error');
+            hideLoading();
+        }
+    }
+}
+
+async function moveToLibrary(itemId) {
+    const wishlistItem = library.wishlist.find(item => item.id === itemId);
+    if (!wishlistItem) return;
+    
+    try {
+        showLoading('Moving to library...');
+        
+        // Create a new book entry
+        const book = {
+            id: Date.now().toString(),
+            title: wishlistItem.title,
+            author: wishlistItem.author,
+            isbn: '',
+            location: '',
+            genre: '',
+            formats: ['hardcover'], // Default format
+            cover: wishlistItem.cover,
+            status: 'want-to-read',
+            rating: 0,
+            summary: wishlistItem.description || '',
+            notes: `Added from wishlist. Original source: ${wishlistItem.source}`,
+            quotes: '',
+            pastRead: false,
+            dateAdded: new Date().toISOString(),
+            dateModified: new Date().toISOString()
+        };
+        
+        library.books.push(book);
+        library.wishlist = library.wishlist.filter(item => item.id !== itemId);
+        
+        await saveLibrary();
+        renderWishlist();
+        
+        showToast('Moved to Library', `"${book.title}" has been added to your library!`, 'success');
+        hideLoading();
+        
+    } catch (error) {
+        console.error('Error moving to library:', error);
+        showToast('Error', 'Could not move book to library. Please try again.', 'error');
+        hideLoading();
+    }
+}
+
+// Additional reading list functions
+async function removeFromReadingList(itemId) {
+    if (confirm('Remove this book from your reading list?')) {
+        try {
+            showLoading('Removing from reading list...');
+            
+            // Ensure readingList exists
+            if (!library.readingList) {
+                library.readingList = [];
+                return;
+            }
+            
+            library.readingList = library.readingList.filter(item => item.id !== itemId);
+            await saveLibrary();
+            renderReadingList();
+            showToast('Removed', 'Book removed from reading list', 'success');
+            hideLoading();
+        } catch (error) {
+            console.error('Error removing from reading list:', error);
+            showToast('Error', 'Could not remove book', 'error');
+            hideLoading();
+        }
+    }
+}
+
+async function addNotesToReadingItem(itemId) {
+    // Ensure readingList exists
+    if (!library.readingList) {
+        library.readingList = [];
+        return;
+    }
+    
+    const item = library.readingList.find(r => r.id === itemId);
+    if (!item) return;
+    
+    // Create custom modal for notes input since prompt doesn't work in Electron
+    showNotesModal(item.notes || '', async (notes) => {
+        if (notes !== null) {
+            try {
+                showLoading('Saving notes...');
+                item.notes = notes;
+                await saveLibrary();
+                renderReadingList();
+                showToast('Notes Saved', 'Reading notes have been updated', 'success');
+                hideLoading();
+            } catch (error) {
+                console.error('Error saving notes:', error);
+                showToast('Error', 'Could not save notes', 'error');
+                hideLoading();
+            }
+        }
+    });
+}
+
+async function clearReadingList() {
+    if (confirm('Clear all books from your reading list? This cannot be undone.')) {
+        try {
+            showLoading('Clearing reading list...');
+            library.readingList = [];
+            await saveLibrary();
+            renderReadingList();
+            showToast('Cleared', 'Reading list has been cleared', 'success');
+            hideLoading();
+        } catch (error) {
+            console.error('Error clearing reading list:', error);
+            showToast('Error', 'Could not clear reading list', 'error');
+            hideLoading();
+        }
+    }
+}
+
+function showAddToReadingListModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>Add Book to Reading List</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="margin-bottom: 1rem;">From Your Library</h4>
+                    <div style="max-height: 200px; overflow-y: auto; border: 1px solid var(--surface-light); border-radius: 8px;">
+                        ${library.books.length === 0 ? 
+                            '<p style="padding: 1rem; text-align: center; color: var(--text-dim);">No books in library</p>' :
+                            library.books.map(book => `
+                                <div style="display: flex; align-items: center; padding: 0.75rem; border-bottom: 1px solid var(--surface-light); cursor: pointer;" 
+                                     onclick="addToReadingList('${book.id}', 'library'); this.closest('.modal').remove();">
+                                    ${book.cover ? 
+                                        `<img src="${book.cover}" style="width: 40px; height: 60px; object-fit: cover; border-radius: 4px; margin-right: 1rem;">` :
+                                        `<div style="width: 40px; height: 60px; background: var(--surface-light); border-radius: 4px; margin-right: 1rem; display: flex; align-items: center; justify-content: center;">📖</div>`
+                                    }
+                                    <div>
+                                        <div style="font-weight: 600;">${book.title}</div>
+                                        <div style="color: var(--text-dim); font-size: 0.875rem;">by ${book.author}</div>
+                                    </div>
+                                </div>
+                            `).join('')
+                        }
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 style="margin-bottom: 1rem;">From Your Wishlist</h4>
+                    <div style="max-height: 200px; overflow-y: auto; border: 1px solid var(--surface-light); border-radius: 8px;">
+                        ${library.wishlist.length === 0 ? 
+                            '<p style="padding: 1rem; text-align: center; color: var(--text-dim);">No books in wishlist</p>' :
+                            library.wishlist.map(item => `
+                                <div style="display: flex; align-items: center; padding: 0.75rem; border-bottom: 1px solid var(--surface-light); cursor: pointer;" 
+                                     onclick="addToReadingList('${item.id}', 'wishlist'); this.closest('.modal').remove();">
+                                    ${item.cover ? 
+                                        `<img src="${item.cover}" style="width: 40px; height: 60px; object-fit: cover; border-radius: 4px; margin-right: 1rem;">` :
+                                        `<div style="width: 40px; height: 60px; background: var(--surface-light); border-radius: 4px; margin-right: 1rem; display: flex; align-items: center; justify-content: center;">📖</div>`
+                                    }
+                                    <div>
+                                        <div style="font-weight: 600;">${item.title}</div>
+                                        <div style="color: var(--text-dim); font-size: 0.875rem;">by ${item.author}</div>
+                                    </div>
+                                </div>
+                            `).join('')
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+// Notebook functionality
+let currentNotebookBook = null;
+let currentNotebookPage = null;
+
+// Make variables globally accessible
+window.currentNotebookBook = currentNotebookBook;
+window.currentNotebookPage = currentNotebookPage;
+
+function renderNotebook() {
+    // Reset state
+    currentNotebookBook = null;
+    currentNotebookPage = null;
+    
+    // Hide book sidebar initially
+    document.getElementById('notebookBookSidebar').classList.remove('active');
+    
+    renderNotebookBookList();
+    showNotebookEmptyState();
+    
+    // Add search functionality (remove any existing listeners first)
+    const searchInput = document.getElementById('notebookSearchInput');
+    searchInput.removeEventListener('input', handleNotebookSearch);
+    searchInput.addEventListener('input', handleNotebookSearch);
+}
+
+function handleNotebookSearch(event) {
+    renderNotebookBookList(event.target.value);
+}
+
+function renderNotebookBookList(searchTerm = '') {
+    const container = document.getElementById('notebookBookList');
+    const books = library.books.filter(book => {
+        if (!searchTerm) return true;
+        return book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+               book.author.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+    
+    if (books.length === 0) {
+        container.innerHTML = `
+            <div style="padding: 2rem; text-align: center; color: var(--text-dim);">
+                <div style="font-size: 2rem; margin-bottom: 1rem;">📚</div>
+                <p>${searchTerm ? 'No books found matching your search' : 'No books in your library yet'}</p>
+                <p style="font-size: 0.875rem; margin-top: 0.5rem;">Add books to your library to start taking notes</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = books.map(book => `
+        <div class="notebook-book-item ${currentNotebookBook?.id === book.id ? 'active' : ''}" 
+             onclick="selectNotebookBook('${book.id}')">
+            ${book.cover ? 
+                `<img src="${book.cover}" alt="${book.title}" class="notebook-book-cover" onerror="this.outerHTML='<div class=\\'notebook-book-cover\\' style=\\'display: flex; align-items: center; justify-content: center; font-size: 1.5rem;\\'>📖</div>'">` :
+                `<div class="notebook-book-cover" style="display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">📖</div>`
+            }
+            <div class="notebook-book-info">
+                <div class="notebook-book-title">${book.title}</div>
+                <div class="notebook-book-author">by ${book.author}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function selectNotebookBook(bookId) {
+    const book = library.books.find(b => b.id === bookId);
+    if (!book) return;
+    
+    currentNotebookBook = book;
+    currentNotebookPage = null;
+    
+    // Update global variables
+    window.currentNotebookBook = currentNotebookBook;
+    window.currentNotebookPage = currentNotebookPage;
+    
+    // Update UI
+    renderNotebookBookList();
+    
+    // Show book sidebar
+    const sidebar = document.getElementById('notebookBookSidebar');
+    sidebar.classList.add('active');
+    
+    // Update book title
+    document.getElementById('notebookBookTitle').textContent = book.title;
+    const addPageBtn = document.getElementById('notebookAddPageBtn');
+    addPageBtn.style.display = 'block';
+    
+    // Remove existing event listeners and add new one
+    addPageBtn.removeEventListener('click', addNotebookPage);
+    addPageBtn.addEventListener('click', function() {
+        console.log('=== BUTTON CLICKED VIA EVENT LISTENER ===');
+        console.log('currentNotebookBook:', currentNotebookBook);
+        addNotebookPage();
+    });
+    
+    // Ensure notebooks object exists
+    if (!library.notebooks) {
+        library.notebooks = {};
+    }
+    
+    // Initialize notebook for this book if it doesn't exist
+    if (!library.notebooks[bookId]) {
+        library.notebooks[bookId] = {
+            bookId: bookId,
+            pages: []
+        };
+    }
+    
+    renderNotebookPages();
+    showNotebookEmptyState();
+}
+
+function renderNotebookPages() {
+    const container = document.getElementById('notebookPagesList');
+    const notebook = library.notebooks[currentNotebookBook.id];
+    
+    if (!notebook || notebook.pages.length === 0) {
+        container.innerHTML = `
+            <div style="padding: 2rem; text-align: center; color: var(--text-dim);">
+                <div style="font-size: 2rem; margin-bottom: 1rem;">📄</div>
+                <p>No pages yet</p>
+                <p style="font-size: 0.875rem; margin-top: 0.5rem;">Click "Add Page" to start taking notes</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = notebook.pages.map((page, index) => `
+        <div class="notebook-page-item ${currentNotebookPage?.id === page.id ? 'active' : ''}" 
+             onclick="selectNotebookPage('${page.id}')">
+            <div class="notebook-page-name">${page.name}</div>
+            <div class="notebook-page-actions">
+                <button class="notebook-page-action" onclick="event.stopPropagation(); renameNotebookPage('${page.id}')" title="Rename">✏️</button>
+                <button class="notebook-page-action" onclick="event.stopPropagation(); deleteNotebookPage('${page.id}')" title="Delete">🗑️</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function addNotebookPage() {
+    console.log('=== ADD NOTEBOOK PAGE CALLED ===');
+    console.log('currentNotebookBook:', currentNotebookBook);
+    
+    if (!currentNotebookBook) {
+        console.error('No book selected');
+        alert('Please select a book first');
+        return;
+    }
+    
+    // Create custom input modal since prompt() doesn't work in Electron
+    showPageNameModal((pageName) => {
+        console.log('User entered page name:', pageName);
+        if (!pageName || pageName.trim() === '') {
+            console.log('Page name was empty, returning');
+            return;
+        }
+        createNotebookPage(pageName.trim());
+    });
+}
+
+function showPageNameModal(callback) {
+    console.log('=== SHOW PAGE NAME MODAL CALLED ===');
+    window.pageNameCallback = callback;
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.8);
+        z-index: 10000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(10px);
+    `;
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Add New Page</h2>
+            </div>
+            <div class="modal-body">
+                <label class="form-label">Page Name:</label>
+                <input type="text" id="pageNameInput" class="form-input" value="New Page" style="margin-bottom: 1rem;">
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: space-between; padding: 1rem;">
+                <button class="btn btn-primary" onclick="submitPageName()">Create Page</button>
+                <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+            </div>
+        </div>
+    `;
+    
+    console.log('Modal created, appending to body...');
+    document.body.appendChild(modal);
+    console.log('Modal appended successfully');
+    
+    // Focus and select the input
+    setTimeout(() => {
+        const input = document.getElementById('pageNameInput');
+        if (input) {
+            input.focus();
+            input.select();
+            console.log('Input focused');
+        } else {
+            console.log('Input not found!');
+        }
+    }, 100);
+}
+
+function submitPageName() {
+    const name = document.getElementById('pageNameInput').value;
+    document.querySelector('.modal-overlay').remove();
+    if (window.pageNameCallback) {
+        window.pageNameCallback(name);
+    }
+}
+
+function createNotebookPage(pageName) {
+    try {
+        console.log('Creating page for book:', currentNotebookBook.id);
+        
+        // Ensure notebooks object exists
+        if (!library.notebooks) {
+            library.notebooks = {};
+            console.log('Created notebooks object');
+        }
+        
+        // Ensure notebook exists for this book
+        if (!library.notebooks[currentNotebookBook.id]) {
+            library.notebooks[currentNotebookBook.id] = {
+                bookId: currentNotebookBook.id,
+                pages: []
+            };
+        }
+        
+        const page = {
+            id: Date.now().toString(),
+            name: pageName.trim(),
+            content: '<p>Start writing your notes...</p>',
+            dateCreated: new Date().toISOString(),
+            dateModified: new Date().toISOString()
+        };
+        
+        library.notebooks[currentNotebookBook.id].pages.push(page);
+        
+        console.log('Page created:', page);
+        console.log('Total pages now:', library.notebooks[currentNotebookBook.id].pages.length);
+        
+        saveLibrary();
+        renderNotebookPages();
+        selectNotebookPage(page.id);
+        
+        console.log(`Page "${pageName}" has been created successfully!`);
+    } catch (error) {
+        console.error('Error adding notebook page:', error);
+        alert('Error creating page. Check console for details.');
+    }
+}
+
+// Make functions globally accessible
+window.addNotebookPage = addNotebookPage;
+window.selectNotebookBook = selectNotebookBook;
+window.selectNotebookPage = selectNotebookPage;
+window.renameNotebookPage = renameNotebookPage;
+window.deleteNotebookPage = deleteNotebookPage;
+window.formatText = formatText;
+window.insertQuote = insertQuote;
+window.handlePaste = handlePaste;
+window.submitPageName = submitPageName;
+window.showColorPicker = showColorPicker;
+window.insertLink = insertLink;
+window.clearFormatting = clearFormatting;
+
+function selectNotebookPage(pageId) {
+    console.log('=== SELECT NOTEBOOK PAGE CALLED ===');
+    console.log('pageId:', pageId);
+    console.log('currentNotebookBook:', currentNotebookBook);
+    
+    const notebook = library.notebooks[currentNotebookBook.id];
+    console.log('notebook:', notebook);
+    
+    const page = notebook.pages.find(p => p.id === pageId);
+    console.log('found page:', page);
+    
+    if (!page) {
+        console.log('Page not found, returning');
+        return;
+    }
+    
+    currentNotebookPage = page;
+    window.currentNotebookPage = currentNotebookPage;
+    
+    console.log('Selected page:', currentNotebookPage);
+    renderNotebookPages();
+    showNotebookEditor();
+}
+
+function showNotebookEditor() {
+    console.log('=== SHOW NOTEBOOK EDITOR CALLED ===');
+    console.log('currentNotebookPage:', currentNotebookPage);
+    if (!currentNotebookPage) {
+        console.log('No current page, returning');
+        return;
+    }
+    
+    const container = document.getElementById('notebookEditorContainer');
+    container.innerHTML = `
+        <div class="notebook-editor-header">
+            <div class="notebook-editor-title">${currentNotebookPage.name}</div>
+            <div style="font-size: 0.875rem; color: var(--text-dim);">
+                Last modified: ${new Date(currentNotebookPage.dateModified).toLocaleDateString()}
+            </div>
+        </div>
+        <div class="notebook-toolbar">
+            <div class="notebook-toolbar-group">
+                <select class="notebook-toolbar-select" onchange="formatText('formatBlock', this.value)">
+                    <option value="div">Normal</option>
+                    <option value="h1">Heading 1</option>
+                    <option value="h2">Heading 2</option>
+                    <option value="h3">Heading 3</option>
+                    <option value="h4">Heading 4</option>
+                    <option value="p">Paragraph</option>
+                    <option value="pre">Code Block</option>
+                </select>
+            </div>
+            <div class="notebook-toolbar-group">
+                <select class="notebook-toolbar-select" style="min-width: 80px;" onchange="formatText('fontName', this.value)">
+                    <option value="Arial">Arial</option>
+                    <option value="Times New Roman">Times</option>
+                    <option value="Courier New">Courier</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Verdana">Verdana</option>
+                    <option value="Comic Sans MS">Comic Sans</option>
+                </select>
+                <select class="notebook-toolbar-select" style="min-width: 60px;" onchange="formatText('fontSize', this.value)">
+                    <option value="1">8pt</option>
+                    <option value="2">10pt</option>
+                    <option value="3" selected>12pt</option>
+                    <option value="4">14pt</option>
+                    <option value="5">18pt</option>
+                    <option value="6">24pt</option>
+                    <option value="7">36pt</option>
+                </select>
+            </div>
+            <div class="notebook-toolbar-group">
+                <button class="notebook-toolbar-btn" onclick="formatText('bold')" title="Bold (Ctrl+B)"><b>B</b></button>
+                <button class="notebook-toolbar-btn" onclick="formatText('italic')" title="Italic (Ctrl+I)"><i>I</i></button>
+                <button class="notebook-toolbar-btn" onclick="formatText('underline')" title="Underline (Ctrl+U)"><u>U</u></button>
+                <button class="notebook-toolbar-btn" onclick="formatText('strikeThrough')" title="Strikethrough"><s>S</s></button>
+                <button class="notebook-toolbar-btn" onclick="showColorPicker('foreColor')" title="Text Color">🎨</button>
+                <button class="notebook-toolbar-btn" onclick="showColorPicker('hiliteColor')" title="Highlight">🖍️</button>
+            </div>
+            <div class="notebook-toolbar-group">
+                <button class="notebook-toolbar-btn" onclick="formatText('justifyLeft')" title="Align Left">⬅</button>
+                <button class="notebook-toolbar-btn" onclick="formatText('justifyCenter')" title="Center">⬌</button>
+                <button class="notebook-toolbar-btn" onclick="formatText('justifyRight')" title="Align Right">➡</button>
+                <button class="notebook-toolbar-btn" onclick="formatText('justifyFull')" title="Justify">☰</button>
+            </div>
+            <div class="notebook-toolbar-group">
+                <button class="notebook-toolbar-btn" onclick="formatText('insertUnorderedList')" title="Bullet List">•</button>
+                <button class="notebook-toolbar-btn" onclick="formatText('insertOrderedList')" title="Numbered List">1.</button>
+                <button class="notebook-toolbar-btn" onclick="formatText('indent')" title="Indent">→|</button>
+                <button class="notebook-toolbar-btn" onclick="formatText('outdent')" title="Outdent">|←</button>
+            </div>
+            <div class="notebook-toolbar-group">
+                <button class="notebook-toolbar-btn" onclick="insertLink()" title="Insert Link">🔗</button>
+                <button class="notebook-toolbar-btn" onclick="insertQuote()" title="Quote">❝</button>
+                <button class="notebook-toolbar-btn" onclick="formatText('insertHorizontalRule')" title="Horizontal Line">—</button>
+                <button class="notebook-toolbar-btn" onclick="clearFormatting()" title="Clear Formatting">✕</button>
+            </div>
+            <div class="notebook-toolbar-group">
+                <button class="notebook-toolbar-btn" onclick="formatText('undo')" title="Undo (Ctrl+Z)">↶</button>
+                <button class="notebook-toolbar-btn" onclick="formatText('redo')" title="Redo (Ctrl+Y)">↷</button>
+            </div>
+        </div>
+        <div class="notebook-rich-editor" 
+             contenteditable="true" 
+             id="notebookRichEditor"
+             oninput="saveNotebookContent()"
+             onpaste="handlePaste(event)"
+             placeholder="Start writing your notes...">${currentNotebookPage.content || '<p>Start writing your notes...</p>'}</div>
+    `;
+    
+    // Set up the editor
+    const editor = document.getElementById('notebookRichEditor');
+    editor.focus();
+}
+
+function showNotebookEmptyState() {
+    if (currentNotebookPage) return;
+    
+    const container = document.getElementById('notebookEditorContainer');
+    container.innerHTML = `
+        <div class="notebook-empty-state">
+            <div class="notebook-empty-icon">📝</div>
+            <h3>${currentNotebookBook ? currentNotebookBook.title : 'Reading Notebook'}</h3>
+            <p style="margin-top: 0.5rem;">
+                ${currentNotebookBook ? 'Select a page or add a new one to start taking notes' : 'Select a book from your library to start taking notes'}
+            </p>
+        </div>
+    `;
+}
+
+let saveTimeout = null;
+
+function saveNotebookContent() {
+    if (!currentNotebookPage) return;
+    
+    const editor = document.getElementById('notebookRichEditor');
+    if (editor) {
+        currentNotebookPage.content = editor.innerHTML;
+        currentNotebookPage.dateModified = new Date().toISOString();
+        
+        // Debounce saving
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => {
+            saveLibrary();
+        }, 1000);
+    }
+}
+
+// Rich text editor functions
+function formatText(command, value = null) {
+    document.execCommand(command, false, value);
+    document.getElementById('notebookRichEditor').focus();
+    saveNotebookContent();
+}
+
+function insertQuote() {
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const selectedText = range.toString();
+        
+        if (selectedText) {
+            const blockquote = document.createElement('blockquote');
+            blockquote.innerHTML = selectedText;
+            range.deleteContents();
+            range.insertNode(blockquote);
+        } else {
+            formatText('formatBlock', 'blockquote');
+        }
+    }
+    saveNotebookContent();
+}
+
+function handlePaste(event) {
+    event.preventDefault();
+    const text = (event.clipboardData || window.clipboardData).getData('text/plain');
+    document.execCommand('insertText', false, text);
+    saveNotebookContent();
+}
+
+function showColorPicker(command) {
+    // Create a color input dynamically
+    const colorInput = document.createElement('input');
+    colorInput.type = 'color';
+    colorInput.value = command === 'foreColor' ? '#000000' : '#FFFF00';
+    
+    colorInput.addEventListener('change', (e) => {
+        formatText(command, e.target.value);
+        colorInput.remove();
+    });
+    
+    colorInput.click();
+}
+
+function insertLink() {
+    // Create custom modal for link input since prompt doesn't work in Electron
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.8);
+        z-index: 10000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(10px);
+    `;
+    
+    const selectedText = window.getSelection().toString();
+    
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Insert Link</h2>
+            </div>
+            <div class="modal-body">
+                <label class="form-label">URL:</label>
+                <input type="url" id="linkUrlInput" class="form-input" placeholder="https://example.com" style="margin-bottom: 1rem;">
+                <label class="form-label">Link Text:</label>
+                <input type="text" id="linkTextInput" class="form-input" value="${selectedText}" placeholder="Link text" style="margin-bottom: 1rem;">
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+                <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+                <button class="btn btn-primary" onclick="insertLinkFromModal()">Insert Link</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    document.getElementById('linkUrlInput').focus();
+}
+
+function insertLinkFromModal() {
+    const url = document.getElementById('linkUrlInput').value;
+    const text = document.getElementById('linkTextInput').value || url;
+    
+    if (url) {
+        document.execCommand('insertHTML', false, `<a href="${url}" target="_blank">${text}</a>`);
+    }
+    
+    document.querySelector('.modal-overlay').remove();
+}
+
+window.insertLinkFromModal = insertLinkFromModal;
+
+function clearFormatting() {
+    document.execCommand('removeFormat', false, null);
+    document.execCommand('formatBlock', false, 'div');
+}
+
+function renameNotebookPage(pageId) {
+    const notebook = library.notebooks[currentNotebookBook.id];
+    const page = notebook.pages.find(p => p.id === pageId);
+    if (!page) return;
+    
+    const newName = prompt('Enter new page name:', page.name);
+    if (!newName || newName === page.name) return;
+    
+    page.name = newName;
+    page.dateModified = new Date().toISOString();
+    saveLibrary();
+    renderNotebookPages();
+    
+    if (currentNotebookPage?.id === pageId) {
+        showNotebookEditor();
+    }
+}
+
+function deleteNotebookPage(pageId) {
+    if (!confirm('Delete this page? This cannot be undone.')) return;
+    
+    const notebook = library.notebooks[currentNotebookBook.id];
+    notebook.pages = notebook.pages.filter(p => p.id !== pageId);
+    
+    if (currentNotebookPage?.id === pageId) {
+        currentNotebookPage = null;
+        showNotebookEmptyState();
+    }
+    
+    saveLibrary();
+    renderNotebookPages();
+}
+
+function renderLending() {
     const lentBooks = library.books.filter(b => b.lentTo);
     const list = document.getElementById('lendingList');
     const empty = document.getElementById('lendingEmpty');
@@ -2646,6 +4537,122 @@ async function bulkChangeStatus() {
         });
     }
 }
+
+        // Stat card click handler
+        let activeStatType = null;
+
+        function handleStatClick(type) {
+            // If clicking the same stat card, toggle it off
+            if (activeStatType === type) {
+                document.querySelectorAll('.stat-card').forEach(card => card.classList.remove('active'));
+                document.getElementById('bookRowContainer').classList.remove('active');
+                activeStatType = null;
+                return;
+            }
+            
+            // Remove active class from all stat cards
+            document.querySelectorAll('.stat-card').forEach(card => card.classList.remove('active'));
+            
+            // Get the clicked card and add active class
+            const clickedCard = event.currentTarget;
+            clickedCard.classList.add('active');
+            
+            // Set active stat type
+            activeStatType = type;
+            
+            // Get filtered books based on ownership
+            let filteredBooks = library.books.filter(book => {
+                // Handle both old format (single string) and new formats (array)
+                if (book.formats && Array.isArray(book.formats)) {
+                    // New format: array of formats
+                    return book.formats.length > 0 && !book.formats.includes('no-copy');
+                } else if (book.format && typeof book.format === 'string') {
+                    // Old format: single string
+                    return book.format !== 'no-copy';
+                } else {
+                    // No format specified - assume they have a copy for backwards compatibility
+                    return true;
+                }
+            });
+            
+            // Further filter based on the clicked stat
+            switch(type) {
+                case 'total':
+                    // Already filtered for ownership
+                    break;
+                case 'reading':
+                    filteredBooks = filteredBooks.filter(b => b.status === 'reading');
+                    break;
+                case 'completed':
+                    filteredBooks = filteredBooks.filter(b => b.status === 'completed' && !b.pastRead);
+                    break;
+                case 'rating':
+                    filteredBooks = filteredBooks.filter(b => b.rating >= 4).sort((a, b) => (b.rating || 0) - (a.rating || 0));
+                    break;
+            }
+            
+            // Show/hide the book row container
+            const container = document.getElementById('bookRowContainer');
+            if (filteredBooks.length > 0) {
+                container.classList.add('active');
+                renderBookRows(filteredBooks, type);
+            } else {
+                container.classList.add('active');
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--text-dim);">
+                        <p style="font-size: 1.125rem;">No books found in this category that you own.</p>
+                        <p style="margin-top: 0.5rem;">Books marked as "No Personal Copy" are not included.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderBookRows(books, type) {
+            const container = document.getElementById('bookRowContainer');
+            let title = '';
+            
+            switch(type) {
+                case 'total':
+                    title = 'All Books You Own';
+                    break;
+                case 'reading':
+                    title = 'Currently Reading';
+                    break;
+                case 'completed':
+                    title = 'Completed Books';
+                    break;
+                case 'rating':
+                    title = 'Highly Rated Books (4+ stars)';
+                    break;
+            }
+            
+            container.innerHTML = `
+                <h3 style="margin-bottom: 1rem;">${title}</h3>
+                ${books.map(book => `
+                    <div class="book-row-card" onclick="showBookDetails('${book.id}')">
+                        ${book.cover ? 
+                            `<img src="${book.cover}" alt="${book.title}" class="book-row-thumbnail" onerror="this.outerHTML='<div class=\\'book-row-thumbnail\\' style=\\'display: flex; align-items: center; justify-content: center; font-size: 3rem;\\'>📖</div>'">` :
+                            `<div class="book-row-thumbnail" style="display: flex; align-items: center; justify-content: center; font-size: 3rem;">📖</div>`
+                        }
+                        <div class="book-row-info">
+                            <div class="book-row-title">${book.title}</div>
+                            <div class="book-row-author">by ${book.author}</div>
+                            <div class="book-row-meta">
+                                <span>${book.status === 'reading' ? '📖 Reading' : book.status === 'completed' ? '✅ Completed' : book.status === 'want-to-read' ? '📚 Want to Read' : '⏸️ Abandoned'}</span>
+                                ${book.rating ? `<span>${'⭐'.repeat(book.rating)}</span>` : ''}
+                                ${book.genre ? `<span>📂 ${book.genre}</span>` : ''}
+                            </div>
+                            ${book.summary ? `<div class="book-row-summary">${book.summary}</div>` : ''}
+                            <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                                <button class="btn btn-secondary" onclick="event.stopPropagation(); addToReadingList('${book.id}', 'library')" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;">
+                                    📋 Add to Reading List
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
 
         // Modal Functions
         function showBookDetails(bookId) {
@@ -3590,6 +5597,11 @@ if (activeView === 'libraryView') {
     renderLibrary();
 } else if (activeView === 'statsView') {
     updateStats();
+    
+    // Show total books by default if on stats view
+    setTimeout(() => {
+        handleStatClick('total');
+    }, 100);
 } else if (activeView === 'lendingView') {
     renderLending();
 }
@@ -3602,7 +5614,7 @@ hideLoading();
         document.getElementById('userInfo').style.display = 'none';
         
         // Clear local data and show sign-in modal
-        library = { books: [], settings: { goal2025: null } };
+        library = { books: [], wishlist: [], settings: { goal2025: null } };
         renderLibrary();
         openModal('signInModal');
         hideLoading(); // Ensure loading is hidden
@@ -3620,6 +5632,101 @@ function signOut() {
             showToast('Sign-out Failed', 'Could not sign out. Please try again.', 'error');
         });
     }
+}
+
+function showNotesModal(currentNotes, callback) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.8);
+        z-index: 10000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(10px);
+    `;
+    
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Reading Notes</h2>
+            </div>
+            <div class="modal-body">
+                <label class="form-label">Notes:</label>
+                <textarea id="notesTextarea" class="form-input" rows="5" placeholder="Add your reading notes here..." style="resize: vertical; margin-bottom: 1rem;">${currentNotes}</textarea>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: space-between; padding: 1rem;">
+                <button class="btn btn-primary" onclick="submitNotes()">Save Notes</button>
+                <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+            </div>
+        </div>
+    `;
+    
+    window.notesCallback = callback;
+    
+    document.body.appendChild(modal);
+    document.getElementById('notesTextarea').focus();
+}
+
+function submitNotes() {
+    const notes = document.getElementById('notesTextarea').value;
+    document.querySelector('.modal-overlay').remove();
+    if (window.notesCallback) {
+        window.notesCallback(notes);
+    }
+}
+
+window.submitNotes = submitNotes;
+
+function showAddOptions() {
+    // Create a modal for add options
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.8);
+        z-index: 10000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(10px);
+    `;
+    
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Add Book</h2>
+            </div>
+            <div class="modal-body">
+                <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;" onclick="this.closest('.modal-overlay').remove(); showBarcodeScanner();">
+                    <span>📷</span>
+                    <span>Scan Barcode</span>
+                </button>
+                <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;" onclick="this.closest('.modal-overlay').remove(); showInternetSearch();">
+                    <span>🔍</span>
+                    <span>Search Internet</span>
+                </button>
+                <button class="btn btn-primary" style="width: 100%; display: flex; align-items: center; gap: 0.5rem;" onclick="this.closest('.modal-overlay').remove(); openModal('addBookModal');">
+                    <span>✏️</span>
+                    <span>Manual Entry</span>
+                </button>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: center; padding: 1rem;">
+                <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
 }
 
 </script>

@@ -20,7 +20,9 @@ function createWindow() {
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
-            nodeIntegration: false
+            nodeIntegration: false,
+            webviewTag: true,
+            webSecurity: false
         },
         icon: path.join(__dirname, 'icon.png'), // Add your icon
         titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
@@ -134,7 +136,7 @@ ipcMain.handle('load-library', async () => {
     } catch (error) {
         console.log('No existing library found, creating new one');
         // Return default library if file doesn't exist
-        return { books: [], settings: { goal2025: null } };
+        return { books: [], wishlist: [], readingList: [], notebooks: {}, settings: { goal2025: null } };
     }
 });
 
