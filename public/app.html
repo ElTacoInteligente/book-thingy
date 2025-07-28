@@ -6758,8 +6758,15 @@ if (activeView === 'libraryView') {
 }
 hideLoading();
     } else {
-        currentUser = null;
         console.log('User signed out');
+        
+        // Check if we're in test drive mode - if so, don't interfere
+        if (localStorage.getItem('testDriveMode') === 'true' || (currentUser && currentUser.isDemo)) {
+            console.log('In test drive mode - ignoring auth sign out');
+            return;
+        }
+        
+        currentUser = null;
         
         // Hide user info in header
         document.getElementById('userInfo').style.display = 'none';
