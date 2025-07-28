@@ -6231,6 +6231,287 @@ document.getElementById('googleSignInBtn').addEventListener('click', async () =>
 let isTestDriveMode = false;
 const TEST_DRIVE_LIMIT = 3;
 
+// Load demo library with 20 sample books
+async function loadDemoLibrary() {
+    library = {
+        books: [
+            {
+                id: 'demo-1',
+                title: 'The Great Gatsby',
+                author: 'F. Scott Fitzgerald',
+                isbn: '9780743273565',
+                status: 'read',
+                rating: 4,
+                dateAdded: '2024-01-15',
+                dateFinished: '2024-02-01',
+                pages: 180,
+                genre: 'Classic Literature',
+                notes: 'A masterpiece of American literature with beautiful prose.'
+            },
+            {
+                id: 'demo-2',
+                title: 'Dune',
+                author: 'Frank Herbert',
+                isbn: '9780441172719',
+                status: 'reading',
+                rating: 0,
+                dateAdded: '2024-03-10',
+                pages: 688,
+                currentPage: 234,
+                genre: 'Science Fiction',
+                notes: 'Epic sci-fi world building. Currently at the desert scenes.'
+            },
+            {
+                id: 'demo-3',
+                title: 'Sapiens',
+                author: 'Yuval Noah Harari',
+                isbn: '9780062316097',
+                status: 'read',
+                rating: 5,
+                dateAdded: '2023-11-20',
+                dateFinished: '2023-12-15',
+                pages: 443,
+                genre: 'History',
+                notes: 'Fascinating perspective on human history and development.'
+            },
+            {
+                id: 'demo-4',
+                title: 'The Midnight Library',
+                author: 'Matt Haig',
+                isbn: '9780525559474',
+                status: 'unread',
+                rating: 0,
+                dateAdded: '2024-01-05',
+                pages: 288,
+                genre: 'Fiction'
+            },
+            {
+                id: 'demo-5',
+                title: 'Atomic Habits',
+                author: 'James Clear',
+                isbn: '9780735211292',
+                status: 'read',
+                rating: 5,
+                dateAdded: '2023-09-10',
+                dateFinished: '2023-10-02',
+                pages: 320,
+                genre: 'Self-Help',
+                notes: 'Excellent practical advice on building good habits.'
+            },
+            {
+                id: 'demo-6',
+                title: 'The Silent Patient',
+                author: 'Alex Michaelides',
+                isbn: '9781250301697',
+                status: 'read',
+                rating: 4,
+                dateAdded: '2024-02-20',
+                dateFinished: '2024-02-25',
+                pages: 336,
+                genre: 'Thriller',
+                notes: 'Gripping psychological thriller with a great twist.'
+            },
+            {
+                id: 'demo-7',
+                title: 'Project Hail Mary',
+                author: 'Andy Weir',
+                isbn: '9780593135204',
+                status: 'reading',
+                rating: 0,
+                dateAdded: '2024-03-01',
+                pages: 496,
+                currentPage: 156,
+                genre: 'Science Fiction',
+                notes: 'Love the humor and scientific problem-solving!'
+            },
+            {
+                id: 'demo-8',
+                title: 'Educated',
+                author: 'Tara Westover',
+                isbn: '9780399590504',
+                status: 'read',
+                rating: 5,
+                dateAdded: '2023-10-15',
+                dateFinished: '2023-11-01',
+                pages: 334,
+                genre: 'Memoir',
+                notes: 'Powerful memoir about education and family.'
+            },
+            {
+                id: 'demo-9',
+                title: 'The Seven Husbands of Evelyn Hugo',
+                author: 'Taylor Jenkins Reid',
+                isbn: '9781501161933',
+                status: 'unread',
+                rating: 0,
+                dateAdded: '2024-01-20',
+                pages: 400,
+                genre: 'Historical Fiction'
+            },
+            {
+                id: 'demo-10',
+                title: 'Klara and the Sun',
+                author: 'Kazuo Ishiguro',
+                isbn: '9780571364909',
+                status: 'read',
+                rating: 4,
+                dateAdded: '2023-12-01',
+                dateFinished: '2023-12-20',
+                pages: 288,
+                genre: 'Literary Fiction',
+                notes: 'Beautiful exploration of consciousness and love.'
+            },
+            {
+                id: 'demo-11',
+                title: 'The Invisible Life of Addie LaRue',
+                author: 'V.E. Schwab',
+                isbn: '9780765387561',
+                status: 'reading',
+                rating: 0,
+                dateAdded: '2024-02-10',
+                pages: 560,
+                currentPage: 203,
+                genre: 'Fantasy',
+                notes: 'Intriguing premise about being forgotten by everyone.'
+            },
+            {
+                id: 'demo-12',
+                title: 'Born a Crime',
+                author: 'Trevor Noah',
+                isbn: '9780399588198',
+                status: 'read',
+                rating: 5,
+                dateAdded: '2023-08-15',
+                dateFinished: '2023-09-05',
+                pages: 304,
+                genre: 'Biography',
+                notes: 'Hilarious and heartbreaking stories from South Africa.'
+            },
+            {
+                id: 'demo-13',
+                title: 'The Thursday Murder Club',
+                author: 'Richard Osman',
+                isbn: '9781984880987',
+                status: 'unread',
+                rating: 0,
+                dateAdded: '2024-03-15',
+                pages: 368,
+                genre: 'Mystery'
+            },
+            {
+                id: 'demo-14',
+                title: 'Circe',
+                author: 'Madeline Miller',
+                isbn: '9780316556347',
+                status: 'read',
+                rating: 4,
+                dateAdded: '2023-07-10',
+                dateFinished: '2023-08-01',
+                pages: 393,
+                genre: 'Mythology',
+                notes: 'Beautiful retelling of Greek mythology from Circe\'s perspective.'
+            },
+            {
+                id: 'demo-15',
+                title: 'The Power of Now',
+                author: 'Eckhart Tolle',
+                isbn: '9781577314806',
+                status: 'reading',
+                rating: 0,
+                dateAdded: '2024-01-25',
+                pages: 236,
+                currentPage: 89,
+                genre: 'Spirituality',
+                notes: 'Challenging but insightful ideas about mindfulness.'
+            },
+            {
+                id: 'demo-16',
+                title: 'Where the Crawdads Sing',
+                author: 'Delia Owens',
+                isbn: '9780735219090',
+                status: 'read',
+                rating: 3,
+                dateAdded: '2023-12-20',
+                dateFinished: '2024-01-10',
+                pages: 384,
+                genre: 'Fiction',
+                notes: 'Beautiful nature writing, though the plot felt a bit predictable.'
+            },
+            {
+                id: 'demo-17',
+                title: 'The Alchemist',
+                author: 'Paulo Coelho',
+                isbn: '9780061122415',
+                status: 'unread',
+                rating: 0,
+                dateAdded: '2024-02-28',
+                pages: 163,
+                genre: 'Philosophy'
+            },
+            {
+                id: 'demo-18',
+                title: 'Becoming',
+                author: 'Michelle Obama',
+                isbn: '9781524763138',
+                status: 'read',
+                rating: 5,
+                dateAdded: '2023-06-01',
+                dateFinished: '2023-06-25',
+                pages: 448,
+                genre: 'Biography',
+                notes: 'Inspiring and beautifully written memoir.'
+            },
+            {
+                id: 'demo-19',
+                title: 'The Song of Achilles',
+                author: 'Madeline Miller',
+                isbn: '9780062060624',
+                status: 'reading',
+                rating: 0,
+                dateAdded: '2024-03-20',
+                pages: 352,
+                currentPage: 127,
+                genre: 'Historical Fiction',
+                notes: 'Love Miller\'s writing style. The relationship development is beautiful.'
+            },
+            {
+                id: 'demo-20',
+                title: 'Digital Minimalism',
+                author: 'Cal Newport',
+                isbn: '9780525536512',
+                status: 'unread',
+                rating: 0,
+                dateAdded: '2024-03-25',
+                pages: 304,
+                genre: 'Technology'
+            }
+        ],
+        wishlist: [
+            {
+                id: 'wish-1',
+                title: 'Tomorrow, and Tomorrow, and Tomorrow',
+                author: 'Gabrielle Zevin',
+                isbn: '9780593321201',
+                notes: 'Heard great things about this gaming-themed novel'
+            },
+            {
+                id: 'wish-2',
+                title: 'The Atlas Six',
+                author: 'Olivie Blake',
+                isbn: '9781250854452',
+                notes: 'Dark academia fantasy - trending on social media'
+            }
+        ],
+        settings: {
+            goal2025: 24
+        }
+    };
+    
+    // Save to localStorage for demo persistence
+    localStorage.setItem('demoLibrary', JSON.stringify(library));
+    return Promise.resolve();
+}
+
 document.getElementById('testDriveBtn').addEventListener('click', () => {
     isTestDriveMode = true;
     currentUser = null;
@@ -6253,11 +6534,14 @@ function checkTestDriveMode() {
     return localStorage.getItem('testDriveMode') === 'true' && !currentUser;
 }
 
-// Check test drive limits
+// Check test drive limits (20 demo books + 3 user additions = 23 max)
 function checkTestDriveLimit() {
-    if (checkTestDriveMode() && library.books.length >= TEST_DRIVE_LIMIT) {
-        showUpgradeModal();
-        return false;
+    if (checkTestDriveMode()) {
+        const userAddedBooks = library.books.filter(book => !book.id.startsWith('demo-')).length;
+        if (userAddedBooks >= TEST_DRIVE_LIMIT) {
+            showUpgradeModal();
+            return false;
+        }
     }
     return true;
 }
@@ -6274,7 +6558,7 @@ function showUpgradeModal() {
             <div class="modal-body" style="text-align: center;">
                 <div style="font-size: 3rem; margin-bottom: 1rem;">🚗➡️☁️</div>
                 <h3 style="margin-bottom: 1rem;">Ready for the Full Experience?</h3>
-                <p style="color: var(--text-dim); margin-bottom: 1.5rem;">You've tried 3 books in demo mode!</p>
+                <p style="color: var(--text-dim); margin-bottom: 1.5rem;">You've added 3 books to the 20 demo books! Ready to unlock unlimited access?</p>
                 
                 <div style="background: var(--surface-light); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; text-align: left; font-size: 0.875rem;">
                     <strong>Full Web App includes:</strong>
@@ -6312,9 +6596,43 @@ window.addEventListener('load', async () => {
     console.log('localStorage currentUser:', localStorage.getItem('currentUser'));
     
     try {
-        // Check if sign-in was explicitly requested
+        // Check URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const signInRequested = urlParams.get('signin') === 'true';
+        const testDriveRequested = urlParams.get('testdrive') === 'true';
+        
+        if (testDriveRequested) {
+            console.log('Test drive explicitly requested - starting demo mode');
+            localStorage.removeItem('currentUser');
+            localStorage.setItem('testDriveMode', 'true');
+            isTestDriveMode = true;
+            
+            // Create faux user for demo
+            currentUser = {
+                email: 'demo@bookthingy.com',
+                displayName: 'Demo User',
+                photoURL: null,
+                isDemo: true
+            };
+            
+            // Show demo user in header
+            document.getElementById('userEmail').textContent = 'Demo User';
+            document.getElementById('subscriptionStatus').textContent = 'Test Drive Mode';
+            document.getElementById('userInfo').style.display = 'flex';
+            
+            // Load demo books
+            showLoading('Loading test drive...');
+            loadDemoLibrary().then(() => {
+                renderLibrary();
+                updateStats();
+                hideLoading();
+                showToast('Test Drive Active', '🚗 You have 20 sample books loaded! Add up to 3 more books to test the app.', 'info', 8000);
+            });
+            
+            // Remove the parameter from URL to prevent issues on refresh
+            window.history.replaceState({}, document.title, '/app');
+            return; // Skip normal auth flow
+        }
         
         if (signInRequested) {
             console.log('Sign-in explicitly requested - clearing any saved session');

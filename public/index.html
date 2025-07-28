@@ -353,13 +353,96 @@
         .mockup-content {
             background: var(--bg-light);
             border-radius: 12px;
-            padding: 2rem;
+            padding: 1.5rem;
             color: var(--text-primary);
-            min-height: 300px;
+            min-height: 400px;
+        }
+        
+        .mockup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e0e7ff;
+        }
+        
+        .mockup-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .mockup-stats {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .book-item {
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .book-item:hover {
+            transform: translateY(-2px);
+        }
+        
+        .book-cover {
+            width: 100px;
+            height: 140px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            margin: 0 auto 0.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 2rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-bottom: 0.75rem;
+        }
+        
+        .book-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            line-height: 1.2;
+        }
+        
+        .book-author {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .book-status {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        
+        .status-read {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-reading {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+        
+        .status-unread {
+            background: #fef3c7;
+            color: #92400e;
         }
         
         /* Footer */
@@ -448,15 +531,9 @@
                     🖥️ Desktop App - One-time Purchase
                 </a>
                 <a href="/app?signin=true" class="button-secondary">🌐 Web App - $2.99/month</a>
-            </div>
-            
-            <div class="screenshot-mockup">
-                <div class="mockup-content">
-                    <div>
-                        <h3>📚 Beautiful Library Management</h3>
-                        <p>Organize, track, and discover your next great read</p>
-                    </div>
-                </div>
+                <a href="/app?testdrive=true" class="button-secondary" style="background: var(--accent); border-color: var(--accent); margin-top: 1rem;">
+                    🚗 Test Drive - Try it Now
+                </a>
             </div>
         </div>
     </section>
