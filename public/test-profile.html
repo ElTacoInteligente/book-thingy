@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test Profile - Book Thingy</title>
-    <!-- Simple test profile page without authentication -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -139,6 +138,35 @@
             opacity: 0.9;
         }
 
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .nav-tab {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .nav-tab:hover {
+            color: var(--text);
+        }
+
         /* Library Grid */
         .library-header {
             display: flex;
@@ -165,6 +193,7 @@
             padding: 1.5rem;
             transition: all 0.3s;
             border: 1px solid rgba(148, 163, 184, 0.1);
+            cursor: pointer;
         }
 
         .book-card:hover {
@@ -251,6 +280,146 @@
             font-size: 0.9rem;
         }
 
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        .close-btn:hover {
+            color: var(--text);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--surface-light);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--surface-light);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .btn-cancel {
+            background: var(--surface-light);
+            color: var(--text);
+        }
+
+        /* View containers */
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        .add-book-btn {
+            background: var(--success);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .add-book-btn:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        /* Demo limit warning */
+        .demo-limit {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: var(--warning);
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header {
@@ -270,6 +439,16 @@
                 flex-direction: column;
                 gap: 1rem;
                 align-items: flex-start;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+
+            .nav-tabs {
+                overflow-x: auto;
+                white-space: nowrap;
             }
         }
     </style>
@@ -295,193 +474,182 @@
         <!-- Demo Banner -->
         <div class="demo-banner">
             <h2>🚗 Test Drive Mode</h2>
-            <p>Experience Book Thingy with 20 classic books! This is a demonstration of the full app functionality.</p>
+            <p>Experience Book Thingy with 20 classic books! Click books to view details, add new ones, and explore all features.</p>
         </div>
 
-        <!-- Stats -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-value">20</div>
-                <div class="stat-label">Total Books</div>
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchView('library')">📚 Library</button>
+            <button class="nav-tab" onclick="switchView('stats')">📊 Statistics</button>
+            <button class="nav-tab" onclick="switchView('wishlist')">⭐ Wishlist</button>
+        </div>
+
+        <!-- Library View -->
+        <div id="libraryView" class="view active">
+            <div class="demo-limit" id="demoLimit" style="display: none;">
+                <strong>Demo Limit Reached!</strong> You've added 3 books to test the functionality. The full app allows unlimited books with a subscription.
             </div>
-            <div class="stat-card">
-                <div class="stat-value">4</div>
-                <div class="stat-label">Currently Reading</div>
+
+            <div class="library-header">
+                <h1 class="library-title">Your Test Library</h1>
+                <button class="add-book-btn" onclick="showAddBookModal()">+ Add Book</button>
             </div>
-            <div class="stat-card">
-                <div class="stat-value">12</div>
-                <div class="stat-label">Completed</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">4.2</div>
-                <div class="stat-label">Average Rating</div>
+
+            <div class="books-grid" id="booksGrid">
+                <!-- Books will be populated by JavaScript -->
             </div>
         </div>
 
-        <!-- Library -->
-        <div class="library-header">
-            <h1 class="library-title">Your Test Library</h1>
+        <!-- Stats View -->
+        <div id="statsView" class="view">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalBooks">20</div>
+                    <div class="stat-label">Total Books</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="currentlyReading">4</div>
+                    <div class="stat-label">Currently Reading</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="completedBooks">12</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="averageRating">4.2</div>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+            </div>
         </div>
 
-        <div class="books-grid" id="booksGrid">
-            <!-- Books will be populated by JavaScript -->
+        <!-- Wishlist View -->
+        <div id="wishlistView" class="view">
+            <div class="library-header">
+                <h1 class="library-title">Reading Wishlist</h1>
+                <button class="add-book-btn" onclick="showAddWishlistModal()">+ Add to Wishlist</button>
+            </div>
+            <div class="books-grid" id="wishlistGrid">
+                <!-- Wishlist items will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Book Detail Modal -->
+    <div class="modal-overlay" id="bookModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Book Details</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalBody">
+                <!-- Modal content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Book Modal -->
+    <div class="modal-overlay" id="addBookModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Book</h2>
+                <button class="close-btn" onclick="closeAddBookModal()">&times;</button>
+            </div>
+            <form id="bookForm" onsubmit="submitBook(event)">
+                <div class="form-group">
+                    <label class="form-label">Title *</label>
+                    <input type="text" class="form-input" id="bookTitle" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Author *</label>
+                    <input type="text" class="form-input" id="bookAuthor" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" id="bookStatus">
+                        <option value="unread">Unread</option>
+                        <option value="reading">Currently Reading</option>
+                        <option value="read">Read</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Pages</label>
+                    <input type="number" class="form-input" id="bookPages" min="1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Genre</label>
+                    <input type="text" class="form-input" id="bookGenre">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Rating (1-5)</label>
+                    <select class="form-select" id="bookRating">
+                        <option value="0">No Rating</option>
+                        <option value="1">1 Star</option>
+                        <option value="2">2 Stars</option>
+                        <option value="3">3 Stars</option>
+                        <option value="4">4 Stars</option>
+                        <option value="5">5 Stars</option>
+                    </select>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-cancel" onclick="closeAddBookModal()">Cancel</button>
+                    <button type="submit" class="btn">Add Book</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
-        // Demo books data
-        const demoBooks = [
-            {
-                title: 'Pride and Prejudice',
-                author: 'Jane Austen',
-                status: 'read',
-                rating: 5,
-                pages: 432,
-                genre: 'Classic Literature'
-            },
-            {
-                title: 'The Adventures of Sherlock Holmes',
-                author: 'Arthur Conan Doyle',
-                status: 'reading',
-                pages: 307,
-                genre: 'Mystery'
-            },
-            {
-                title: 'The Count of Monte Cristo',
-                author: 'Alexandre Dumas',
-                status: 'read',
-                rating: 5,
-                pages: 1276,
-                genre: 'Adventure'
-            },
-            {
-                title: 'Alice\'s Adventures in Wonderland',
-                author: 'Lewis Carroll',
-                status: 'unread',
-                pages: 96,
-                genre: 'Fantasy'
-            },
-            {
-                title: 'The Art of War',
-                author: 'Sun Tzu',
-                status: 'read',
-                rating: 4,
-                pages: 273,
-                genre: 'Philosophy'
-            },
-            {
-                title: 'Frankenstein',
-                author: 'Mary Shelley',
-                status: 'read',
-                rating: 4,
-                pages: 280,
-                genre: 'Horror'
-            },
-            {
-                title: 'The Odyssey',
-                author: 'Homer',
-                status: 'reading',
-                pages: 541,
-                genre: 'Epic'
-            },
-            {
-                title: 'Jane Eyre',
-                author: 'Charlotte Brontë',
-                status: 'read',
-                rating: 5,
-                pages: 624,
-                genre: 'Gothic Romance'
-            },
-            {
-                title: 'Moby Dick',
-                author: 'Herman Melville',
-                status: 'unread',
-                pages: 635,
-                genre: 'Adventure'
-            },
-            {
-                title: 'The Picture of Dorian Gray',
-                author: 'Oscar Wilde',
-                status: 'read',
-                rating: 4,
-                pages: 254,
-                genre: 'Gothic Fiction'
-            },
-            {
-                title: 'The Strange Case of Dr. Jekyll and Mr. Hyde',
-                author: 'Robert Louis Stevenson',
-                status: 'reading',
-                pages: 96,
-                genre: 'Horror'
-            },
-            {
-                title: 'Around the World in Eighty Days',
-                author: 'Jules Verne',
-                status: 'read',
-                rating: 4,
-                pages: 176,
-                genre: 'Adventure'
-            },
-            {
-                title: 'The Time Machine',
-                author: 'H.G. Wells',
-                status: 'unread',
-                pages: 118,
-                genre: 'Science Fiction'
-            },
-            {
-                title: 'Wuthering Heights',
-                author: 'Emily Brontë',
-                status: 'read',
-                rating: 3,
-                pages: 464,
-                genre: 'Gothic Romance'
-            },
-            {
-                title: 'The Republic',
-                author: 'Plato',
-                status: 'reading',
-                pages: 407,
-                genre: 'Philosophy'
-            },
-            {
-                title: 'Dracula',
-                author: 'Bram Stoker',
-                status: 'read',
-                rating: 4,
-                pages: 418,
-                genre: 'Horror'
-            },
-            {
-                title: 'The War of the Worlds',
-                author: 'H.G. Wells',
-                status: 'unread',
-                pages: 192,
-                genre: 'Science Fiction'
-            },
-            {
-                title: 'Little Women',
-                author: 'Louisa May Alcott',
-                status: 'read',
-                rating: 5,
-                pages: 759,
-                genre: 'Coming of Age'
-            },
-            {
-                title: 'The Jungle Book',
-                author: 'Rudyard Kipling',
-                status: 'reading',
-                pages: 304,
-                genre: 'Adventure'
-            },
-            {
-                title: 'The Wonderful Wizard of Oz',
-                author: 'L. Frank Baum',
-                status: 'unread',
-                pages: 154,
-                genre: 'Fantasy'
-            }
+        // Demo books data with unique IDs
+        let demoBooks = [
+            { id: 1, title: 'Pride and Prejudice', author: 'Jane Austen', status: 'read', rating: 5, pages: 432, genre: 'Classic Literature' },
+            { id: 2, title: 'The Adventures of Sherlock Holmes', author: 'Arthur Conan Doyle', status: 'reading', rating: 0, pages: 307, genre: 'Mystery' },
+            { id: 3, title: 'The Count of Monte Cristo', author: 'Alexandre Dumas', status: 'read', rating: 5, pages: 1276, genre: 'Adventure' },
+            { id: 4, title: 'Alice\'s Adventures in Wonderland', author: 'Lewis Carroll', status: 'unread', rating: 0, pages: 96, genre: 'Fantasy' },
+            { id: 5, title: 'The Art of War', author: 'Sun Tzu', status: 'read', rating: 4, pages: 273, genre: 'Philosophy' },
+            { id: 6, title: 'Frankenstein', author: 'Mary Shelley', status: 'read', rating: 4, pages: 280, genre: 'Horror' },
+            { id: 7, title: 'The Odyssey', author: 'Homer', status: 'reading', rating: 0, pages: 541, genre: 'Epic' },
+            { id: 8, title: 'Jane Eyre', author: 'Charlotte Brontë', status: 'read', rating: 5, pages: 624, genre: 'Gothic Romance' },
+            { id: 9, title: 'Moby Dick', author: 'Herman Melville', status: 'unread', rating: 0, pages: 635, genre: 'Adventure' },
+            { id: 10, title: 'The Picture of Dorian Gray', author: 'Oscar Wilde', status: 'read', rating: 4, pages: 254, genre: 'Gothic Fiction' },
+            { id: 11, title: 'The Strange Case of Dr. Jekyll and Mr. Hyde', author: 'Robert Louis Stevenson', status: 'reading', rating: 0, pages: 96, genre: 'Horror' },
+            { id: 12, title: 'Around the World in Eighty Days', author: 'Jules Verne', status: 'read', rating: 4, pages: 176, genre: 'Adventure' },
+            { id: 13, title: 'The Time Machine', author: 'H.G. Wells', status: 'unread', rating: 0, pages: 118, genre: 'Science Fiction' },
+            { id: 14, title: 'Wuthering Heights', author: 'Emily Brontë', status: 'read', rating: 3, pages: 464, genre: 'Gothic Romance' },
+            { id: 15, title: 'The Republic', author: 'Plato', status: 'reading', rating: 0, pages: 407, genre: 'Philosophy' },
+            { id: 16, title: 'Dracula', author: 'Bram Stoker', status: 'read', rating: 4, pages: 418, genre: 'Horror' },
+            { id: 17, title: 'The War of the Worlds', author: 'H.G. Wells', status: 'unread', rating: 0, pages: 192, genre: 'Science Fiction' },
+            { id: 18, title: 'Little Women', author: 'Louisa May Alcott', status: 'read', rating: 5, pages: 759, genre: 'Coming of Age' },
+            { id: 19, title: 'The Jungle Book', author: 'Rudyard Kipling', status: 'reading', rating: 0, pages: 304, genre: 'Adventure' },
+            { id: 20, title: 'The Wonderful Wizard of Oz', author: 'L. Frank Baum', status: 'unread', rating: 0, pages: 154, genre: 'Fantasy' }
         ];
+
+        let wishlist = [
+            { id: 101, title: 'Twenty Thousand Leagues Under the Sea', author: 'Jules Verne', genre: 'Adventure' },
+            { id: 102, title: 'The Metamorphosis', author: 'Franz Kafka', genre: 'Fiction' }
+        ];
+
+        let userAddedBooks = 0;
+        const MAX_USER_BOOKS = 3;
+
+        // Navigation
+        function switchView(viewName) {
+            // Hide all views
+            document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected view
+            document.getElementById(viewName + 'View').classList.add('active');
+            event.target.classList.add('active');
+            
+            // Render content based on view
+            if (viewName === 'library') {
+                renderBooks();
+            } else if (viewName === 'stats') {
+                updateStats();
+            } else if (viewName === 'wishlist') {
+                renderWishlist();
+            }
+        }
 
         // Render books
         function renderBooks() {
@@ -491,6 +659,7 @@
             demoBooks.forEach(book => {
                 const bookCard = document.createElement('div');
                 bookCard.className = 'book-card';
+                bookCard.onclick = () => showBookDetails(book);
                 
                 const statusClass = `status-${book.status}`;
                 const statusText = book.status === 'read' ? 'Read' : 
@@ -510,6 +679,155 @@
                 
                 booksGrid.appendChild(bookCard);
             });
+
+            // Show demo limit if reached
+            if (userAddedBooks >= MAX_USER_BOOKS) {
+                document.getElementById('demoLimit').style.display = 'block';
+            }
+        }
+
+        // Render wishlist
+        function renderWishlist() {
+            const wishlistGrid = document.getElementById('wishlistGrid');
+            wishlistGrid.innerHTML = '';
+
+            wishlist.forEach(book => {
+                const bookCard = document.createElement('div');
+                bookCard.className = 'book-card';
+                
+                bookCard.innerHTML = `
+                    <div class="book-title">${book.title}</div>
+                    <div class="book-author">by ${book.author}</div>
+                    <div class="book-meta">
+                        <span class="book-status status-unread">Wishlist</span>
+                    </div>
+                    <div class="book-pages">${book.genre}</div>
+                `;
+                
+                wishlistGrid.appendChild(bookCard);
+            });
+        }
+
+        // Update statistics
+        function updateStats() {
+            const total = demoBooks.length;
+            const reading = demoBooks.filter(book => book.status === 'reading').length;
+            const completed = demoBooks.filter(book => book.status === 'read').length;
+            const ratedBooks = demoBooks.filter(book => book.rating > 0);
+            const avgRating = ratedBooks.length > 0 ? 
+                (ratedBooks.reduce((sum, book) => sum + book.rating, 0) / ratedBooks.length).toFixed(1) : '0';
+
+            document.getElementById('totalBooks').textContent = total;
+            document.getElementById('currentlyReading').textContent = reading;
+            document.getElementById('completedBooks').textContent = completed;
+            document.getElementById('averageRating').textContent = avgRating;
+        }
+
+        // Show book details modal
+        function showBookDetails(book) {
+            const modal = document.getElementById('bookModal');
+            const modalBody = document.getElementById('modalBody');
+            
+            const rating = book.rating ? '★'.repeat(book.rating) + '☆'.repeat(5 - book.rating) : 'No rating';
+            const statusText = book.status === 'read' ? 'Read' : 
+                             book.status === 'reading' ? 'Currently Reading' : 'Unread';
+            
+            modalBody.innerHTML = `
+                <div style="margin-bottom: 1rem;"><strong>Title:</strong> ${book.title}</div>
+                <div style="margin-bottom: 1rem;"><strong>Author:</strong> ${book.author}</div>
+                <div style="margin-bottom: 1rem;"><strong>Status:</strong> ${statusText}</div>
+                <div style="margin-bottom: 1rem;"><strong>Rating:</strong> ${rating}</div>
+                <div style="margin-bottom: 1rem;"><strong>Pages:</strong> ${book.pages}</div>
+                <div style="margin-bottom: 1rem;"><strong>Genre:</strong> ${book.genre}</div>
+                <div class="btn-group">
+                    <button class="btn" onclick="editBookStatus(${book.id})">Change Status</button>
+                    <button class="btn btn-cancel" onclick="closeModal()">Close</button>
+                </div>
+            `;
+            
+            modal.classList.add('active');
+        }
+
+        // Edit book status
+        function editBookStatus(bookId) {
+            const book = demoBooks.find(b => b.id === bookId);
+            if (!book) return;
+            
+            const newStatus = prompt('Enter new status (unread, reading, read):', book.status);
+            if (newStatus && ['unread', 'reading', 'read'].includes(newStatus)) {
+                book.status = newStatus;
+                if (newStatus === 'read' && book.rating === 0) {
+                    const rating = prompt('Rate this book (1-5):');
+                    if (rating && rating >= 1 && rating <= 5) {
+                        book.rating = parseInt(rating);
+                    }
+                }
+                renderBooks();
+                updateStats();
+                closeModal();
+            }
+        }
+
+        // Show add book modal
+        function showAddBookModal() {
+            if (userAddedBooks >= MAX_USER_BOOKS) {
+                alert('Demo limit reached! You can add up to 3 books to test the functionality. The full app allows unlimited books.');
+                return;
+            }
+            document.getElementById('addBookModal').classList.add('active');
+        }
+
+        // Submit new book
+        function submitBook(event) {
+            event.preventDefault();
+            
+            if (userAddedBooks >= MAX_USER_BOOKS) {
+                alert('Demo limit reached!');
+                return;
+            }
+            
+            const newBook = {
+                id: Date.now(),
+                title: document.getElementById('bookTitle').value,
+                author: document.getElementById('bookAuthor').value,
+                status: document.getElementById('bookStatus').value,
+                pages: parseInt(document.getElementById('bookPages').value) || 0,
+                genre: document.getElementById('bookGenre').value || 'Unknown',
+                rating: parseInt(document.getElementById('bookRating').value) || 0
+            };
+            
+            demoBooks.push(newBook);
+            userAddedBooks++;
+            
+            renderBooks();
+            updateStats();
+            closeAddBookModal();
+            
+            // Reset form
+            document.getElementById('bookForm').reset();
+        }
+
+        // Modal controls
+        function closeModal() {
+            document.getElementById('bookModal').classList.remove('active');
+        }
+
+        function closeAddBookModal() {
+            document.getElementById('addBookModal').classList.remove('active');
+        }
+
+        function showAddWishlistModal() {
+            const title = prompt('Book title:');
+            const author = prompt('Author:');
+            if (title && author) {
+                wishlist.push({
+                    id: Date.now(),
+                    title: title,
+                    author: author,
+                    genre: 'Unknown'
+                });
+                renderWishlist();
+            }
         }
 
         // Go back to landing page
@@ -520,6 +838,7 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             renderBooks();
+            updateStats();
         });
     </script>
 </body>
