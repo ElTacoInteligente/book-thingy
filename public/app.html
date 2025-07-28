@@ -6302,9 +6302,6 @@ document.getElementById('testAccountBtn').addEventListener('click', async () => 
     }
 });
 
-// Test Drive Mode
-let isTestDriveMode = false;
-const TEST_DRIVE_LIMIT = 3;
 
 // Load demo library with 20 public domain books
 async function loadDemoLibrary() {
@@ -6588,58 +6585,7 @@ async function loadDemoLibrary() {
 }
 
 
-// Check if user is in test drive mode
-function checkTestDriveMode() {
-    return localStorage.getItem('testDriveMode') === 'true' || (currentUser && currentUser.isDemo);
-}
 
-// Check test drive limits (20 demo books + 3 user additions = 23 max)
-function checkTestDriveLimit() {
-    if (checkTestDriveMode()) {
-        const userAddedBooks = library.books.filter(book => !book.id.startsWith('demo-')).length;
-        if (userAddedBooks >= TEST_DRIVE_LIMIT) {
-            showUpgradeModal();
-            return false;
-        }
-    }
-    return true;
-}
-
-// Show upgrade modal
-function showUpgradeModal() {
-    const modal = document.createElement('div');
-    modal.className = 'modal active';
-    modal.innerHTML = `
-        <div class="modal-content" style="max-width: 450px;">
-            <div class="modal-header">
-                <h2 class="modal-title">Demo Limit Reached</h2>
-            </div>
-            <div class="modal-body" style="text-align: center;">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">🚗➡️☁️</div>
-                <h3 style="margin-bottom: 1rem;">Ready for the Full Experience?</h3>
-                <p style="color: var(--text-dim); margin-bottom: 1.5rem;">You've added 3 books to the 20 demo books! Ready to unlock unlimited access?</p>
-                
-                <div style="background: var(--surface-light); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; text-align: left; font-size: 0.875rem;">
-                    <strong>Full Web App includes:</strong>
-                    <ul style="margin-top: 0.5rem; padding-left: 1rem;">
-                        <li>✅ Unlimited books</li>
-                        <li>✅ Cloud sync across devices</li>
-                        <li>✅ 6 months FREE (new users)</li>
-                        <li>✅ Then $12/year</li>
-                    </ul>
-                </div>
-                
-                <button class="btn" onclick="location.reload();" style="width: 100%; margin-bottom: 1rem;">
-                    Sign In for Full Access
-                </button>
-                <button class="btn btn-secondary" onclick="this.closest('.modal').remove();" style="width: 100%;">
-                    Continue Demo
-                </button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-}
 
 // Allow Enter key in email input
 document.getElementById('emailInput').addEventListener('keypress', (e) => {
@@ -6652,91 +6598,15 @@ document.getElementById('emailInput').addEventListener('keypress', (e) => {
 window.addEventListener('load', async () => {
     console.log('=== AUTH CHECK START ===');
     console.log('localStorage currentUser:', localStorage.getItem('currentUser'));
-    console.log('localStorage testDriveMode:', localStorage.getItem('testDriveMode'));
     
     try {
-        // Check URL parameters FIRST
+        // Check URL parameters for sign-in request
         const urlParams = new URLSearchParams(window.location.search);
-        const testProfileRequested = urlParams.get('testprofile') === 'true';
-        
-        // Handle direct test profile access
-        if (testProfileRequested) {
-            console.log('Test profile directly requested - loading immediately');
-            
-            // Clear any existing auth data and set test mode
-            localStorage.removeItem('currentUser');
-            localStorage.setItem('testDriveMode', 'true');
-            isTestDriveMode = true;
-            
-            // Create demo user
-            currentUser = {
-                email: 'test@bookthingy.com',
-                displayName: 'Test Profile',
-                photoURL: null,
-                isDemo: true
-            };
-            
-            // Show demo user in header
-            document.getElementById('userEmail').textContent = 'Test Profile';
-            document.getElementById('subscriptionStatus').textContent = 'Demo Mode';
-            document.getElementById('userInfo').style.display = 'flex';
-            
-            // Load demo books immediately
-            showLoading('Loading test profile...');
-            try {
-                await loadDemoLibrary();
-                renderLibrary();
-                updateStats();
-                hideLoading();
-                showToast('Test Profile Loaded', '📚 20 classic books loaded! Add up to 3 more to test the app.', 'success', 6000);
-            } catch (error) {
-                console.error('Error loading demo library:', error);
-                hideLoading();
-                showToast('Error', 'Could not load test profile. Please try again.', 'error');
-            }
-            
-            // Clean up URL
-            window.history.replaceState({}, document.title, '/app');
-            return; // Skip normal auth flow
-        }
-        
-        // Check if we're in an existing test drive session (from previous visit)
-        if (localStorage.getItem('testDriveMode') === 'true') {
-            console.log('Existing test drive mode detected - loading demo profile');
-            isTestDriveMode = true;
-            
-            // Create demo user
-            currentUser = {
-                email: 'test@bookthingy.com',
-                displayName: 'Test Profile',
-                photoURL: null,
-                isDemo: true
-            };
-            
-            // Show demo user in header
-            document.getElementById('userEmail').textContent = 'Test Profile';
-            document.getElementById('subscriptionStatus').textContent = 'Demo Mode';
-            document.getElementById('userInfo').style.display = 'flex';
-            
-            // Load demo books
-            showLoading('Loading test profile...');
-            try {
-                await loadDemoLibrary();
-                renderLibrary();
-                updateStats();
-                hideLoading();
-            } catch (error) {
-                console.error('Error loading demo library:', error);
-                hideLoading();
-            }
-            return; // Skip normal auth flow
-        }
         
         // Clear any sign-in parameters from URL  
         if (urlParams.get('signin') === 'true') {
             console.log('Sign-in explicitly requested - clearing any saved session');
             localStorage.removeItem('currentUser');
-            localStorage.removeItem('testDriveMode');
             window.history.replaceState({}, document.title, '/app');
         }
         
@@ -6763,12 +6633,14 @@ window.addEventListener('load', async () => {
                             currentUser = parsedUser;
                             
                             // Show user info in header
-                            document.getElementById('userEmail').textContent = currentUser.email;
+                            document.getElementById('userEmail').textContent = currentUser.isDemo ? 'Test User (Demo)' : currentUser.email;
+                            document.getElementById('subscriptionStatus').textContent = currentUser.isDemo ? 'Demo Mode' : getSubscriptionStatusText();
                             document.getElementById('userInfo').style.display = 'flex';
                             
-                            // Load user's data
-                            showLoading('Loading your library...');
-                            loadLibrary().then(() => {
+                            // Load appropriate library
+                            showLoading(currentUser.isDemo ? 'Loading demo library...' : 'Loading your library...');
+                            const loadPromise = currentUser.isDemo ? loadDemoLibrary() : loadLibrary();
+                            loadPromise.then(() => {
                                 // Update the current view
                                 const activeView = document.querySelector('.view.active').id;
                                 if (activeView === 'libraryView') {
@@ -6802,10 +6674,7 @@ window.addEventListener('load', async () => {
         }, 500); // Give Firebase time to initialize
     } catch (error) {
         console.error('Load error:', error);
-        // Only show sign-in modal if NOT in test drive mode
-        if (localStorage.getItem('testDriveMode') !== 'true') {
-            openModal('signInModal');
-        }
+        openModal('signInModal');
     }
 });
 
@@ -6842,9 +6711,9 @@ hideLoading();
     } else {
         console.log('User signed out');
         
-        // Check if we're in test drive mode - if so, don't interfere
-        if (localStorage.getItem('testDriveMode') === 'true' || (currentUser && currentUser.isDemo)) {
-            console.log('In test drive mode - ignoring auth sign out');
+        // Check if we're in demo mode - if so, don't interfere
+        if (currentUser && currentUser.isDemo) {
+            console.log('In demo mode - ignoring auth sign out');
             return;
         }
         
