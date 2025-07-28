@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Thingy - Desktop</title>
+    <!-- Version: 2.1 - Fixed Auth Flow -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -2567,7 +2568,20 @@ body {
                 <div class="modal-body" style="text-align: center;">
                     <div style="margin-bottom: 2rem;">
                         <div style="font-size: 4rem; margin-bottom: 1rem;">📚</div>
-                        <p style="color: var(--text-dim); margin-bottom: 2rem;">Create your account or sign in to sync your library</p>
+                        <p style="color: var(--text-dim); margin-bottom: 1rem; font-weight: 600;">Welcome to Book Thingy Web</p>
+                        
+                        <!-- Clear Requirements -->
+                        <div style="background: var(--surface-light); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; text-align: left;">
+                            <div style="margin-bottom: 1rem;">
+                                <strong style="color: var(--primary); font-size: 1rem;">☁️ Web App Requires Cloud Sync</strong><br>
+                                <span style="color: var(--text-dim); font-size: 0.875rem;">The web version works entirely through cloud sync</span>
+                            </div>
+                            <div style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 6px; font-size: 0.8rem;">
+                                <div style="margin-bottom: 0.5rem;">✅ New users: <strong>6 months FREE</strong> cloud sync</div>
+                                <div style="margin-bottom: 0.5rem;">✅ Desktop owners: Subscribe for <strong>$12/year</strong></div>
+                                <div>✅ Then: <strong>$12/year</strong> (less than $1/month)</div>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Email Sign Up/In Form -->
@@ -2591,19 +2605,59 @@ body {
                         <span>🔐 Sign in with Google</span>
                     </button>
                     
-                    <!-- Skip Option -->
-                    <button id="skipSignInBtn" style="background: none; border: none; color: var(--text-dim); text-decoration: underline; margin-top: 1rem; cursor: pointer;">
-                        Skip for now (offline mode)
-                    </button>
-                    
-                    <!-- Desktop App Link -->
-                    <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
-                        <p style="font-size: 0.875rem; color: var(--text-dim); margin-bottom: 0.5rem;">Want the desktop app?</p>
-                        <a href="download.html" style="color: var(--accent); text-decoration: none; font-size: 0.875rem;">Download Book Thingy Desktop →</a>
+                    <!-- Test Drive Option -->
+                    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                        <button id="testDriveBtn" style="background: var(--surface-light); border: 1px solid var(--border-color); color: var(--text); padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 0.875rem;">
+                            🚗 Demo Mode (3 books only)
+                        </button>
+                        <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.5rem;">Quick preview - full version requires cloud sync subscription</p>
                     </div>
                     
-                    <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-dim);">
-                        Your data is private and secure
+                    <!-- Desktop App Link -->
+                    <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border-color); background: var(--surface); padding: 1rem; border-radius: 8px;">
+                        <p style="font-size: 0.875rem; color: var(--primary); margin-bottom: 0.5rem; font-weight: 600;">💎 Want permanent storage?</p>
+                        <p style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.5rem;">Get the desktop app for true offline storage that never expires</p>
+                        <a href="download.html" style="color: var(--accent); text-decoration: none; font-size: 0.875rem; font-weight: 500;">Buy Book Thingy Desktop ($25.99) →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Desktop User Cloud Sync Modal -->
+        <div class="modal" id="desktopUserSyncModal">
+            <div class="modal-content" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h2 class="modal-title">Welcome Desktop User!</h2>
+                </div>
+                <div class="modal-body" style="text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🖥️➡️☁️</div>
+                    <h3 style="margin-bottom: 1rem;">Access Your Library Online</h3>
+                    <p style="color: var(--text-dim); margin-bottom: 2rem;">
+                        You own the desktop app! To view and sync your library on the web, subscribe to cloud sync.
+                    </p>
+                    
+                    <div style="background: var(--surface-light); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; text-align: left;">
+                        <h4 style="color: var(--accent); margin-bottom: 1rem;">☁️ Cloud Sync - $12/year</h4>
+                        <ul style="margin-bottom: 1rem; padding-left: 1rem;">
+                            <li>✅ Access your library on all devices</li>
+                            <li>✅ Automatic backup & sync with desktop app</li>
+                            <li>✅ Never lose your book data</li>
+                            <li>✅ Read and update from anywhere</li>
+                        </ul>
+                        <p style="font-size: 0.875rem; color: var(--text-dim);">
+                            <strong>Less than $1 per month!</strong>
+                        </p>
+                    </div>
+                    
+                    <button class="btn" onclick="subscribeDesktopUserToCloudSync()" style="width: 100%; justify-content: center; margin-bottom: 1rem;">
+                        <span>Subscribe to Cloud Sync - $12/year</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeModal('desktopUserSyncModal'); location.href='/';" style="width: 100%; justify-content: center;">
+                        <span>Maybe Later (Return to Homepage)</span>
+                    </button>
+                    
+                    <p style="margin-top: 1rem; font-size: 0.75rem; color: var(--text-dim);">
+                        <strong>Cloud sync is required</strong> to use the web app. Without it, please use the desktop app.
                     </p>
                 </div>
             </div>
@@ -2829,6 +2883,96 @@ body {
             showToast('Local Mode', 'Your library will be saved locally on this device only.', 'info');
             console.log('User chose to continue with local-only storage');
         }
+
+        // Desktop user cloud sync functions
+        function subscribeDesktopUserToCloudSync() {
+            // Mark user as desktop app owner with cloud sync
+            subscriptionStatus = {
+                hasCloudAccess: true,
+                subscriptionType: 'paid',
+                userType: 'desktop',
+                trialStartDate: null,
+                trialEndDate: null,
+                subscriptionEndDate: new Date(new Date().getTime() + (365 * 24 * 60 * 60 * 1000)).toISOString(), // 1 year
+                purchaseDate: new Date().toISOString()
+            };
+            
+            // Save to Firebase
+            saveLibrary();
+            
+            closeModal('desktopUserSyncModal');
+            showToast('Cloud Sync Activated!', 'Your library will now sync with the desktop app.', 'success');
+            
+            // Load library (will now have cloud access)
+            loadLibrary().then(() => {
+                renderLibrary();
+                updateStats();
+            });
+        }
+
+
+        function checkIfDesktopUser(user) {
+            // Check if this is a desktop app user signing in for the first time on web
+            return new Promise(async (resolve) => {
+                try {
+                    const doc = await db.collection('users').doc(user.uid).get();
+                    if (!doc.exists) {
+                        // New user - show a modal to ask if they own the desktop app
+                        showDesktopAppQuestionModal(user, resolve);
+                    } else {
+                        const data = doc.data();
+                        resolve(data.userType === 'desktop');
+                    }
+                } catch (error) {
+                    console.error('Error checking user type:', error);
+                    resolve(false);
+                }
+            });
+        }
+
+        function showDesktopAppQuestionModal(user, callback) {
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 450px;">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Welcome!</h2>
+                    </div>
+                    <div class="modal-body" style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🖥️❓</div>
+                        <h3 style="margin-bottom: 1rem;">Do you own Book Thingy Desktop?</h3>
+                        <p style="color: var(--text-dim); margin-bottom: 2rem;">
+                            If you've purchased the desktop app, you can subscribe to cloud sync to access your library here.
+                        </p>
+                        
+                        <button class="btn" onclick="handleDesktopOwner(true)" style="width: 100%; margin-bottom: 1rem;">
+                            Yes, I own the desktop app
+                        </button>
+                        <button class="btn btn-secondary" onclick="handleDesktopOwner(false)" style="width: 100%;">
+                            No, I'm new to Book Thingy
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Add callback to window for button handlers
+            window.desktopUserCallback = callback;
+            window.desktopUserModal = modal;
+            
+            document.body.appendChild(modal);
+        }
+
+        function handleDesktopOwner(isDesktopOwner) {
+            const callback = window.desktopUserCallback;
+            const modal = window.desktopUserModal;
+            
+            modal.remove();
+            callback(isDesktopOwner);
+            
+            // Clean up
+            delete window.desktopUserCallback;
+            delete window.desktopUserModal;
+        }
         
         function getSubscriptionStatusText() {
             if (subscriptionStatus.subscriptionType === 'trial') {
@@ -2926,23 +3070,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     
 
     // Direct button handlers (add after FAB handler)
-    document.getElementById('barcodeBtn').addEventListener('click', function(e) {
-        e.stopPropagation();
-        document.getElementById('addOptions').classList.remove('active');
-        showBarcodeScanner();
-    });
+    const barcodeBtn = document.getElementById('barcodeBtn');
+    if (barcodeBtn) {
+        barcodeBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('addOptions').classList.remove('active');
+            showBarcodeScanner();
+        });
+    }
 
-    document.getElementById('searchBtn').addEventListener('click', function(e) {
-        e.stopPropagation();
-        document.getElementById('addOptions').classList.remove('active');
-        showInternetSearch();
-    });
+    const searchBtn = document.getElementById('searchBtn');
+    if (searchBtn) {
+        searchBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('addOptions').classList.remove('active');
+            showInternetSearch();
+        });
+    }
 
-    document.getElementById('manualBtn').addEventListener('click', function(e) {
-        e.stopPropagation();
-        document.getElementById('addOptions').classList.remove('active');
-        showManualEntry();
-    });
+    const manualBtn = document.getElementById('manualBtn');
+    if (manualBtn) {
+        manualBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('addOptions').classList.remove('active');
+            showManualEntry();
+        });
+    }
 
     // Close FAB menu when clicking elsewhere
     document.addEventListener('click', function(e) {
@@ -3236,6 +3389,13 @@ function getFormatIcon(format) {
 // Book Management
 async function saveBook(e) {
     e.preventDefault();
+    
+    // Check test drive limits for new books
+    const isNewBook = !document.getElementById('bookId').value;
+    if (isNewBook && !checkTestDriveLimit()) {
+        hideLoading();
+        return;
+    }
     
     showLoading('Saving book...');
     
@@ -5488,8 +5648,8 @@ const firebaseConfig = {
   projectId: "book-thingy-web",
   storageBucket: "book-thingy-web.firebasestorage.app",
   messagingSenderId: "463721013366",
-  appId: "1:463721013366:web:abc123def456",
-  measurementId: "G-ABC123DEF"
+  appId: "1:463721013366:web:b06f1e034cf276bababf57",
+  measurementId: "G-MEASUREMENT_ID"
 };
     
     // Initialize Firebase
@@ -5990,7 +6150,15 @@ document.getElementById('emailSignInBtn').addEventListener('click', async () => 
         // Save user to localStorage
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
         
-        // Initialize subscription for new user
+        // Check if this might be a desktop user
+        const isDesktopUser = await checkIfDesktopUser(currentUser);
+        if (isDesktopUser) {
+            closeModal('signInModal');
+            openModal('desktopUserSyncModal');
+            return;
+        }
+        
+        // Initialize subscription for new user (web-only)
         initializeSubscription(currentUser);
         
         // Close modal and load library
@@ -6027,6 +6195,16 @@ document.getElementById('googleSignInBtn').addEventListener('click', async () =>
             
             // Save user to localStorage
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Check if this might be a desktop user
+            const isDesktopUser = await checkIfDesktopUser(currentUser);
+            if (isDesktopUser) {
+                closeModal('signInModal');
+                openModal('desktopUserSyncModal');
+                hideLoading();
+                return;
+            }
+            
             closeModal('signInModal');
             showToast('Welcome!', `Signed in with Google`, 'success');
         }
@@ -6049,21 +6227,76 @@ document.getElementById('googleSignInBtn').addEventListener('click', async () =>
     }
 });
 
-// Skip Sign-In (Offline Mode)
-document.getElementById('skipSignInBtn').addEventListener('click', () => {
+// Test Drive Mode
+let isTestDriveMode = false;
+const TEST_DRIVE_LIMIT = 3;
+
+document.getElementById('testDriveBtn').addEventListener('click', () => {
+    isTestDriveMode = true;
     currentUser = null;
     localStorage.removeItem('currentUser');
+    localStorage.setItem('testDriveMode', 'true');
     closeModal('signInModal');
     
-    // Load with offline mode
-    showLoading('Loading offline mode...');
+    // Load with demo mode
+    showLoading('Loading demo mode...');
     loadLibrary().then(() => {
         renderLibrary();
         updateStats();
         hideLoading();
-        showToast('Offline Mode', 'Using offline mode. Your data will be saved locally.', 'info');
+        showToast('Demo Mode', '🚗 Preview with 3 books limit. Full version requires cloud sync subscription!', 'warning', 10000);
     });
 });
+
+// Check if user is in test drive mode
+function checkTestDriveMode() {
+    return localStorage.getItem('testDriveMode') === 'true' && !currentUser;
+}
+
+// Check test drive limits
+function checkTestDriveLimit() {
+    if (checkTestDriveMode() && library.books.length >= TEST_DRIVE_LIMIT) {
+        showUpgradeModal();
+        return false;
+    }
+    return true;
+}
+
+// Show upgrade modal
+function showUpgradeModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Demo Limit Reached</h2>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🚗➡️☁️</div>
+                <h3 style="margin-bottom: 1rem;">Ready for the Full Experience?</h3>
+                <p style="color: var(--text-dim); margin-bottom: 1.5rem;">You've tried 3 books in demo mode!</p>
+                
+                <div style="background: var(--surface-light); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; text-align: left; font-size: 0.875rem;">
+                    <strong>Full Web App includes:</strong>
+                    <ul style="margin-top: 0.5rem; padding-left: 1rem;">
+                        <li>✅ Unlimited books</li>
+                        <li>✅ Cloud sync across devices</li>
+                        <li>✅ 6 months FREE (new users)</li>
+                        <li>✅ Then $12/year</li>
+                    </ul>
+                </div>
+                
+                <button class="btn" onclick="location.reload();" style="width: 100%; margin-bottom: 1rem;">
+                    Sign In for Full Access
+                </button>
+                <button class="btn btn-secondary" onclick="this.closest('.modal').remove();" style="width: 100%;">
+                    Continue Demo
+                </button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
 
 // Allow Enter key in email input
 document.getElementById('emailInput').addEventListener('keypress', (e) => {
@@ -6074,11 +6307,33 @@ document.getElementById('emailInput').addEventListener('keypress', (e) => {
 
 // Load user from localStorage on app start
 window.addEventListener('load', async () => {
+    console.log('=== AUTH CHECK START ===');
+    console.log('Current URL:', window.location.href);
+    console.log('localStorage currentUser:', localStorage.getItem('currentUser'));
+    
     try {
+        // Check if sign-in was explicitly requested
+        const urlParams = new URLSearchParams(window.location.search);
+        const signInRequested = urlParams.get('signin') === 'true';
+        
+        if (signInRequested) {
+            console.log('Sign-in explicitly requested - clearing any saved session');
+            localStorage.removeItem('currentUser');
+            // Remove the parameter from URL to prevent issues on refresh
+            window.history.replaceState({}, document.title, '/app');
+        }
+        
         // Wait a moment for Firebase Auth to initialize
         setTimeout(() => {
+            // Check for test drive mode
+            if (localStorage.getItem('testDriveMode') === 'true') {
+                isTestDriveMode = true;
+                console.log('Test drive mode detected');
+            }
+            
             // Check Firebase auth state
             const user = firebase.auth().currentUser;
+            console.log('Firebase currentUser:', user);
             
             if (user) {
                 // User is signed in via Firebase
@@ -6088,31 +6343,45 @@ window.addEventListener('load', async () => {
             } else {
                 // Check localStorage as fallback
                 const savedUser = localStorage.getItem('currentUser');
-                if (savedUser && savedUser !== 'null') {
-                    currentUser = JSON.parse(savedUser);
-                    console.log('User loaded from storage:', currentUser.email);
-                    
-                    // Show user info in header
-                    document.getElementById('userEmail').textContent = currentUser.email;
-                    document.getElementById('userInfo').style.display = 'flex';
-                    
-                    // Load user's data
-                    showLoading('Loading your library...');
-                    loadLibrary().then(() => {
-                        // Update the current view
-                        const activeView = document.querySelector('.view.active').id;
-                        if (activeView === 'libraryView') {
-                            renderLibrary();
-                        } else if (activeView === 'statsView') {
-                            updateStats();
-                            setTimeout(() => {
-                                handleStatClick('total');
-                            }, 100);
-                        } else if (activeView === 'lendingView') {
-                            renderLending();
+                if (savedUser && savedUser !== 'null' && savedUser !== 'undefined') {
+                    try {
+                        const parsedUser = JSON.parse(savedUser);
+                        // Validate the saved user object
+                        if (parsedUser && parsedUser.email) {
+                            console.log('Valid user found in storage:', parsedUser.email);
+                            currentUser = parsedUser;
+                            
+                            // Show user info in header
+                            document.getElementById('userEmail').textContent = currentUser.email;
+                            document.getElementById('userInfo').style.display = 'flex';
+                            
+                            // Load user's data
+                            showLoading('Loading your library...');
+                            loadLibrary().then(() => {
+                                // Update the current view
+                                const activeView = document.querySelector('.view.active').id;
+                                if (activeView === 'libraryView') {
+                                    renderLibrary();
+                                } else if (activeView === 'statsView') {
+                                    updateStats();
+                                    setTimeout(() => {
+                                        handleStatClick('total');
+                                    }, 100);
+                                } else if (activeView === 'lendingView') {
+                                    renderLending();
+                                }
+                                hideLoading();
+                            });
+                        } else {
+                            console.log('Invalid user object in storage, showing sign-in modal');
+                            localStorage.removeItem('currentUser');
+                            openModal('signInModal');
                         }
-                        hideLoading();
-                    });
+                    } catch (parseError) {
+                        console.error('Error parsing saved user:', parseError);
+                        localStorage.removeItem('currentUser');
+                        openModal('signInModal');
+                    }
                 } else {
                     // No user, show sign in modal
                     console.log('No saved user found, showing sign-in modal');
@@ -6169,21 +6438,15 @@ hideLoading();
         openModal('signInModal');
         hideLoading(); // Ensure loading is hidden
     }
-});
+};
 
 // Sign-out function
 async function signOut() {
     if (confirm('Are you sure you want to sign out?')) {
         try {
-            if (firebaseConfig.appId === "1:463721013366:web:abc123def456") {
-                // Development mode - manual signout
-                currentUser = null;
-                localStorage.removeItem('currentUser');
-                legacyAuthHandler(null);
-            } else {
-                // Production Firebase signout
-                await firebase.auth().signOut();
-            }
+            // Always use Firebase signout
+            await firebase.auth().signOut();
+            localStorage.removeItem('currentUser');
             console.log('User signed out successfully');
             showToast('Signed Out', 'You have been signed out successfully.', 'info');
         } catch (error) {

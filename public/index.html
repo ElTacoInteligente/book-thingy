@@ -416,7 +416,7 @@
                 <li><a href="#features">Features</a></li>
                 <li><a href="#pricing">Pricing</a></li>
                 <li><a href="download.html">Buy Now</a></li>
-                <li><a href="/app" class="cta-button">Sign In</a></li>
+                <li><a href="/app?signin=true" class="cta-button">Try Web App</a></li>
             </ul>
         </div>
     </nav>
@@ -425,13 +425,25 @@
     <section class="hero">
         <div class="hero-container">
             <h1>Your Personal Library Manager</h1>
-            <p>Track your books, set reading goals, and organize your collection with ease. Sync across all your devices with 6 months of free cloud storage.</p>
+            <p>Track your books, set reading goals, and organize your collection with ease.</p>
+            
+            <!-- Clear Options -->
+            <div style="display: flex; gap: 1rem; margin: 2rem 0; flex-wrap: wrap; justify-content: center;">
+                <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 8px; flex: 1; max-width: 300px;">
+                    <strong style="color: var(--primary);">🖥️ Desktop App ($25.99)</strong>
+                    <p style="font-size: 0.875rem; margin-top: 0.5rem;">✅ Unlimited books<br>✅ Permanent local storage<br>✅ 6 months FREE cloud sync</p>
+                </div>
+                <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 8px; flex: 1; max-width: 300px;">
+                    <strong style="color: var(--warning);">🌐 Web App (Cloud Only)</strong>
+                    <p style="font-size: 0.875rem; margin-top: 0.5rem;">✅ Demo: 3 books preview<br>✅ Full: Requires cloud sync subscription<br>✅ New users get 6 months FREE</p>
+                </div>
+            </div>
             
             <div class="hero-buttons">
                 <a href="download.html" class="button-primary">
                     💰 Buy Now - $25.99
                 </a>
-                <a href="/app" class="button-secondary">Sign In</a>
+                <a href="/app?signin=true" class="button-secondary">Try Web App</a>
             </div>
             
             <div class="screenshot-mockup">
@@ -524,7 +536,7 @@
         <div class="footer-container">
             <div class="footer-links">
                 <a href="download.html">Buy Now</a>
-                <a href="/app">Sign In</a>
+                <a href="/app?signin=true">Try Web App</a>
                 <a href="#features">Features</a>
                 <a href="#pricing">Pricing</a>
             </div>
