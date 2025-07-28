@@ -3509,8 +3509,8 @@ grid.innerHTML = filteredBooks.map(book => `
                 <input type="checkbox" ${selectedBooks.has(book.id) ? 'checked' : ''}>
             </div>
         ` : ''}
-        ${book.cover ? 
-            `<img src="${book.cover}" alt="${book.title}" class="book-cover" onerror="this.outerHTML='<div class=\\'book-cover\\'>📖</div>'">` :
+        ${book.cover || book.coverUrl ? 
+            `<img src="${book.cover || book.coverUrl}" alt="${book.title}" class="book-cover" onerror="this.outerHTML='<div class=\\'book-cover\\'>📖</div>'">` :
             `<div class="book-cover">📖</div>`
         }
         <div class="book-info">
@@ -5166,8 +5166,8 @@ function renderLending() {
             
             document.getElementById('bookModalBody').innerHTML = `
                 <div style="display: flex; gap: 1.5rem; margin-bottom: 1.5rem;">
-                    ${book.cover ? 
-                        `<img src="${book.cover}" alt="${book.title}" style="width: 120px; height: 180px; object-fit: cover; border-radius: var(--radius);" onerror="this.outerHTML='<div style=\\'width: 120px; height: 180px; background: var(--surface-light); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 3rem;\\'>📖</div>'">` :
+                    ${book.cover || book.coverUrl ? 
+                        `<img src="${book.cover || book.coverUrl}" alt="${book.title}" style="width: 120px; height: 180px; object-fit: cover; border-radius: var(--radius);" onerror="this.outerHTML='<div style=\\'width: 120px; height: 180px; background: var(--surface-light); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 3rem;\\'>📖</div>'">` :
                         `<div style="width: 120px; height: 180px; background: var(--surface-light); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 3rem;">📖</div>`
                     }
 <div style="flex: 1;">
@@ -6319,6 +6319,7 @@ async function loadDemoLibrary() {
                 pages: 432,
                 genre: 'Classic Literature',
                 notes: 'Timeless romance with brilliant social commentary.',
+                summary: 'Elizabeth Bennet navigates 19th-century English society, marriage expectations, and her complex feelings toward the seemingly arrogant Mr. Darcy in this witty exploration of love, class, and first impressions.',
                 coverUrl: 'https://www.gutenberg.org/files/1342/1342-h/images/cover.jpg'
             },
             {
@@ -6333,6 +6334,7 @@ async function loadDemoLibrary() {
                 currentPage: 156,
                 genre: 'Mystery',
                 notes: 'Love the deductive reasoning and Victorian atmosphere.',
+                summary: 'Follow the brilliant detective Sherlock Holmes and his loyal companion Dr. Watson as they solve mysterious crimes in Victorian London using logic, observation, and deduction.',
                 coverUrl: 'https://www.gutenberg.org/files/1661/1661-h/images/cover.jpg'
             },
             {
@@ -6347,6 +6349,7 @@ async function loadDemoLibrary() {
                 pages: 1276,
                 genre: 'Adventure',
                 notes: 'Epic tale of revenge and redemption. A masterpiece!',
+                summary: 'Edmond Dantès is wrongfully imprisoned and escapes to become the mysterious Count of Monte Cristo, seeking elaborate revenge against those who betrayed him in this sweeping adventure of justice and redemption.',
                 coverUrl: 'https://www.gutenberg.org/files/1184/1184-h/images/cover.jpg'
             },
             {
@@ -6359,6 +6362,7 @@ async function loadDemoLibrary() {
                 dateAdded: '2024-01-05',
                 pages: 96,
                 genre: 'Fantasy',
+                summary: 'Young Alice falls down a rabbit hole into a fantastical world populated by peculiar creatures, where logic is turned upside down and imagination reigns supreme.',
                 coverUrl: 'https://www.gutenberg.org/files/11/11-h/images/cover.jpg'
             },
             {
@@ -6373,6 +6377,7 @@ async function loadDemoLibrary() {
                 pages: 273,
                 genre: 'Philosophy',
                 notes: 'Ancient wisdom still relevant for modern strategy.',
+                summary: 'Sun Tzu\'s ancient Chinese military treatise offers timeless strategic principles for warfare, business, and life, emphasizing the importance of knowing oneself and one\'s enemy.',
                 coverUrl: 'https://www.gutenberg.org/files/132/132-h/images/cover.jpg'
             },
             {
@@ -6387,6 +6392,7 @@ async function loadDemoLibrary() {
                 pages: 280,
                 genre: 'Horror',
                 notes: 'Pioneering science fiction with deep moral questions.',
+                summary: 'Victor Frankenstein creates artificial life, but his creature becomes a monster when rejected by society, exploring themes of scientific responsibility, isolation, and what it means to be human.',
                 coverUrl: 'https://www.gutenberg.org/files/84/84-h/images/cover.jpg'
             },
             {
@@ -6401,6 +6407,7 @@ async function loadDemoLibrary() {
                 currentPage: 203,
                 genre: 'Epic',
                 notes: 'The original adventure story - incredible journey home.',
+                summary: 'Odysseus faces mythical creatures, angry gods, and treacherous seas in his epic ten-year journey home from the Trojan War, in this foundational tale of heroism and perseverance.',
                 coverUrl: 'https://www.gutenberg.org/files/1727/1727-h/images/cover.jpg'
             },
             {
@@ -6415,6 +6422,7 @@ async function loadDemoLibrary() {
                 pages: 624,
                 genre: 'Gothic Romance',
                 notes: 'Powerful story of independence and love.',
+                summary: 'An orphaned governess falls in love with her mysterious employer at Thornfield Hall, but dark secrets threaten their happiness in this Gothic romance about equality and self-worth.',
                 coverUrl: 'https://www.gutenberg.org/files/1260/1260-h/images/cover.jpg'
             },
             {
@@ -6427,6 +6435,7 @@ async function loadDemoLibrary() {
                 dateAdded: '2024-01-20',
                 pages: 635,
                 genre: 'Adventure',
+                summary: 'Captain Ahab\'s obsessive quest to destroy the white whale that took his leg drives him and his crew toward a fateful confrontation in this epic tale of man versus nature.',
                 coverUrl: 'https://www.gutenberg.org/files/2701/2701-h/images/cover.jpg'
             },
             {
@@ -6441,6 +6450,7 @@ async function loadDemoLibrary() {
                 pages: 254,
                 genre: 'Gothic Fiction',
                 notes: 'Brilliant exploration of beauty, morality, and corruption.',
+                summary: 'A young man\'s portrait ages while he remains beautiful, leading to a life of hedonism and moral decay in Wilde\'s only novel about art, beauty, and the price of vanity.',
                 coverUrl: 'https://www.gutenberg.org/files/174/174-h/images/cover.jpg'
             },
             {
@@ -6455,6 +6465,7 @@ async function loadDemoLibrary() {
                 currentPage: 45,
                 genre: 'Horror',
                 notes: 'Classic psychological thriller about human nature.',
+                summary: 'Dr. Jekyll creates a potion that transforms him into the evil Mr. Hyde, exploring the duality of human nature and the battle between good and evil within us all.',
                 coverUrl: 'https://www.gutenberg.org/files/43/43-h/images/cover.jpg'
             },
             {
@@ -6469,6 +6480,7 @@ async function loadDemoLibrary() {
                 pages: 176,
                 genre: 'Adventure',
                 notes: 'Fun adventure story with great pacing and humor.',
+                summary: 'Phileas Fogg makes a wager that he can travel around the world in 80 days, leading to a race against time filled with adventure, obstacles, and unexpected romance.',
                 coverUrl: 'https://www.gutenberg.org/files/103/103-h/images/cover.jpg'
             },
             {
@@ -6481,6 +6493,7 @@ async function loadDemoLibrary() {
                 dateAdded: '2024-03-15',
                 pages: 118,
                 genre: 'Science Fiction',
+                summary: 'A Victorian scientist travels to the year 802,701 to discover humanity has evolved into two distinct species, the Eloi and Morlocks, in this pioneering time travel story.',
                 coverUrl: 'https://www.gutenberg.org/files/35/35-h/images/cover.jpg'
             },
             {
@@ -6495,6 +6508,7 @@ async function loadDemoLibrary() {
                 pages: 464,
                 genre: 'Gothic Romance',
                 notes: 'Intense and dark love story. Challenging but rewarding.',
+                summary: 'The passionate and destructive love between Heathcliff and Catherine spans generations on the Yorkshire moors in this intense Gothic romance about love, revenge, and obsession.',
                 coverUrl: 'https://www.gutenberg.org/files/768/768-h/images/cover.jpg'
             },
             {
@@ -6509,6 +6523,7 @@ async function loadDemoLibrary() {
                 currentPage: 127,
                 genre: 'Philosophy',
                 notes: 'Foundational work on justice and the ideal state.',
+                summary: 'Plato\'s philosophical dialogue explores justice, truth, and the ideal society through Socratic conversations about the nature of reality and governance.',
                 coverUrl: 'https://www.gutenberg.org/files/1497/1497-h/images/cover.jpg'
             },
             {
@@ -6523,6 +6538,7 @@ async function loadDemoLibrary() {
                 pages: 418,
                 genre: 'Horror',
                 notes: 'The definitive vampire novel. Atmospheric and gripping.',
+                summary: 'Count Dracula travels from Transylvania to England to spread his undead curse, pursued by Professor Van Helsing and his allies in this Gothic horror masterpiece.',
                 coverUrl: 'https://www.gutenberg.org/files/345/345-h/images/cover.jpg'
             },
             {
@@ -6535,6 +6551,7 @@ async function loadDemoLibrary() {
                 dateAdded: '2024-02-28',
                 pages: 192,
                 genre: 'Science Fiction',
+                summary: 'Martians invade Earth with superior technology and deadly heat-rays, but humanity\'s survival depends on the smallest of Earth\'s creatures in this influential sci-fi classic.',
                 coverUrl: 'https://www.gutenberg.org/files/36/36-h/images/cover.jpg'
             },
             {
@@ -6549,6 +6566,7 @@ async function loadDemoLibrary() {
                 pages: 759,
                 genre: 'Coming of Age',
                 notes: 'Beautiful story of sisterhood and growing up.',
+                summary: 'Follow the March sisters - Jo, Meg, Beth, and Amy - as they navigate the challenges of growing up during the American Civil War, each finding her own path to womanhood.',
                 coverUrl: 'https://www.gutenberg.org/files/514/514-h/images/cover.jpg'
             },
             {
@@ -6563,6 +6581,7 @@ async function loadDemoLibrary() {
                 currentPage: 89,
                 genre: 'Adventure',
                 notes: 'Classic tales of Mowgli and the jungle animals.',
+                summary: 'Mowgli, a boy raised by wolves in the Indian jungle, learns the laws of the wild from his animal friends Baloo the bear and Bagheera the panther.',
                 coverUrl: 'https://www.gutenberg.org/files/236/236-h/images/cover.jpg'
             },
             {
@@ -6575,6 +6594,7 @@ async function loadDemoLibrary() {
                 dateAdded: '2024-03-25',
                 pages: 154,
                 genre: 'Fantasy',
+                summary: 'Dorothy is swept away by a tornado to the magical Land of Oz, where she meets colorful companions and seeks the Wizard\'s help to return home to Kansas.',
                 coverUrl: 'https://www.gutenberg.org/files/55/55-h/images/cover.jpg'
             }
         ],
