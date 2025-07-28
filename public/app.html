@@ -2605,6 +2605,15 @@ body {
                         <span>🔐 Sign in with Google</span>
                     </button>
                     
+                    <!-- Test Account Option -->
+                    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                        <button id="testAccountBtn" style="background: var(--accent); border: 1px solid var(--accent); color: white; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 0.875rem; width: 100%;">
+                            🚗 Use Test Account (Demo with 20 Books)
+                        </button>
+                        <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.5rem; text-align: center;">
+                            Pre-loaded with classic literature • Full functionality demo
+                        </p>
+                    </div>
                     
                     <!-- Desktop App Link -->
                     <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border-color); background: var(--surface); padding: 1rem; border-radius: 8px;">
@@ -6217,6 +6226,79 @@ document.getElementById('googleSignInBtn').addEventListener('click', async () =>
         hideLoading();
         console.error('Sign-in error:', error);
         showToast('Sign-in Failed', 'Please try again or check your internet connection.', 'error');
+    }
+});
+
+// Test Account Sign-In
+document.getElementById('testAccountBtn').addEventListener('click', async () => {
+    try {
+        showLoading('Signing in to test account...');
+        
+        // Use predefined test account credentials
+        const testEmail = 'test@bookthingy.com';
+        const testPassword = 'testuser123';
+        
+        // Sign in with Firebase Auth
+        const userCredential = await firebase.auth().signInWithEmailAndPassword(testEmail, testPassword);
+        currentUser = userCredential.user;
+        
+        // Mark as demo user
+        currentUser.isDemo = true;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // Show user info in header with demo badge
+        document.getElementById('userEmail').textContent = 'Test User (Demo)';
+        document.getElementById('subscriptionStatus').textContent = 'Demo Mode';
+        document.getElementById('userInfo').style.display = 'flex';
+        
+        closeModal('signInModal');
+        showToast('Welcome!', 'Signed in to test account with 20 demo books', 'success');
+        
+        // Load demo library
+        await loadDemoLibrary();
+        renderLibrary();
+        hideLoading();
+        
+    } catch (error) {
+        console.error('Test account sign-in error:', error);
+        
+        // If account doesn't exist, create it
+        if (error.code === 'auth/user-not-found') {
+            try {
+                showLoading('Creating test account...');
+                const testEmail = 'test@bookthingy.com';
+                const testPassword = 'testuser123';
+                
+                const userCredential = await firebase.auth().createUserWithEmailAndPassword(testEmail, testPassword);
+                currentUser = userCredential.user;
+                
+                // Mark as demo user
+                currentUser.isDemo = true;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                // Show user info in header with demo badge
+                document.getElementById('userEmail').textContent = 'Test User (Demo)';
+                document.getElementById('subscriptionStatus').textContent = 'Demo Mode';
+                document.getElementById('userInfo').style.display = 'flex';
+                
+                closeModal('signInModal');
+                showToast('Welcome!', 'Test account created with 20 demo books', 'success');
+                
+                // Load demo library and save to Firestore
+                await loadDemoLibrary();
+                await saveLibrary(); // Save demo data to Firestore
+                renderLibrary();
+                hideLoading();
+                
+            } catch (createError) {
+                console.error('Failed to create test account:', createError);
+                showToast('Error', 'Could not access test account. Please try again.', 'error');
+                hideLoading();
+            }
+        } else {
+            showToast('Error', 'Could not access test account. Please try again.', 'error');
+            hideLoading();
+        }
     }
 });
 
