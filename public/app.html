@@ -6231,275 +6231,275 @@ document.getElementById('googleSignInBtn').addEventListener('click', async () =>
 let isTestDriveMode = false;
 const TEST_DRIVE_LIMIT = 3;
 
-// Load demo library with 20 sample books
+// Load demo library with 20 public domain books
 async function loadDemoLibrary() {
     library = {
         books: [
             {
                 id: 'demo-1',
-                title: 'The Great Gatsby',
-                author: 'F. Scott Fitzgerald',
-                isbn: '9780743273565',
+                title: 'Pride and Prejudice',
+                author: 'Jane Austen',
+                isbn: '9780141439518',
                 status: 'read',
-                rating: 4,
+                rating: 5,
                 dateAdded: '2024-01-15',
                 dateFinished: '2024-02-01',
-                pages: 180,
+                pages: 432,
                 genre: 'Classic Literature',
-                notes: 'A masterpiece of American literature with beautiful prose.'
+                notes: 'Timeless romance with brilliant social commentary.'
             },
             {
                 id: 'demo-2',
-                title: 'Dune',
-                author: 'Frank Herbert',
-                isbn: '9780441172719',
+                title: 'The Adventures of Sherlock Holmes',
+                author: 'Arthur Conan Doyle',
+                isbn: '9780486474915',
                 status: 'reading',
                 rating: 0,
                 dateAdded: '2024-03-10',
-                pages: 688,
-                currentPage: 234,
-                genre: 'Science Fiction',
-                notes: 'Epic sci-fi world building. Currently at the desert scenes.'
+                pages: 307,
+                currentPage: 156,
+                genre: 'Mystery',
+                notes: 'Love the deductive reasoning and Victorian atmosphere.'
             },
             {
                 id: 'demo-3',
-                title: 'Sapiens',
-                author: 'Yuval Noah Harari',
-                isbn: '9780062316097',
+                title: 'The Count of Monte Cristo',
+                author: 'Alexandre Dumas',
+                isbn: '9780140449266',
                 status: 'read',
                 rating: 5,
                 dateAdded: '2023-11-20',
                 dateFinished: '2023-12-15',
-                pages: 443,
-                genre: 'History',
-                notes: 'Fascinating perspective on human history and development.'
+                pages: 1276,
+                genre: 'Adventure',
+                notes: 'Epic tale of revenge and redemption. A masterpiece!'
             },
             {
                 id: 'demo-4',
-                title: 'The Midnight Library',
-                author: 'Matt Haig',
-                isbn: '9780525559474',
+                title: 'Alice\'s Adventures in Wonderland',
+                author: 'Lewis Carroll',
+                isbn: '9780486275437',
                 status: 'unread',
                 rating: 0,
                 dateAdded: '2024-01-05',
-                pages: 288,
-                genre: 'Fiction'
+                pages: 96,
+                genre: 'Fantasy'
             },
             {
                 id: 'demo-5',
-                title: 'Atomic Habits',
-                author: 'James Clear',
-                isbn: '9780735211292',
+                title: 'The Art of War',
+                author: 'Sun Tzu',
+                isbn: '9780486425573',
                 status: 'read',
-                rating: 5,
+                rating: 4,
                 dateAdded: '2023-09-10',
                 dateFinished: '2023-10-02',
-                pages: 320,
-                genre: 'Self-Help',
-                notes: 'Excellent practical advice on building good habits.'
+                pages: 273,
+                genre: 'Philosophy',
+                notes: 'Ancient wisdom still relevant for modern strategy.'
             },
             {
                 id: 'demo-6',
-                title: 'The Silent Patient',
-                author: 'Alex Michaelides',
-                isbn: '9781250301697',
+                title: 'Frankenstein',
+                author: 'Mary Shelley',
+                isbn: '9780486282114',
                 status: 'read',
                 rating: 4,
                 dateAdded: '2024-02-20',
                 dateFinished: '2024-02-25',
-                pages: 336,
-                genre: 'Thriller',
-                notes: 'Gripping psychological thriller with a great twist.'
+                pages: 280,
+                genre: 'Horror',
+                notes: 'Pioneering science fiction with deep moral questions.'
             },
             {
                 id: 'demo-7',
-                title: 'Project Hail Mary',
-                author: 'Andy Weir',
-                isbn: '9780593135204',
+                title: 'The Odyssey',
+                author: 'Homer',
+                isbn: '9780140449112',
                 status: 'reading',
                 rating: 0,
                 dateAdded: '2024-03-01',
-                pages: 496,
-                currentPage: 156,
-                genre: 'Science Fiction',
-                notes: 'Love the humor and scientific problem-solving!'
+                pages: 541,
+                currentPage: 203,
+                genre: 'Epic',
+                notes: 'The original adventure story - incredible journey home.'
             },
             {
                 id: 'demo-8',
-                title: 'Educated',
-                author: 'Tara Westover',
-                isbn: '9780399590504',
+                title: 'Jane Eyre',
+                author: 'Charlotte Brontë',
+                isbn: '9780141441146',
                 status: 'read',
                 rating: 5,
                 dateAdded: '2023-10-15',
                 dateFinished: '2023-11-01',
-                pages: 334,
-                genre: 'Memoir',
-                notes: 'Powerful memoir about education and family.'
+                pages: 624,
+                genre: 'Gothic Romance',
+                notes: 'Powerful story of independence and love.'
             },
             {
                 id: 'demo-9',
-                title: 'The Seven Husbands of Evelyn Hugo',
-                author: 'Taylor Jenkins Reid',
-                isbn: '9781501161933',
+                title: 'Moby Dick',
+                author: 'Herman Melville',
+                isbn: '9780486432151',
                 status: 'unread',
                 rating: 0,
                 dateAdded: '2024-01-20',
-                pages: 400,
-                genre: 'Historical Fiction'
+                pages: 635,
+                genre: 'Adventure'
             },
             {
                 id: 'demo-10',
-                title: 'Klara and the Sun',
-                author: 'Kazuo Ishiguro',
-                isbn: '9780571364909',
+                title: 'The Picture of Dorian Gray',
+                author: 'Oscar Wilde',
+                isbn: '9780486278070',
                 status: 'read',
                 rating: 4,
                 dateAdded: '2023-12-01',
                 dateFinished: '2023-12-20',
-                pages: 288,
-                genre: 'Literary Fiction',
-                notes: 'Beautiful exploration of consciousness and love.'
+                pages: 254,
+                genre: 'Gothic Fiction',
+                notes: 'Brilliant exploration of beauty, morality, and corruption.'
             },
             {
                 id: 'demo-11',
-                title: 'The Invisible Life of Addie LaRue',
-                author: 'V.E. Schwab',
-                isbn: '9780765387561',
+                title: 'The Strange Case of Dr. Jekyll and Mr. Hyde',
+                author: 'Robert Louis Stevenson',
+                isbn: '9780486266886',
                 status: 'reading',
                 rating: 0,
                 dateAdded: '2024-02-10',
-                pages: 560,
-                currentPage: 203,
-                genre: 'Fantasy',
-                notes: 'Intriguing premise about being forgotten by everyone.'
+                pages: 96,
+                currentPage: 45,
+                genre: 'Horror',
+                notes: 'Classic psychological thriller about human nature.'
             },
             {
                 id: 'demo-12',
-                title: 'Born a Crime',
-                author: 'Trevor Noah',
-                isbn: '9780399588198',
+                title: 'Around the World in Eighty Days',
+                author: 'Jules Verne',
+                isbn: '9780486411118',
                 status: 'read',
-                rating: 5,
+                rating: 4,
                 dateAdded: '2023-08-15',
                 dateFinished: '2023-09-05',
-                pages: 304,
-                genre: 'Biography',
-                notes: 'Hilarious and heartbreaking stories from South Africa.'
+                pages: 176,
+                genre: 'Adventure',
+                notes: 'Fun adventure story with great pacing and humor.'
             },
             {
                 id: 'demo-13',
-                title: 'The Thursday Murder Club',
-                author: 'Richard Osman',
-                isbn: '9781984880987',
+                title: 'The Time Machine',
+                author: 'H.G. Wells',
+                isbn: '9780486284729',
                 status: 'unread',
                 rating: 0,
                 dateAdded: '2024-03-15',
-                pages: 368,
-                genre: 'Mystery'
+                pages: 118,
+                genre: 'Science Fiction'
             },
             {
                 id: 'demo-14',
-                title: 'Circe',
-                author: 'Madeline Miller',
-                isbn: '9780316556347',
+                title: 'Wuthering Heights',
+                author: 'Emily Brontë',
+                isbn: '9780141439556',
                 status: 'read',
-                rating: 4,
+                rating: 3,
                 dateAdded: '2023-07-10',
                 dateFinished: '2023-08-01',
-                pages: 393,
-                genre: 'Mythology',
-                notes: 'Beautiful retelling of Greek mythology from Circe\'s perspective.'
+                pages: 464,
+                genre: 'Gothic Romance',
+                notes: 'Intense and dark love story. Challenging but rewarding.'
             },
             {
                 id: 'demo-15',
-                title: 'The Power of Now',
-                author: 'Eckhart Tolle',
-                isbn: '9781577314806',
+                title: 'The Republic',
+                author: 'Plato',
+                isbn: '9780140455113',
                 status: 'reading',
                 rating: 0,
                 dateAdded: '2024-01-25',
-                pages: 236,
-                currentPage: 89,
-                genre: 'Spirituality',
-                notes: 'Challenging but insightful ideas about mindfulness.'
+                pages: 407,
+                currentPage: 127,
+                genre: 'Philosophy',
+                notes: 'Foundational work on justice and the ideal state.'
             },
             {
                 id: 'demo-16',
-                title: 'Where the Crawdads Sing',
-                author: 'Delia Owens',
-                isbn: '9780735219090',
+                title: 'Dracula',
+                author: 'Bram Stoker',
+                isbn: '9780486411095',
                 status: 'read',
-                rating: 3,
+                rating: 4,
                 dateAdded: '2023-12-20',
                 dateFinished: '2024-01-10',
-                pages: 384,
-                genre: 'Fiction',
-                notes: 'Beautiful nature writing, though the plot felt a bit predictable.'
+                pages: 418,
+                genre: 'Horror',
+                notes: 'The definitive vampire novel. Atmospheric and gripping.'
             },
             {
                 id: 'demo-17',
-                title: 'The Alchemist',
-                author: 'Paulo Coelho',
-                isbn: '9780061122415',
+                title: 'The War of the Worlds',
+                author: 'H.G. Wells',
+                isbn: '9780486295060',
                 status: 'unread',
                 rating: 0,
                 dateAdded: '2024-02-28',
-                pages: 163,
-                genre: 'Philosophy'
+                pages: 192,
+                genre: 'Science Fiction'
             },
             {
                 id: 'demo-18',
-                title: 'Becoming',
-                author: 'Michelle Obama',
-                isbn: '9781524763138',
+                title: 'Little Women',
+                author: 'Louisa May Alcott',
+                isbn: '9780486420301',
                 status: 'read',
                 rating: 5,
                 dateAdded: '2023-06-01',
                 dateFinished: '2023-06-25',
-                pages: 448,
-                genre: 'Biography',
-                notes: 'Inspiring and beautifully written memoir.'
+                pages: 759,
+                genre: 'Coming of Age',
+                notes: 'Beautiful story of sisterhood and growing up.'
             },
             {
                 id: 'demo-19',
-                title: 'The Song of Achilles',
-                author: 'Madeline Miller',
-                isbn: '9780062060624',
+                title: 'The Jungle Book',
+                author: 'Rudyard Kipling',
+                isbn: '9780486415826',
                 status: 'reading',
                 rating: 0,
                 dateAdded: '2024-03-20',
-                pages: 352,
-                currentPage: 127,
-                genre: 'Historical Fiction',
-                notes: 'Love Miller\'s writing style. The relationship development is beautiful.'
+                pages: 304,
+                currentPage: 89,
+                genre: 'Adventure',
+                notes: 'Classic tales of Mowgli and the jungle animals.'
             },
             {
                 id: 'demo-20',
-                title: 'Digital Minimalism',
-                author: 'Cal Newport',
-                isbn: '9780525536512',
+                title: 'The Wonderful Wizard of Oz',
+                author: 'L. Frank Baum',
+                isbn: '9780486296906',
                 status: 'unread',
                 rating: 0,
                 dateAdded: '2024-03-25',
-                pages: 304,
-                genre: 'Technology'
+                pages: 154,
+                genre: 'Fantasy'
             }
         ],
         wishlist: [
             {
                 id: 'wish-1',
-                title: 'Tomorrow, and Tomorrow, and Tomorrow',
-                author: 'Gabrielle Zevin',
-                isbn: '9780593321201',
-                notes: 'Heard great things about this gaming-themed novel'
+                title: 'Twenty Thousand Leagues Under the Sea',
+                author: 'Jules Verne',
+                isbn: '9780486440927',
+                notes: 'Classic underwater adventure'
             },
             {
                 id: 'wish-2',
-                title: 'The Atlas Six',
-                author: 'Olivie Blake',
-                isbn: '9781250854452',
-                notes: 'Dark academia fantasy - trending on social media'
+                title: 'The Metamorphosis',
+                author: 'Franz Kafka',
+                isbn: '9780486290300',
+                notes: 'Surreal transformation story'
             }
         ],
         settings: {
@@ -6643,10 +6643,11 @@ window.addEventListener('load', async () => {
         
         // Wait a moment for Firebase Auth to initialize
         setTimeout(() => {
-            // Check for test drive mode
+            // Check for test drive mode first
             if (localStorage.getItem('testDriveMode') === 'true') {
                 isTestDriveMode = true;
-                console.log('Test drive mode detected');
+                console.log('Test drive mode detected - skipping auth checks');
+                return; // Skip all auth checks for test drive mode
             }
             
             // Check Firebase auth state
