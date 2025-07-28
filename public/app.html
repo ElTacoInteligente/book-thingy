@@ -5512,25 +5512,8 @@ const firebaseConfig = {
     
     // Initialize app after DOM is loaded
     document.addEventListener('DOMContentLoaded', () => {
-        console.log('DOM loaded, forcing sign-in modal to test...');
-        
-        // Force show modal for testing (remove saved user first)
-        localStorage.removeItem('currentUser');
-        
-        // Show modal immediately
-        setTimeout(() => {
-            console.log('Attempting to open sign-in modal...');
-            openModal('signInModal');
-        }, 1000);
-        
-        // Backup attempt
-        setTimeout(() => {
-            const modal = document.getElementById('signInModal');
-            if (modal && !modal.classList.contains('active')) {
-                console.log('Backup modal open attempt...');
-                openModal('signInModal');
-            }
-        }, 2000);
+        console.log('DOM loaded, checking auth state...');
+        // Let the window.load handler manage auth state
     });
 
 // Loading overlay functions
@@ -6092,37 +6075,51 @@ document.getElementById('emailInput').addEventListener('keypress', (e) => {
 // Load user from localStorage on app start
 window.addEventListener('load', async () => {
     try {
-        const savedUser = localStorage.getItem('currentUser');
-        if (savedUser) {
-            currentUser = JSON.parse(savedUser);
-            console.log('User loaded from storage:', currentUser.email);
+        // Wait a moment for Firebase Auth to initialize
+        setTimeout(() => {
+            // Check Firebase auth state
+            const user = firebase.auth().currentUser;
             
-            // Show user info in header
-            document.getElementById('userEmail').textContent = currentUser.email;
-            document.getElementById('userInfo').style.display = 'flex';
-            
-            // Load user's data
-            showLoading('Loading your library...');
-            await loadLibrary();
-            
-            // Update the current view
-            const activeView = document.querySelector('.view.active').id;
-            if (activeView === 'libraryView') {
-                renderLibrary();
-            } else if (activeView === 'statsView') {
-                updateStats();
-                setTimeout(() => {
-                    handleStatClick('total');
-                }, 100);
-            } else if (activeView === 'lendingView') {
-                renderLending();
+            if (user) {
+                // User is signed in via Firebase
+                console.log('Firebase user detected:', user.email);
+                currentUser = user;
+                legacyAuthHandler(user);
+            } else {
+                // Check localStorage as fallback
+                const savedUser = localStorage.getItem('currentUser');
+                if (savedUser && savedUser !== 'null') {
+                    currentUser = JSON.parse(savedUser);
+                    console.log('User loaded from storage:', currentUser.email);
+                    
+                    // Show user info in header
+                    document.getElementById('userEmail').textContent = currentUser.email;
+                    document.getElementById('userInfo').style.display = 'flex';
+                    
+                    // Load user's data
+                    showLoading('Loading your library...');
+                    loadLibrary().then(() => {
+                        // Update the current view
+                        const activeView = document.querySelector('.view.active').id;
+                        if (activeView === 'libraryView') {
+                            renderLibrary();
+                        } else if (activeView === 'statsView') {
+                            updateStats();
+                            setTimeout(() => {
+                                handleStatClick('total');
+                            }, 100);
+                        } else if (activeView === 'lendingView') {
+                            renderLending();
+                        }
+                        hideLoading();
+                    });
+                } else {
+                    // No user, show sign in modal
+                    console.log('No saved user found, showing sign-in modal');
+                    openModal('signInModal');
+                }
             }
-            hideLoading();
-        } else {
-            // No user, show sign in modal
-            console.log('No saved user found, showing sign-in modal');
-            openModal('signInModal');
-        }
+        }, 500); // Give Firebase time to initialize
     } catch (error) {
         console.error('Load error:', error);
         openModal('signInModal');
