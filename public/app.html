@@ -2607,10 +2607,10 @@ body {
                     
                     <!-- Test Drive Option -->
                     <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
-                        <button id="testDriveBtn" style="background: var(--surface-light); border: 1px solid var(--border-color); color: var(--text); padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 0.875rem;">
-                            🚗 Demo Mode (3 books only)
+                        <button id="testDriveBtn" style="background: var(--accent); border: 1px solid var(--accent); color: white; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 0.875rem; width: 100%;">
+                            🚗 Try Test Profile (20 Classic Books)
                         </button>
-                        <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.5rem;">Quick preview - full version requires cloud sync subscription</p>
+                        <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.5rem;">Experience the app with pre-loaded classics - add up to 3 more books</p>
                     </div>
                     
                     <!-- Desktop App Link -->
@@ -6512,21 +6512,44 @@ async function loadDemoLibrary() {
     return Promise.resolve();
 }
 
-document.getElementById('testDriveBtn').addEventListener('click', () => {
+document.getElementById('testDriveBtn').addEventListener('click', async () => {
+    console.log('Test profile button clicked');
+    
+    // Set up demo mode
     isTestDriveMode = true;
-    currentUser = null;
     localStorage.removeItem('currentUser');
     localStorage.setItem('testDriveMode', 'true');
+    
+    // Create demo user
+    currentUser = {
+        email: 'test@bookthingy.com',
+        displayName: 'Test Profile',
+        photoURL: null,
+        isDemo: true
+    };
+    
+    // Show demo user in header
+    document.getElementById('userEmail').textContent = 'Test Profile';
+    document.getElementById('subscriptionStatus').textContent = 'Demo Mode';
+    document.getElementById('userInfo').style.display = 'flex';
+    
+    // Close modal
     closeModal('signInModal');
     
-    // Load with demo mode
-    showLoading('Loading demo mode...');
-    loadLibrary().then(() => {
+    // Load demo books
+    showLoading('Loading test profile...');
+    try {
+        await loadDemoLibrary();
+        console.log('Demo library loaded successfully');
         renderLibrary();
         updateStats();
         hideLoading();
-        showToast('Demo Mode', '🚗 Preview with 3 books limit. Full version requires cloud sync subscription!', 'warning', 10000);
-    });
+        showToast('Test Profile Loaded', '📚 20 classic books loaded! Add up to 3 more to test the app.', 'success', 6000);
+    } catch (error) {
+        console.error('Error loading demo library:', error);
+        hideLoading();
+        showToast('Error', 'Could not load test profile. Please try again.', 'error');
+    }
 });
 
 // Check if user is in test drive mode
@@ -6592,77 +6615,52 @@ document.getElementById('emailInput').addEventListener('keypress', (e) => {
 // Load user from localStorage on app start
 window.addEventListener('load', async () => {
     console.log('=== AUTH CHECK START ===');
-    console.log('Current URL:', window.location.href);
     console.log('localStorage currentUser:', localStorage.getItem('currentUser'));
-    
-    // Check URL parameters FIRST, outside try-catch
-    const urlParams = new URLSearchParams(window.location.search);
-    const signInRequested = urlParams.get('signin') === 'true';
-    const testDriveRequested = urlParams.get('testdrive') === 'true';
-    
-    // Handle test drive mode immediately
-    if (testDriveRequested) {
-        console.log('Test drive explicitly requested - starting demo mode');
-        
-        // Clear any existing auth data
-        localStorage.removeItem('currentUser');
-        localStorage.removeItem('testDriveMode'); // Clear first to ensure fresh start
-        localStorage.setItem('testDriveMode', 'true');
-        isTestDriveMode = true;
-        
-        // Create faux user for demo
-        currentUser = {
-            email: 'demo@bookthingy.com',
-            displayName: 'Demo User',
-            photoURL: null,
-            isDemo: true
-        };
-        
-        // Show demo user in header
-        document.getElementById('userEmail').textContent = 'Demo User';
-        document.getElementById('subscriptionStatus').textContent = 'Test Drive Mode';
-        document.getElementById('userInfo').style.display = 'flex';
-        
-        // Load demo books immediately
-        console.log('Loading demo library...');
-        showLoading('Loading test drive...');
-        
-        try {
-            await loadDemoLibrary();
-            console.log('Demo library loaded, rendering...');
-            renderLibrary();
-            updateStats();
-            hideLoading();
-            showToast('Test Drive Active', '🚗 You have 20 classic books loaded! Add up to 3 more books to test the app.', 'info', 8000);
-        } catch (demoError) {
-            console.error('Demo loading error:', demoError);
-            hideLoading();
-            showToast('Demo Load Failed', 'Could not load demo books. Please try again.', 'error');
-        }
-        
-        // Remove the parameter from URL to prevent issues on refresh
-        window.history.replaceState({}, document.title, '/app');
-        return; // Exit early, skip all other auth logic
-    }
+    console.log('localStorage testDriveMode:', localStorage.getItem('testDriveMode'));
     
     try {
-        if (signInRequested) {
+        // Check if we're in an existing test drive session
+        if (localStorage.getItem('testDriveMode') === 'true') {
+            console.log('Existing test drive mode detected - loading demo profile');
+            isTestDriveMode = true;
+            
+            // Create demo user
+            currentUser = {
+                email: 'test@bookthingy.com',
+                displayName: 'Test Profile',
+                photoURL: null,
+                isDemo: true
+            };
+            
+            // Show demo user in header
+            document.getElementById('userEmail').textContent = 'Test Profile';
+            document.getElementById('subscriptionStatus').textContent = 'Demo Mode';
+            document.getElementById('userInfo').style.display = 'flex';
+            
+            // Load demo books
+            showLoading('Loading test profile...');
+            try {
+                await loadDemoLibrary();
+                renderLibrary();
+                updateStats();
+                hideLoading();
+            } catch (error) {
+                console.error('Error loading demo library:', error);
+                hideLoading();
+            }
+            return; // Skip normal auth flow
+        }
+        
+        // Clear any sign-in parameters from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('signin') === 'true') {
             console.log('Sign-in explicitly requested - clearing any saved session');
             localStorage.removeItem('currentUser');
-            localStorage.removeItem('testDriveMode');
-            // Remove the parameter from URL to prevent issues on refresh
             window.history.replaceState({}, document.title, '/app');
         }
         
         // Wait a moment for Firebase Auth to initialize
         setTimeout(() => {
-            // Check for existing test drive mode (from previous session)
-            if (localStorage.getItem('testDriveMode') === 'true' && !testDriveRequested) {
-                isTestDriveMode = true;
-                console.log('Existing test drive mode detected - skipping auth checks');
-                return; // Skip all auth checks for test drive mode
-            }
-            
             // Check Firebase auth state
             const user = firebase.auth().currentUser;
             console.log('Firebase currentUser:', user);
@@ -6724,7 +6722,7 @@ window.addEventListener('load', async () => {
     } catch (error) {
         console.error('Load error:', error);
         // Only show sign-in modal if NOT in test drive mode
-        if (!isTestDriveMode && localStorage.getItem('testDriveMode') !== 'true') {
+        if (localStorage.getItem('testDriveMode') !== 'true') {
             openModal('signInModal');
         }
     }
