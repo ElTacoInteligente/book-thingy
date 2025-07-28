@@ -6242,9 +6242,18 @@ document.getElementById('testAccountBtn').addEventListener('click', async () => 
         const userCredential = await firebase.auth().signInWithEmailAndPassword(testEmail, testPassword);
         currentUser = userCredential.user;
         
-        // Mark as demo user
+        // Mark as demo user and create serializable user object
         currentUser.isDemo = true;
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        const userToSave = {
+            uid: currentUser.uid,
+            email: currentUser.email,
+            displayName: currentUser.displayName || 'Test User',
+            isDemo: true
+        };
+        localStorage.setItem('currentUser', JSON.stringify(userToSave));
+        
+        // Update currentUser to match saved object
+        currentUser = userToSave;
         
         // Show user info in header with demo badge
         document.getElementById('userEmail').textContent = 'Test User (Demo)';
@@ -6272,9 +6281,18 @@ document.getElementById('testAccountBtn').addEventListener('click', async () => 
                 const userCredential = await firebase.auth().createUserWithEmailAndPassword(testEmail, testPassword);
                 currentUser = userCredential.user;
                 
-                // Mark as demo user
+                // Mark as demo user and create serializable user object
                 currentUser.isDemo = true;
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                const userToSave = {
+                    uid: currentUser.uid,
+                    email: currentUser.email,
+                    displayName: currentUser.displayName || 'Test User',
+                    isDemo: true
+                };
+                localStorage.setItem('currentUser', JSON.stringify(userToSave));
+                
+                // Update currentUser to match saved object
+                currentUser = userToSave;
                 
                 // Show user info in header with demo badge
                 document.getElementById('userEmail').textContent = 'Test User (Demo)';
@@ -6671,6 +6689,11 @@ window.addEventListener('load', async () => {
                         if (parsedUser && parsedUser.email) {
                             console.log('Valid user found in storage:', parsedUser.email);
                             currentUser = parsedUser;
+                            
+                            // If it's a demo user, make sure we have the isDemo flag
+                            if (parsedUser.isDemo) {
+                                currentUser.isDemo = true;
+                            }
                             
                             // Show user info in header
                             document.getElementById('userEmail').textContent = currentUser.isDemo ? 'Test User (Demo)' : currentUser.email;
