@@ -7,6 +7,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     saveLibrary: (data) => ipcRenderer.invoke('save-library', data),
     getStorageInfo: () => ipcRenderer.invoke('get-storage-info'),
     
+    // Authentication
+    googleOAuth: () => ipcRenderer.invoke('google-oauth'),
+    
     // Menu operations
     onExportLibrary: (callback) => ipcRenderer.on('export-library', callback),
     onImportLibrary: (callback) => ipcRenderer.on('import-library', callback)

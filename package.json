@@ -1,15 +1,21 @@
- {
+{
   "name": "book-thingy",
   "version": "1.0.0",
   "description": "A simple, offline book tracking app",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build-win": "electron-builder --win",
-    "build-mac": "electron-builder --mac",
-    "build-linux": "electron-builder --linux"
+    "start-prod": "NODE_ENV=production electron .",
+    "build-win": "NODE_ENV=production electron-builder --win",
+    "build-mac": "NODE_ENV=production electron-builder --mac",
+    "build-linux": "NODE_ENV=production electron-builder --linux"
   },
-  "keywords": ["books", "library", "tracking", "reading"],
+  "keywords": [
+    "books",
+    "library",
+    "tracking",
+    "reading"
+  ],
   "author": "Andres Salazar",
   "license": "MIT",
   "devDependencies": {

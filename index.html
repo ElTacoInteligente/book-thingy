@@ -1911,7 +1911,10 @@ body {
         <span>Book Thingy</span>
     </div>
 <div class="user-info" id="userInfo" style="display: none;">
-    <span id="userEmail" style="color: var(--text-dim); font-size: 0.875rem; margin-right: 1rem;"></span>
+    <div style="display: flex; flex-direction: column; margin-right: 1rem;">
+        <span id="userEmail" style="color: var(--text-dim); font-size: 0.875rem;"></span>
+        <span id="subscriptionStatus" style="color: var(--accent); font-size: 0.7rem;"></span>
+    </div>
     <button class="btn btn-secondary" onclick="showSettingsModal()" style="padding: 0.5rem 1rem; font-size: 0.875rem; margin-right: 0.5rem;">
         Settings
     </button>
@@ -2557,21 +2560,114 @@ body {
                 <!-- ADD THE SIGN-IN MODAL HERE -->
         <!-- Sign In Modal -->
         <div class="modal" id="signInModal">
-            <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-content" style="max-width: 450px;">
                 <div class="modal-header">
                     <h2 class="modal-title">Welcome to Book Thingy</h2>
                 </div>
                 <div class="modal-body" style="text-align: center;">
                     <div style="margin-bottom: 2rem;">
                         <div style="font-size: 4rem; margin-bottom: 1rem;">📚</div>
-                        <p style="color: var(--text-dim); margin-bottom: 2rem;">Sign in to sync your library across all devices</p>
+                        <p style="color: var(--text-dim); margin-bottom: 2rem;">Create your account or sign in to sync your library</p>
                     </div>
-                    <button class="btn" id="googleSignInBtn" style="width: 100%; justify-content: center;">
-                        <span>Sign in with Google</span>
+                    
+                    <!-- Email Sign Up/In Form -->
+                    <div id="emailAuthForm" style="margin-bottom: 1.5rem;">
+                        <input type="email" id="emailInput" placeholder="Enter your email address" 
+                               style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 1rem; background: var(--bg-secondary); color: var(--text-primary);">
+                        <button class="btn" id="emailSignInBtn" style="width: 100%; justify-content: center; margin-bottom: 1rem;">
+                            <span>Create Account / Sign In</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Divider -->
+                    <div style="display: flex; align-items: center; margin: 1.5rem 0; color: var(--text-dim);">
+                        <div style="flex: 1; height: 1px; background: var(--border-color);"></div>
+                        <span style="padding: 0 1rem; font-size: 0.875rem;">or</span>
+                        <div style="flex: 1; height: 1px; background: var(--border-color);"></div>
+                    </div>
+                    
+                    <!-- Google Sign In -->
+                    <button class="btn btn-secondary" id="googleSignInBtn" style="width: 100%; justify-content: center;">
+                        <span>🔐 Sign in with Google</span>
                     </button>
+                    
+                    <!-- Skip Option -->
+                    <button id="skipSignInBtn" style="background: none; border: none; color: var(--text-dim); text-decoration: underline; margin-top: 1rem; cursor: pointer;">
+                        Skip for now (offline mode)
+                    </button>
+                    
+                    <!-- Desktop App Link -->
+                    <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                        <p style="font-size: 0.875rem; color: var(--text-dim); margin-bottom: 0.5rem;">Want the desktop app?</p>
+                        <a href="download.html" style="color: var(--accent); text-decoration: none; font-size: 0.875rem;">Download Book Thingy Desktop →</a>
+                    </div>
+                    
                     <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-dim);">
                         Your data is private and secure
                     </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subscription Expired Modal -->
+        <div class="modal" id="subscriptionExpiredModal">
+            <div class="modal-content" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h2 class="modal-title">Cloud Sync Expired</h2>
+                </div>
+                <div class="modal-body" style="text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">☁️</div>
+                    <h3 style="margin-bottom: 1rem;">Your cloud sync subscription has expired</h3>
+                    <p style="color: var(--text-dim); margin-bottom: 2rem;">
+                        Your books are still safe! They're now saved locally on this device only. 
+                        Subscribe to cloud sync to access your library on all your devices.
+                    </p>
+                    
+                    <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+                        <h4 style="color: var(--accent); margin-bottom: 1rem;">🔄 Cloud Sync - $12/year</h4>
+                        <ul style="text-align: left; margin-bottom: 1rem;">
+                            <li>✅ Access your library on all devices</li>
+                            <li>✅ Automatic backup & sync</li>
+                            <li>✅ Web app access</li>
+                            <li>✅ Never lose your books</li>
+                        </ul>
+                    </div>
+                    
+                    <button class="btn" onclick="subscribeToCloudSync()" style="width: 100%; justify-content: center; margin-bottom: 1rem;">
+                        <span>Subscribe for $12/year</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="continueLocalOnly()" style="width: 100%; justify-content: center;">
+                        <span>Continue with Local Storage Only</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trial Expiring Warning Modal -->
+        <div class="modal" id="trialExpiringModal">
+            <div class="modal-content" style="max-width: 450px;">
+                <div class="modal-header">
+                    <h2 class="modal-title">Free Trial Ending Soon</h2>
+                    <button class="modal-close" onclick="closeModal('trialExpiringModal')">×</button>
+                </div>
+                <div class="modal-body" style="text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">⏰</div>
+                    <h3 id="trialDaysLeft" style="margin-bottom: 1rem;"></h3>
+                    <p style="color: var(--text-dim); margin-bottom: 2rem;">
+                        Subscribe now to keep your cloud sync active and access your library on all devices.
+                    </p>
+                    
+                    <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                        <h4 style="color: var(--accent); margin-bottom: 0.5rem;">Just $12/year</h4>
+                        <p style="font-size: 0.875rem; color: var(--text-dim);">Less than $1 per month!</p>
+                    </div>
+                    
+                    <button class="btn" onclick="subscribeToCloudSync()" style="width: 100%; justify-content: center; margin-bottom: 1rem;">
+                        <span>Subscribe Now - $12/year</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeModal('trialExpiringModal')" style="width: 100%; justify-content: center;">
+                        <span>Remind Me Later</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -2591,7 +2687,215 @@ body {
                 goal2025: null
             }
         };
+        
+        // Subscription tracking
+        let subscriptionStatus = {
+            hasCloudAccess: false,
+            subscriptionType: 'none', // 'none', 'trial', 'paid'
+            trialStartDate: null,
+            trialEndDate: null,
+            subscriptionEndDate: null,
+            purchaseDate: null
+        };
         let currentSort = 'recent';
+
+        // Subscription Management Functions
+        function initializeSubscription(user) {
+            const now = new Date();
+            
+            // Check if user has existing subscription data
+            if (!user.subscriptionStatus) {
+                // New user - start 6-month free trial
+                const trialEnd = new Date(now.getTime() + (6 * 30 * 24 * 60 * 60 * 1000)); // 6 months
+                
+                subscriptionStatus = {
+                    hasCloudAccess: true,
+                    subscriptionType: 'trial',
+                    trialStartDate: now.toISOString(),
+                    trialEndDate: trialEnd.toISOString(),
+                    subscriptionEndDate: null,
+                    purchaseDate: now.toISOString()
+                };
+                
+                console.log('Started 6-month free trial for new user');
+                showToast('Welcome!', '6 months of free cloud sync included! 🎉', 'success');
+            } else {
+                subscriptionStatus = user.subscriptionStatus;
+                checkSubscriptionStatus();
+            }
+        }
+        
+        function checkSubscriptionStatus() {
+            const now = new Date();
+            
+            if (subscriptionStatus.subscriptionType === 'trial') {
+                const trialEnd = new Date(subscriptionStatus.trialEndDate);
+                if (now > trialEnd) {
+                    // Trial expired
+                    subscriptionStatus.hasCloudAccess = false;
+                    subscriptionStatus.subscriptionType = 'expired';
+                    showSubscriptionExpiredModal();
+                    return false;
+                } else {
+                    // Trial still active
+                    const daysLeft = Math.ceil((trialEnd - now) / (24 * 60 * 60 * 1000));
+                    if (daysLeft <= 30) {
+                        showTrialExpiringWarning(daysLeft);
+                    }
+                    return true;
+                }
+            } else if (subscriptionStatus.subscriptionType === 'paid') {
+                const subEnd = new Date(subscriptionStatus.subscriptionEndDate);
+                if (now > subEnd) {
+                    // Paid subscription expired
+                    subscriptionStatus.hasCloudAccess = false;
+                    subscriptionStatus.subscriptionType = 'expired';
+                    showSubscriptionExpiredModal();
+                    return false;
+                } else {
+                    // Paid subscription active
+                    const daysLeft = Math.ceil((subEnd - now) / (24 * 60 * 60 * 1000));
+                    if (daysLeft <= 7) {
+                        showSubscriptionExpiringWarning(daysLeft);
+                    }
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+        
+        function hasCloudSyncAccess() {
+            return subscriptionStatus.hasCloudAccess && 
+                   (subscriptionStatus.subscriptionType === 'trial' || subscriptionStatus.subscriptionType === 'paid');
+        }
+        
+        // Subscription UI Functions
+        function showSubscriptionExpiredModal() {
+            openModal('subscriptionExpiredModal');
+        }
+        
+        function showTrialExpiringWarning(daysLeft) {
+            document.getElementById('trialDaysLeft').textContent = 
+                `Your free trial ends in ${daysLeft} day${daysLeft > 1 ? 's' : ''}!`;
+            openModal('trialExpiringModal');
+        }
+        
+        function showSubscriptionExpiringWarning(daysLeft) {
+            showToast('Subscription Ending', `Your cloud sync expires in ${daysLeft} day${daysLeft > 1 ? 's' : ''}. Renew to keep syncing!`, 'warning');
+        }
+        
+        function subscribeToCloudSync() {
+            // In a real app, this would integrate with a payment processor like Stripe
+            // For now, we'll simulate the subscription
+            
+            const confirmed = confirm(
+                'This will open your payment processor to subscribe for $12/year.\n\n' +
+                'For this demo, clicking OK will simulate a successful subscription.'
+            );
+            
+            if (confirmed) {
+                // Simulate successful subscription
+                const now = new Date();
+                const nextYear = new Date(now.getTime() + (365 * 24 * 60 * 60 * 1000)); // 1 year
+                
+                subscriptionStatus = {
+                    hasCloudAccess: true,
+                    subscriptionType: 'paid',
+                    trialStartDate: subscriptionStatus.trialStartDate,
+                    trialEndDate: subscriptionStatus.trialEndDate,
+                    subscriptionEndDate: nextYear.toISOString(),
+                    purchaseDate: now.toISOString()
+                };
+                
+                // Save updated subscription status
+                saveLibrary();
+                
+                // Close any open modals
+                closeModal('subscriptionExpiredModal');
+                closeModal('trialExpiringModal');
+                
+                showToast('Success!', 'Cloud sync activated! Your library will now sync across all devices.', 'success');
+                
+                console.log('Subscription activated until:', nextYear);
+            }
+        }
+        
+        function continueLocalOnly() {
+            closeModal('subscriptionExpiredModal');
+            subscriptionStatus.hasCloudAccess = false;
+            subscriptionStatus.subscriptionType = 'local-only';
+            
+            showToast('Local Mode', 'Your library will be saved locally on this device only.', 'info');
+            console.log('User chose to continue with local-only storage');
+        }
+        
+        function getSubscriptionStatusText() {
+            if (subscriptionStatus.subscriptionType === 'trial') {
+                const trialEnd = new Date(subscriptionStatus.trialEndDate);
+                const daysLeft = Math.ceil((trialEnd - new Date()) / (24 * 60 * 60 * 1000));
+                return `Free Trial (${daysLeft} days left)`;
+            } else if (subscriptionStatus.subscriptionType === 'paid') {
+                const subEnd = new Date(subscriptionStatus.subscriptionEndDate);
+                const daysLeft = Math.ceil((subEnd - new Date()) / (24 * 60 * 60 * 1000));
+                return `Cloud Sync Active (${daysLeft} days remaining)`;
+            } else if (subscriptionStatus.subscriptionType === 'expired') {
+                return 'Cloud Sync Expired';
+            } else {
+                return 'Local Storage Only';
+            }
+        }
+
+        // Loading overlay functions
+        function showLoading(message = 'Loading...') {
+            document.getElementById('loadingText').textContent = message;
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        // Toast notification functions
+        function showToast(title, message = '', type = 'success', duration = 4000) {
+            const container = document.getElementById('toastContainer');
+            const toastId = 'toast-' + Date.now();
+            
+            const icons = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            };
+            
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.id = toastId;
+            toast.innerHTML = `
+                <div class="toast-icon">${icons[type]}</div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    ${message ? `<div class="toast-message">${message}</div>` : ''}
+                </div>
+                <button class="toast-close" onclick="closeToast('${toastId}')">×</button>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Show toast with animation
+            setTimeout(() => toast.classList.add('show'), 100);
+            
+            // Auto remove after duration
+            setTimeout(() => closeToast(toastId), duration);
+        }
+
+        function closeToast(toastId) {
+            const toast = document.getElementById(toastId);
+            if (toast) {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }
+        }
         let currentBookId = null;
         let selectedRating = 0;
         let selectionMode = false;
@@ -2830,20 +3134,44 @@ function switchView(viewName) {
         // Data Management
 async function loadLibrary() {
     try {
-        // Check if user is authenticated and use Firebase
-        if (currentUser) {
+        // Check if user is authenticated and has cloud access
+        if (currentUser && hasCloudSyncAccess()) {
             const doc = await db.collection('users').doc(currentUser.uid).get();
             if (doc.exists) {
-                library = doc.data();
+                const data = doc.data();
+                library = {
+                    books: data.books || [],
+                    wishlist: data.wishlist || [],
+                    readingList: data.readingList || [],
+                    notebooks: data.notebooks || {},
+                    settings: data.settings || { goal2025: null }
+                };
+                
+                // Load subscription status
+                if (data.subscriptionStatus) {
+                    subscriptionStatus = data.subscriptionStatus;
+                    checkSubscriptionStatus(); // Verify it's still valid
+                }
+                
+                console.log('Library loaded from Firebase with cloud sync');
             } else {
-                // First time user - create default library
+                // First time user - create default library and initialize subscription
                 library = { books: [], wishlist: [], readingList: [], notebooks: {}, settings: { goal2025: null } };
-                await saveLibrary(); // Save the default structure
+                initializeSubscription(currentUser);
+                await saveLibrary(); // Save the default structure with subscription
             }
         } else {
-            // Not signed in - use localStorage
+            // No cloud access or not signed in - use localStorage only
             const saved = localStorage.getItem('bookThingyLibrary');
             library = saved ? JSON.parse(saved) : { books: [], wishlist: [], readingList: [], notebooks: {}, settings: { goal2025: null } };
+            
+            if (currentUser && !hasCloudSyncAccess()) {
+                console.log('Cloud sync not available - using local data only');
+                // Check if we need to initialize subscription for signed-in user
+                if (subscriptionStatus.subscriptionType === 'none') {
+                    initializeSubscription(currentUser);
+                }
+            }
         }
         
         if (!library.books) library.books = [];
@@ -2860,15 +3188,27 @@ async function loadLibrary() {
 
 async function saveLibrary() {
     try {
-        if (currentUser) {
-            // User is signed in - save to Firebase
-            await db.collection('users').doc(currentUser.uid).set(library);
+        if (currentUser && hasCloudSyncAccess()) {
+            // User has cloud sync access - save to Firebase
+            const dataToSave = {
+                ...library,
+                subscriptionStatus: subscriptionStatus
+            };
+            await db.collection('users').doc(currentUser.uid).set(dataToSave);
             console.log('Data saved to Firebase for user:', currentUser.email);
         } else {
-            // Not signed in - save to localStorage
+            // No cloud access or not signed in - save to localStorage only
             localStorage.setItem('bookThingyLibrary', JSON.stringify(library));
+            
+            if (currentUser && !hasCloudSyncAccess()) {
+                // User is signed in but doesn't have cloud access
+                console.log('Cloud sync not available - saving locally only');
+                if (subscriptionStatus.subscriptionType === 'expired') {
+                    showToast('Local Save', 'Cloud sync expired - data saved locally only', 'warning');
+                }
+            }
         }
-        showSaveIndicator();
+        // Removed showSaveIndicator() to prevent duplicate notifications
 } catch (error) {
         console.error('Error saving library:', error);
         showToast('Save Failed', 'Could not save your library. Please try again.', 'error');
@@ -4717,9 +5057,6 @@ function renderLending() {
             openModal('bookModal');
         }
 
-        function showAddOptions() {
-            document.getElementById('addOptions').classList.add('active');
-        }
 
 function showManualEntry() {
     console.log('showManualEntry called');
@@ -4731,6 +5068,52 @@ function showManualEntry() {
     document.getElementById('coverPreview').style.display = 'none';
     openModal('addBookModal');
     document.getElementById('addOptions').classList.remove('active');
+}
+
+function showAddOptions() {
+    // Create a modal for add options
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.8);
+        z-index: 10000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(10px);
+    `;
+    
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Add Book</h2>
+            </div>
+            <div class="modal-body">
+                <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;" onclick="this.closest('.modal-overlay').remove(); showBarcodeScanner();">
+                    <span>📷</span>
+                    <span>Scan Barcode</span>
+                </button>
+                <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;" onclick="this.closest('.modal-overlay').remove(); showInternetSearch();">
+                    <span>🔍</span>
+                    <span>Search Internet</span>
+                </button>
+                <button class="btn btn-primary" style="width: 100%; display: flex; align-items: center; gap: 0.5rem;" onclick="this.closest('.modal-overlay').remove(); showManualEntry();">
+                    <span>✏️</span>
+                    <span>Manual Entry</span>
+                </button>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: center; padding: 1rem;">
+                <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
 }
 
 function editBook(bookId) {
@@ -4898,8 +5281,13 @@ function openModal(modalId) {
 
        // Google Books Search
 async function searchGoogleBooks() {
+    console.log('searchGoogleBooks called');
     const query = document.getElementById('internetSearchInput').value;
-    if (!query) return;
+    console.log('Query:', query);
+    if (!query) {
+        console.log('No query provided');
+        return;
+    }
 
     const resultsDiv = document.getElementById('searchResults');
     showLoading('Searching for books...');
@@ -4908,56 +5296,57 @@ async function searchGoogleBooks() {
         const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=10`);
         const data = await response.json();
 
-if (data.items && data.items.length > 0) {
-    resultsDiv.innerHTML = '<div class="search-results">' + 
-        data.items.map((item, index) => {
-            const info = item.volumeInfo;
-            const title = info.title || 'Unknown Title';
-            const authors = info.authors?.join(', ') || 'Unknown Author';
-            const isbn = info.industryIdentifiers?.find(id => id.type === 'ISBN_13')?.identifier || 
-                       info.industryIdentifiers?.find(id => id.type === 'ISBN_10')?.identifier || '';
-            
-      let thumbnail = info.imageLinks?.thumbnail || '';
-let originalThumbnail = thumbnail; // Keep the original as backup
+        if (data.items && data.items.length > 0) {
+            resultsDiv.innerHTML = '<div class="search-results">' + 
+                data.items.map((item, index) => {
+                    const info = item.volumeInfo;
+                    const title = info.title || 'Unknown Title';
+                    const authors = info.authors?.join(', ') || 'Unknown Author';
+                    const isbn = info.industryIdentifiers?.find(id => id.type === 'ISBN_13')?.identifier || 
+                               info.industryIdentifiers?.find(id => id.type === 'ISBN_10')?.identifier || '';
+                    
+                    let thumbnail = info.imageLinks?.thumbnail || '';
+                    let originalThumbnail = thumbnail; // Keep the original as backup
 
-// Force higher resolution by changing zoom parameter
-if (thumbnail) {
-    // Change zoom=1 to zoom=0 for better quality
-    thumbnail = thumbnail.replace('zoom=1', 'zoom=0');
-    // Also change http to https for security
-    thumbnail = thumbnail.replace('http://', 'https://');
-    // Remove edge=curl for cleaner image
-    thumbnail = thumbnail.replace('&edge=curl', '');
-    // Also fix https on the original
-    originalThumbnail = originalThumbnail.replace('http://', 'https://');
-}
+                    // Force higher resolution by changing zoom parameter
+                    if (thumbnail) {
+                        // Change zoom=1 to zoom=0 for better quality
+                        thumbnail = thumbnail.replace('zoom=1', 'zoom=0');
+                        // Also change http to https for security
+                        thumbnail = thumbnail.replace('http://', 'https://');
+                        // Remove edge=curl for cleaner image
+                        thumbnail = thumbnail.replace('&edge=curl', '');
+                        // Also fix https on the original
+                        originalThumbnail = originalThumbnail.replace('http://', 'https://');
+                    }
 
-// Store both versions in the book data
-const bookData = {
-    title: title,
-    author: authors,
-    isbn: isbn,
-    cover: originalThumbnail || thumbnail,  // Use original (more reliable) thumbnail
-    summary: (info.description || '').substring(0, 500),
-    genre: info.categories ? info.categories.join(', ') : '' // ADD THIS LINE
-};                 
-// Use index to store data in a global variable to avoid encoding issues
+                    // Store both versions in the book data
+                    const bookData = {
+                        title: title,
+                        author: authors,
+                        isbn: isbn,
+                        cover: originalThumbnail || thumbnail,  // Use original (more reliable) thumbnail
+                        summary: (info.description || '').substring(0, 500),
+                        genre: info.categories ? info.categories.join(', ') : '' // ADD THIS LINE
+                    };                 
+                    // Use index to store data in a global variable to avoid encoding issues
                     window.searchResultsData = window.searchResultsData || {};
                     window.searchResultsData[index] = bookData;
                     
-return `
-    <div class="search-result-item" onclick="selectGoogleBookByIndex(${index})">
-        <img src="${thumbnail}" 
-             alt="${title}" 
-             class="search-result-cover"
-             onerror="this.onerror=null; if(this.src.includes('zoom=0')) { this.src=this.src.replace('zoom=0','zoom=1'); } else { this.parentElement.innerHTML='<div class=\\'search-result-cover\\' style=\\'display:flex;align-items:center;justify-content:center;\\'>📖</div>'; }">
-        <div class="search-result-info">
-            <div class="search-result-title">${title}</div>
-            <div class="search-result-author">${authors}</div>
-        </div>
-    </div>
-`;              }).join('') + 
-            '</div>';
+                    return `
+                        <div class="search-result-item" onclick="selectGoogleBookByIndex(${index})">
+                            <img src="${thumbnail}" 
+                                 alt="${title}" 
+                                 class="search-result-cover"
+                                 onerror="this.onerror=null; if(this.src.includes('zoom=0')) { this.src=this.src.replace('zoom=0','zoom=1'); } else { this.parentElement.innerHTML='<div class=\\'search-result-cover\\' style=\\'display:flex;align-items:center;justify-content:center;\\'>📖</div>'; }">
+                            <div class="search-result-info">
+                                <div class="search-result-title">${title}</div>
+                                <div class="search-result-author">${authors}</div>
+                            </div>
+                        </div>
+                    `;              
+                }).join('') + 
+                '</div>';
         } else {
             resultsDiv.innerHTML = '<p style="text-align: center; color: var(--text-dim);">No books found. Try a different search term.</p>';
         }
@@ -5094,19 +5483,55 @@ window.returnBook = returnBook;
 <!-- Initialize Firebase -->
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyCG4hFaDegneYjJ8_jvAVAEJIu9NwzxVsw",
-  authDomain: "book-thingy-app.firebaseapp.com",
-  projectId: "book-thingy-app",
-  storageBucket: "book-thingy-app.firebasestorage.app",
-  messagingSenderId: "284502577988",
-  appId: "1:284502577988:web:5c50de859e0870a09efd11",
-  measurementId: "G-TZ2VTER0YV"
+  apiKey: "AIzaSyCG4hFaDegneYjJ8_jvAVAEJIu9NwzxVsw", 
+  authDomain: "book-thingy-web.firebaseapp.com",
+  projectId: "book-thingy-web",
+  storageBucket: "book-thingy-web.firebasestorage.app",
+  messagingSenderId: "463721013366",
+  appId: "1:463721013366:web:abc123def456",
+  measurementId: "G-ABC123DEF"
 };
     
     // Initialize Firebase
     const app = firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
+    
+    // Set up auth state listener
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            currentUser = user;
+            console.log('User is signed in:', user.email);
+            legacyAuthHandler(user);
+        } else {
+            currentUser = null;
+            console.log('User is signed out');
+            legacyAuthHandler(null);
+        }
+    });
+    
+    // Initialize app after DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('DOM loaded, forcing sign-in modal to test...');
+        
+        // Force show modal for testing (remove saved user first)
+        localStorage.removeItem('currentUser');
+        
+        // Show modal immediately
+        setTimeout(() => {
+            console.log('Attempting to open sign-in modal...');
+            openModal('signInModal');
+        }, 1000);
+        
+        // Backup attempt
+        setTimeout(() => {
+            const modal = document.getElementById('signInModal');
+            if (modal && !modal.classList.contains('active')) {
+                console.log('Backup modal open attempt...');
+                openModal('signInModal');
+            }
+        }, 2000);
+    });
 
 // Loading overlay functions
 function showLoading(message = 'Loading...') {
@@ -5554,22 +5979,86 @@ Type "DELETE ALL" to confirm:`;
     // Authentication state
 let currentUser = null;
 
-// Google Sign-In
+// Email Sign-In/Sign-Up
+document.getElementById('emailSignInBtn').addEventListener('click', async () => {
+    try {
+        const email = document.getElementById('emailInput').value.trim();
+        if (!email) {
+            showToast('Error', 'Please enter an email address', 'error');
+            return;
+        }
+        
+        if (!email.includes('@')) {
+            showToast('Error', 'Please enter a valid email address', 'error');
+            return;
+        }
+        
+        showLoading('Signing in...');
+        
+        // Create user object
+        currentUser = {
+            uid: btoa(email),
+            email: email,
+            displayName: email.split('@')[0]
+        };
+        
+        console.log('Signed in with email:', currentUser.email);
+        
+        // Save user to localStorage
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // Initialize subscription for new user
+        initializeSubscription(currentUser);
+        
+        // Close modal and load library
+        closeModal('signInModal');
+        legacyAuthHandler(currentUser);
+        hideLoading();
+        
+        showToast('Welcome!', `Signed in as ${email}`, 'success');
+        
+    } catch (error) {
+        console.error('Email sign-in error:', error);
+        showToast('Sign-in Failed', 'Could not sign in. Please try again.', 'error');
+        hideLoading();
+    }
+});
+
+// Google Sign-In 
 document.getElementById('googleSignInBtn').addEventListener('click', async () => {
     try {
-        showLoading('Signing in...');
-        const provider = new firebase.auth.GoogleAuthProvider();
-provider.setCustomParameters({
-    prompt: 'select_account'
-});
-        const result = await auth.signInWithPopup(provider);
-        currentUser = result.user;
-        console.log('Signed in:', currentUser.email);
+        showLoading('Signing in with Google...');
+        
+        // Check if Firebase is properly configured
+        if (firebaseConfig.appId === "1:463721013366:web:abc123def456") {
+            // Fallback for development
+            showToast('Info', 'Google Sign-In not configured for development. Use email instead.', 'info');
+            hideLoading();
+            return;
+        } else {
+            // Real Firebase Auth
+            const provider = new firebase.auth.GoogleAuthProvider();
+            const result = await firebase.auth().signInWithPopup(provider);
+            currentUser = result.user;
+            console.log('Signed in with Firebase:', currentUser.email);
+            
+            // Save user to localStorage
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            closeModal('signInModal');
+            showToast('Welcome!', `Signed in with Google`, 'success');
+        }
+        
+        // Show user info in header
+        document.getElementById('userEmail').textContent = currentUser.email;
+        document.getElementById('subscriptionStatus').textContent = getSubscriptionStatusText();
+        document.getElementById('userInfo').style.display = 'flex';
+        
         closeModal('signInModal');
         showLoading('Loading your library...');
         await loadLibrary();
         renderLibrary();
         hideLoading();
+        
 } catch (error) {
         hideLoading();
         console.error('Sign-in error:', error);
@@ -5577,14 +6066,78 @@ provider.setCustomParameters({
     }
 });
 
-// Listen for authentication state changes
-auth.onAuthStateChanged(async (user) => {
+// Skip Sign-In (Offline Mode)
+document.getElementById('skipSignInBtn').addEventListener('click', () => {
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    closeModal('signInModal');
+    
+    // Load with offline mode
+    showLoading('Loading offline mode...');
+    loadLibrary().then(() => {
+        renderLibrary();
+        updateStats();
+        hideLoading();
+        showToast('Offline Mode', 'Using offline mode. Your data will be saved locally.', 'info');
+    });
+});
+
+// Allow Enter key in email input
+document.getElementById('emailInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        document.getElementById('emailSignInBtn').click();
+    }
+});
+
+// Load user from localStorage on app start
+window.addEventListener('load', async () => {
+    try {
+        const savedUser = localStorage.getItem('currentUser');
+        if (savedUser) {
+            currentUser = JSON.parse(savedUser);
+            console.log('User loaded from storage:', currentUser.email);
+            
+            // Show user info in header
+            document.getElementById('userEmail').textContent = currentUser.email;
+            document.getElementById('userInfo').style.display = 'flex';
+            
+            // Load user's data
+            showLoading('Loading your library...');
+            await loadLibrary();
+            
+            // Update the current view
+            const activeView = document.querySelector('.view.active').id;
+            if (activeView === 'libraryView') {
+                renderLibrary();
+            } else if (activeView === 'statsView') {
+                updateStats();
+                setTimeout(() => {
+                    handleStatClick('total');
+                }, 100);
+            } else if (activeView === 'lendingView') {
+                renderLending();
+            }
+            hideLoading();
+        } else {
+            // No user, show sign in modal
+            console.log('No saved user found, showing sign-in modal');
+            openModal('signInModal');
+        }
+    } catch (error) {
+        console.error('Load error:', error);
+        openModal('signInModal');
+    }
+});
+
+// Legacy auth state handler (keeping for compatibility)
+const legacyAuthHandler = async (user) => {
     if (user) {
         currentUser = user;
         console.log('User signed in:', user.email);
         
         // Show user info in header
         document.getElementById('userEmail').textContent = user.email;
+        document.getElementById('subscriptionStatus').textContent = getSubscriptionStatusText();
         document.getElementById('userInfo').style.display = 'flex';
         
 // Load user's data and render
@@ -5622,15 +6175,24 @@ hideLoading();
 });
 
 // Sign-out function
-function signOut() {
+async function signOut() {
     if (confirm('Are you sure you want to sign out?')) {
-        auth.signOut().then(() => {
+        try {
+            if (firebaseConfig.appId === "1:463721013366:web:abc123def456") {
+                // Development mode - manual signout
+                currentUser = null;
+                localStorage.removeItem('currentUser');
+                legacyAuthHandler(null);
+            } else {
+                // Production Firebase signout
+                await firebase.auth().signOut();
+            }
             console.log('User signed out successfully');
             showToast('Signed Out', 'You have been signed out successfully.', 'info');
-        }).catch((error) => {
+        } catch (error) {
             console.error('Sign-out error:', error);
             showToast('Sign-out Failed', 'Could not sign out. Please try again.', 'error');
-        });
+        }
     }
 }
 
@@ -5682,52 +6244,6 @@ function submitNotes() {
 }
 
 window.submitNotes = submitNotes;
-
-function showAddOptions() {
-    // Create a modal for add options
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.8);
-        z-index: 10000;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        backdrop-filter: blur(10px);
-    `;
-    
-    modal.innerHTML = `
-        <div class="modal-content" style="max-width: 400px;">
-            <div class="modal-header">
-                <h2>Add Book</h2>
-            </div>
-            <div class="modal-body">
-                <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;" onclick="this.closest('.modal-overlay').remove(); showBarcodeScanner();">
-                    <span>📷</span>
-                    <span>Scan Barcode</span>
-                </button>
-                <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;" onclick="this.closest('.modal-overlay').remove(); showInternetSearch();">
-                    <span>🔍</span>
-                    <span>Search Internet</span>
-                </button>
-                <button class="btn btn-primary" style="width: 100%; display: flex; align-items: center; gap: 0.5rem;" onclick="this.closest('.modal-overlay').remove(); openModal('addBookModal');">
-                    <span>✏️</span>
-                    <span>Manual Entry</span>
-                </button>
-            </div>
-            <div class="modal-footer" style="display: flex; justify-content: center; padding: 1rem;">
-                <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-}
 
 </script>
 </body>

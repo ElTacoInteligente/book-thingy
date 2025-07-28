@@ -2,8 +2,10 @@
 const { app, BrowserWindow, Menu, dialog, ipcMain, shell } = require('electron');
 const path = require('path');
 const fs = require('fs').promises;
+const { URL } = require('url');
 
 let mainWindow;
+const isDev = process.env.NODE_ENV !== 'production';
 
 // Get user data path
 function getUserDataPath() {
@@ -22,14 +24,26 @@ function createWindow() {
             contextIsolation: true,
             nodeIntegration: false,
             webviewTag: true,
-            webSecurity: false
+            webSecurity: true // Enable for production
         },
-        icon: path.join(__dirname, 'icon.png'), // Add your icon
+        icon: path.join(__dirname, 'icon.ico'), // Windows icon
         titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
         backgroundColor: '#0f172a'
     });
 
     mainWindow.loadFile('index.html');
+    
+    // Set Content Security Policy for production
+    if (!isDev) {
+        mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+            callback({
+                responseHeaders: {
+                    ...details.responseHeaders,
+                    'Content-Security-Policy': ["default-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googleapis.com https://apis.google.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com https://accounts.google.com https://www.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https:; frame-src https://accounts.google.com;"]
+                }
+            });
+        });
+    }
 
     // Create menu
     createMenu();
@@ -94,7 +108,7 @@ function createMenu() {
             label: 'View',
             submenu: [
                 { label: 'Reload', accelerator: 'CmdOrCtrl+R', role: 'reload' },
-                { label: 'Toggle DevTools', accelerator: 'F12', role: 'toggleDevTools' },
+                ...(isDev ? [{ label: 'Toggle DevTools', accelerator: 'F12', role: 'toggleDevTools' }] : []),
                 { type: 'separator' },
                 { label: 'Actual Size', accelerator: 'CmdOrCtrl+0', role: 'resetZoom' },
                 { label: 'Zoom In', accelerator: 'CmdOrCtrl+Plus', role: 'zoomIn' },
@@ -179,6 +193,12 @@ ipcMain.handle('get-storage-info', async () => {
 app.whenReady().then(() => {
     console.log('App is ready!');
     console.log('User data will be stored at:', app.getPath('userData'));
+    
+    // Set app icon for Windows
+    if (process.platform === 'win32') {
+        app.setAppUserModelId('com.rovenset.bookthingy');
+    }
+    
     createWindow();
 
     app.on('activate', () => {
@@ -196,3 +216,56 @@ app.on('window-all-closed', () => {
 
 // Set app name
 app.setName('Book Thingy');
+
+// Google OAuth handler
+ipcMain.handle('google-oauth', async () => {
+    return new Promise((resolve, reject) => {
+        const authWindow = new BrowserWindow({
+            width: 500,
+            height: 600,
+            show: false,
+            parent: mainWindow,
+            modal: true,
+            webPreferences: {
+                nodeIntegration: false,
+                contextIsolation: true
+            }
+        });
+
+        const clientId = '284502577988-your-client-id.apps.googleusercontent.com'; // You'll need to get this from Firebase console
+        const redirectUri = 'https://book-thingy-app.firebaseapp.com/__/auth/handler';
+        const scope = 'openid email profile';
+        
+        const authUrl = `https://accounts.google.com/oauth/authorize?` +
+            `client_id=${clientId}&` +
+            `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+            `response_type=code&` +
+            `scope=${encodeURIComponent(scope)}&` +
+            `access_type=offline`;
+
+        authWindow.loadURL(authUrl);
+        authWindow.show();
+
+        authWindow.webContents.on('will-redirect', (event, navigationUrl) => {
+            const parsedUrl = new URL(navigationUrl);
+            
+            if (parsedUrl.hostname === 'book-thingy-app.firebaseapp.com') {
+                const urlParams = new URLSearchParams(parsedUrl.search);
+                const code = urlParams.get('code');
+                const error = urlParams.get('error');
+
+                if (error) {
+                    reject(new Error(error));
+                } else if (code) {
+                    resolve(code);
+                }
+                
+                authWindow.close();
+            }
+        });
+
+        authWindow.on('closed', () => {
+            reject(new Error('Auth window was closed'));
+        });
+    });
+});
