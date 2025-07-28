@@ -279,7 +279,22 @@
             border-radius: 20px;
             padding: 3rem;
             margin-top: 3rem;
-            backdrop-filter: blur(10px);
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 3rem;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
         }
         
         .price {
@@ -415,8 +430,8 @@
             <ul class="nav-links">
                 <li><a href="#features">Features</a></li>
                 <li><a href="#pricing">Pricing</a></li>
-                <li><a href="download.html">Buy Now</a></li>
-                <li><a href="/app?signin=true" class="cta-button">Try Web App</a></li>
+                <li><a href="download.html">Desktop App</a></li>
+                <li><a href="/app?signin=true" class="cta-button">Web App</a></li>
             </ul>
         </div>
     </nav>
@@ -426,24 +441,13 @@
         <div class="hero-container">
             <h1>Your Personal Library Manager</h1>
             <p>Track your books, set reading goals, and organize your collection with ease.</p>
-            
-            <!-- Clear Options -->
-            <div style="display: flex; gap: 1rem; margin: 2rem 0; flex-wrap: wrap; justify-content: center;">
-                <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 8px; flex: 1; max-width: 300px;">
-                    <strong style="color: var(--primary);">🖥️ Desktop App ($25.99)</strong>
-                    <p style="font-size: 0.875rem; margin-top: 0.5rem;">✅ Unlimited books<br>✅ Permanent local storage<br>✅ 6 months FREE cloud sync</p>
-                </div>
-                <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 8px; flex: 1; max-width: 300px;">
-                    <strong style="color: var(--warning);">🌐 Web App (Cloud Only)</strong>
-                    <p style="font-size: 0.875rem; margin-top: 0.5rem;">✅ Demo: 3 books preview<br>✅ Full: Requires cloud sync subscription<br>✅ New users get 6 months FREE</p>
-                </div>
-            </div>
+            <p style="font-weight: 600; color: var(--primary); margin-top: 1rem;">No fuss, no social, just what you want and what you need</p>
             
             <div class="hero-buttons">
                 <a href="download.html" class="button-primary">
-                    💰 Buy Now - $25.99
+                    🖥️ Desktop App - One-time Purchase
                 </a>
-                <a href="/app?signin=true" class="button-secondary">Try Web App</a>
+                <a href="/app?signin=true" class="button-secondary">🌐 Web App - $2.99/month</a>
             </div>
             
             <div class="screenshot-mockup">
@@ -506,28 +510,63 @@
     <!-- Pricing Section -->
     <section class="pricing" id="pricing">
         <div class="pricing-container">
-            <h2 class="section-title">Simple, Fair Pricing</h2>
-            <p class="section-subtitle">One purchase, lifetime access to the desktop app</p>
+            <h2 class="section-title">Choose Your Experience</h2>
+            <p class="section-subtitle">Two simple options, no confusion</p>
             
-            <div class="pricing-card">
-                <div class="price">One-Time Purchase</div>
-                <p class="price-subtitle">Desktop app with 6 months free cloud sync</p>
+            <div class="pricing-grid">
                 
-                <ul class="features-list">
-                    <li>Desktop app forever</li>
-                    <li>6 months free cloud sync</li>
-                    <li>Web app access included</li>
-                    <li>All features unlocked</li>
-                    <li>Free updates</li>
-                </ul>
+                <!-- Desktop App Option -->
+                <div class="pricing-card">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🖥️</div>
+                    <h3 style="color: var(--text-light); margin-bottom: 0.5rem;">Desktop App</h3>
+                    <div class="price">One-Time Purchase</div>
+                    <p class="price-subtitle">Local storage only • No subscriptions</p>
+                    
+                    <ul class="features-list">
+                        <li>✅ Unlimited books</li>
+                        <li>✅ Permanent local storage</li>
+                        <li>✅ No cloud sync needed</li>
+                        <li>✅ Works offline forever</li>
+                        <li>✅ Free updates</li>
+                        <li>✅ One and done</li>
+                    </ul>
+                    
+                    <a href="download.html" class="button-primary">Download Desktop App</a>
+                    
+                    <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                        Perfect for focused, offline reading
+                    </p>
+                </div>
+
+                <!-- Web App Option -->
+                <div class="pricing-card">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🌐</div>
+                    <h3 style="color: var(--text-light); margin-bottom: 0.5rem;">Web App</h3>
+                    <div class="price">$2.99/month</div>
+                    <p class="price-subtitle">Anywhere, anytime access</p>
+                    
+                    <ul class="features-list">
+                        <li>✅ Access on any device</li>
+                        <li>✅ Any browser, anywhere</li>
+                        <li>✅ Automatic cloud sync</li>
+                        <li>✅ Never lose your data</li>
+                        <li>✅ All features included</li>
+                        <li>✅ Cancel anytime</li>
+                    </ul>
+                    
+                    <a href="/app?signin=true" class="button-primary">Try Web App</a>
+                    
+                    <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                        Perfect for multi-device access
+                    </p>
+                </div>
                 
-                <a href="download.html" class="button-primary">Buy Book Thingy - $25.99</a>
-                
-                <p style="margin-top: 2rem; color: var(--text-secondary); font-size: 0.9rem;">
-                    After 6 months: Optional cloud sync for $12/year<br>
-                    <small>Less than $1 per month!</small>
-                </p>
             </div>
+            
+            <p style="margin-top: 3rem; color: var(--text-secondary); text-align: center; font-size: 1.1rem;">
+                <strong>No fuss, no social features, no complexity.</strong><br>
+                Just a clean, simple book tracker that works the way you want it to.
+            </p>
         </div>
     </section>
 
@@ -535,8 +574,8 @@
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-links">
-                <a href="download.html">Buy Now</a>
-                <a href="/app?signin=true">Try Web App</a>
+                <a href="download.html">Desktop App</a>
+                <a href="/app?signin=true">Web App</a>
                 <a href="#features">Features</a>
                 <a href="#pricing">Pricing</a>
             </div>
