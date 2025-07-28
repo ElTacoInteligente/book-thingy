@@ -26,15 +26,28 @@
 - ✅ Automatic updates
 - ✅ Works offline
 
-## 🍎 macOS Installation (Coming Soon)
+## 🍎 macOS Installation
 
 ### Download
-- Download the `.dmg` file (coming soon)
+1. Download `Book Thingy-1.0.0.dmg` (available by building from source)
+2. The file is about 95 MB
+3. Supports both Intel and Apple Silicon Macs
 
 ### Install
-1. Open the downloaded `.dmg` file
-2. Drag Book Thingy to Applications folder
-3. Launch from Applications
+1. Double-click the downloaded `.dmg` file
+2. Drag Book Thingy to the Applications folder
+3. **First launch only**: Right-click Book Thingy in Applications → "Open"
+4. Click "Open" in the security dialog
+5. Future launches work normally
+
+### Build from Source (if no DMG available)
+```bash
+git clone https://github.com/ElTacoInteligente/book-thingy.git
+cd book-thingy
+npm install
+npm run build-mac
+```
+See `BUILD_MAC.md` for detailed instructions.
 
 ## 🐧 Linux Installation (Coming Soon)
 

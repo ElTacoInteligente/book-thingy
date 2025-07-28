@@ -4,23 +4,16 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
-    "public": ".",
+    "public": "public",
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**",
-      "dist/**",
-      "main.js",
-      "preload.js",
-      "package*.json",
-      "*.md",
-      "*.exe",
-      "*.ico"
+      "**/node_modules/**"
     ],
     "rewrites": [
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "/app",
+        "destination": "/app.html"
       }
     ]
   }
