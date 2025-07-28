@@ -6573,39 +6573,7 @@ window.addEventListener('load', async () => {
     console.log('localStorage testDriveMode:', localStorage.getItem('testDriveMode'));
     
     try {
-        // Check if we're in an existing test drive session
-        if (localStorage.getItem('testDriveMode') === 'true') {
-            console.log('Existing test drive mode detected - loading demo profile');
-            isTestDriveMode = true;
-            
-            // Create demo user
-            currentUser = {
-                email: 'test@bookthingy.com',
-                displayName: 'Test Profile',
-                photoURL: null,
-                isDemo: true
-            };
-            
-            // Show demo user in header
-            document.getElementById('userEmail').textContent = 'Test Profile';
-            document.getElementById('subscriptionStatus').textContent = 'Demo Mode';
-            document.getElementById('userInfo').style.display = 'flex';
-            
-            // Load demo books
-            showLoading('Loading test profile...');
-            try {
-                await loadDemoLibrary();
-                renderLibrary();
-                updateStats();
-                hideLoading();
-            } catch (error) {
-                console.error('Error loading demo library:', error);
-                hideLoading();
-            }
-            return; // Skip normal auth flow
-        }
-        
-        // Check URL parameters
+        // Check URL parameters FIRST
         const urlParams = new URLSearchParams(window.location.search);
         const testProfileRequested = urlParams.get('testprofile') === 'true';
         
@@ -6647,6 +6615,38 @@ window.addEventListener('load', async () => {
             
             // Clean up URL
             window.history.replaceState({}, document.title, '/app');
+            return; // Skip normal auth flow
+        }
+        
+        // Check if we're in an existing test drive session (from previous visit)
+        if (localStorage.getItem('testDriveMode') === 'true') {
+            console.log('Existing test drive mode detected - loading demo profile');
+            isTestDriveMode = true;
+            
+            // Create demo user
+            currentUser = {
+                email: 'test@bookthingy.com',
+                displayName: 'Test Profile',
+                photoURL: null,
+                isDemo: true
+            };
+            
+            // Show demo user in header
+            document.getElementById('userEmail').textContent = 'Test Profile';
+            document.getElementById('subscriptionStatus').textContent = 'Demo Mode';
+            document.getElementById('userInfo').style.display = 'flex';
+            
+            // Load demo books
+            showLoading('Loading test profile...');
+            try {
+                await loadDemoLibrary();
+                renderLibrary();
+                updateStats();
+                hideLoading();
+            } catch (error) {
+                console.error('Error loading demo library:', error);
+                hideLoading();
+            }
             return; // Skip normal auth flow
         }
         
