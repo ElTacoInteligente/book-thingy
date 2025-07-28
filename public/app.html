@@ -6652,14 +6652,115 @@ document.getElementById('emailInput').addEventListener('keypress', (e) => {
     }
 });
 
+// Auto sign-in to test account function
+async function autoSignInTestAccount() {
+    try {
+        showLoading('Loading test drive...');
+        
+        // Use predefined test account credentials
+        const testEmail = 'test@bookthingy.com';
+        const testPassword = 'testuser123';
+        
+        // Sign in with Firebase Auth
+        const userCredential = await firebase.auth().signInWithEmailAndPassword(testEmail, testPassword);
+        currentUser = userCredential.user;
+        
+        // Mark as demo user and create serializable user object
+        currentUser.isDemo = true;
+        const userToSave = {
+            uid: currentUser.uid,
+            email: currentUser.email,
+            displayName: currentUser.displayName || 'Test User',
+            isDemo: true
+        };
+        localStorage.setItem('currentUser', JSON.stringify(userToSave));
+        
+        // Update currentUser to match saved object
+        currentUser = userToSave;
+        
+        // Show user info in header with demo badge
+        document.getElementById('userEmail').textContent = 'Test User (Demo)';
+        document.getElementById('subscriptionStatus').textContent = 'Demo Mode';
+        document.getElementById('userInfo').style.display = 'flex';
+        
+        showToast('Welcome to Test Drive!', 'Explore 20 classic books and all features', 'success');
+        
+        // Load demo library
+        await loadDemoLibrary();
+        renderLibrary();
+        hideLoading();
+        
+    } catch (error) {
+        console.error('Auto test account sign-in error:', error);
+        
+        // If account doesn't exist, create it
+        if (error.code === 'auth/user-not-found') {
+            try {
+                showLoading('Setting up test account...');
+                const testEmail = 'test@bookthingy.com';
+                const testPassword = 'testuser123';
+                
+                const userCredential = await firebase.auth().createUserWithEmailAndPassword(testEmail, testPassword);
+                currentUser = userCredential.user;
+                
+                // Mark as demo user and create serializable user object
+                currentUser.isDemo = true;
+                const userToSave = {
+                    uid: currentUser.uid,
+                    email: currentUser.email,
+                    displayName: currentUser.displayName || 'Test User',
+                    isDemo: true
+                };
+                localStorage.setItem('currentUser', JSON.stringify(userToSave));
+                
+                // Update currentUser to match saved object
+                currentUser = userToSave;
+                
+                // Show user info in header with demo badge
+                document.getElementById('userEmail').textContent = 'Test User (Demo)';
+                document.getElementById('subscriptionStatus').textContent = 'Demo Mode';
+                document.getElementById('userInfo').style.display = 'flex';
+                
+                showToast('Welcome to Test Drive!', 'Test account created with 20 demo books', 'success');
+                
+                // Load demo library and save to Firestore
+                await loadDemoLibrary();
+                await saveLibrary(); // Save demo data to Firestore
+                renderLibrary();
+                hideLoading();
+                
+            } catch (createError) {
+                console.error('Failed to create test account:', createError);
+                showToast('Error', 'Could not set up test drive. Please try again.', 'error');
+                hideLoading();
+                // Fallback to normal sign-in modal
+                openModal('signInModal');
+            }
+        } else {
+            showToast('Error', 'Could not start test drive. Please try again.', 'error');
+            hideLoading();
+            // Fallback to normal sign-in modal
+            openModal('signInModal');
+        }
+    }
+}
+
 // Load user from localStorage on app start
 window.addEventListener('load', async () => {
     console.log('=== AUTH CHECK START ===');
     console.log('localStorage currentUser:', localStorage.getItem('currentUser'));
     
     try {
-        // Check URL parameters for sign-in request
+        // Check URL parameters
         const urlParams = new URLSearchParams(window.location.search);
+        
+        // Handle test drive direct sign-in
+        if (urlParams.get('testdrive') === 'true') {
+            console.log('Test drive requested - auto signing in to test account');
+            window.history.replaceState({}, document.title, '/app');
+            await autoSignInTestAccount();
+            return;
+        }
         
         // Clear any sign-in parameters from URL  
         if (urlParams.get('signin') === 'true') {
